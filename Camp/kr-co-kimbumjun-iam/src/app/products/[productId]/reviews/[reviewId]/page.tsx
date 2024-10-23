@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 export default function ReviewDetail({
   params,
 }: {
@@ -15,8 +16,10 @@ export default function ReviewDetail({
     return notFound();
   }
   return (
-    <h1>
-      Review {params.reviewId} for product {params.productId}
-    </h1>
+    <div className="text-red-400 text-3xl">
+      <h1>
+        Review {params.reviewId} for product {params.productId}
+      </h1>
+    </div>
   );
 }
