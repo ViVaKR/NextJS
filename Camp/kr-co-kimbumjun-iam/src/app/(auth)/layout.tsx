@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 const navLinks = [
   { name: 'Register', href: '/register' },
@@ -13,10 +14,20 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname(); // Get the current path
+
+  const [input, setInput] = useState(''); // State for the input field, 상태를 저장할 수 있는 변수를 만들어 줍니다.
 
   return (
     <div>
+      <div>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="input field"
+          className="p-2 border border-gray-300 rounded-md"
+        />
+      </div>
       {navLinks.map((link) => {
         const isActive = pathname.startsWith(link.href);
 
