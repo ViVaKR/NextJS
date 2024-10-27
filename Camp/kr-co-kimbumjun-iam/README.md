@@ -4,14 +4,28 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
+```json
+"scripts": {
+  "dev": "next dev -p 7139",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "watch": "next dev -p 7139 & open -a 'Google Chrome' http://localhost:7139",
+  "watch:chrome": "next dev -p 7139 & open -a 'Google Chrome' http://localhost:7139",
+  "watch:firefox": "next dev -p 7139 & open -a 'Firefox' http://localhost:7139",
+  "watch:safari": "next dev -p 7139 & open -a 'Safari' http://localhost:7139"
+},
+"dependencies": {
+  "next": "14.2.15",
+  "react": "^18",
+  "react-dom": "^18"
+}
+```
+
 ```bash
 npm run dev
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run watch # 크롬 브라우저로 열기
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

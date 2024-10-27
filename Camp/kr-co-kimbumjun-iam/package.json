@@ -6,21 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "watch": "next dev -p 7139 & open -a 'Google Chrome' http://localhost:7139",
+    "watch:chrome": "next dev -p 7139 & open -a 'Google Chrome' http://localhost:7139",
+    "watch:firefox": "next dev -p 7155 & open -a 'Firefox' http://localhost:7155",
+    "watch:safari": "next dev -p 7144 & open -a 'Safari' http://localhost:7144"
   },
   "dependencies": {
+    "next": "14.2.15",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.15"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.15",
+    "open-cli": "^8.0.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.15"
+    "typescript": "^5"
   }
 }
