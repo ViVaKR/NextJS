@@ -1,0 +1,38 @@
+import { ICategory } from "@/interfaces/i-category";
+
+export default class Language {
+    public lang: ICategory[] = [
+        { id: 1, name: "csharp" },
+        { id: 2, name: "c#" },
+        { id: 3, name: "javascript" },
+        { id: 4, name: "angular-ts" },
+        { id: 5, name: "node" },
+        { id: 6, name: "c#" },
+        { id: 7, name: "rust" },
+        { id: 8, name: "bat" },
+        { id: 9, name: "shell" },
+        { id: 10, name: "ruby" },
+        { id: 11, name: "cpp" },
+        { id: 12, name: "r" },
+        { id: 13, name: "python" },
+        { id: 14, name: "swift" },
+        { id: 15, name: "vb" },
+        { id: 16, name: "go" },
+        { id: 17, name: "html" },
+        { id: 18, name: "css" },
+        { id: 19, name: "sql" },
+        { id: 20, name: "typescript" },
+        { id: 21, name: "bash" },
+        { id: 22, name: "docker" },
+        { id: 23, name: "asm" },
+        { id: 24, name: "http" },
+        { id: 25, name: "tsx" },
+        { id: 26, name: "dart" },
+        { id: 27, name: "c#" },
+        { id: 28, name: "Perl" },
+        { id: 29, name: "java" },
+        { id: 30, name: "nginx" },
+        { id: 31, name: "Math" },
+        { id: 32, name: "Note" },
+    ]
+}
