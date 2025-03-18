@@ -1,0 +1,27 @@
+// src/app/dtc/ip-address/page.tsx
+import VivTitle from '@/components/Title';
+import { IIpInfo } from '@/interfaces/i-ip-info';
+import React from 'react';
+import FormSection from './FormSection';
+
+const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
+
+
+async function getInfo(): Promise<IIpInfo> {
+    const response = await fetch(`${api}/api/ip`);
+    const data: IIpInfo = await response.json();
+    return data;
+}
+
+const Page = async () => {
+
+    const ipInfo = await getInfo();
+
+    return (
+        <React.Fragment>
+            <VivTitle title='IP Address Info' />
+            <FormSection ipInfo={ipInfo} />
+        </React.Fragment>
+    );
+}
+export default Page;
