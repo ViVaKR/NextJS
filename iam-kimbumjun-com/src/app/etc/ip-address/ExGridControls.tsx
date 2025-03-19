@@ -1,5 +1,5 @@
 'use client';
-import VivTitle from '@/components/Title';
+import VivTitle from '@/components/VivTitle';
 import { Box, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';

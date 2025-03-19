@@ -1,6 +1,6 @@
 // src/app/code/read/page.tsx
 import Code from '@/components/Code';
-import VivTitle from '@/components/Title';
+import VivTitle from '@/components/VivTitle';
 import { getLanguageName } from '@/data/category';
 import { ICode } from '@/interfaces/i-code';
 import { fetchCodes } from '@/lib/fetchCodes';
@@ -28,7 +28,7 @@ export default async function CodeReadPage({
           {new Date(code.created).toLocaleDateString()}
         </span>
 
-        <span className='flex-1 text-slate-400 text-center'>
+        <span className="flex-1 text-slate-400 text-center">
           {code.userName}
         </span>
 
@@ -39,8 +39,7 @@ export default async function CodeReadPage({
 
       {/* code */}
       <div className="min-w-full flex flex-col">
-        <div
-          className="w-full h-auto">
+        <div className="w-full h-auto">
           {/* content */}
           <Code
             code={code.content}
@@ -49,8 +48,7 @@ export default async function CodeReadPage({
           />
         </div>
         {/* subContent */}
-        <div
-          className="h-auto w-full">
+        <div className="h-auto w-full">
           <Code
             code={code.subContent ?? '연관된 코드는 없습니다.'}
             lang="tsx"
@@ -58,8 +56,7 @@ export default async function CodeReadPage({
           />
         </div>
         {/* note */}
-        <div
-          className="h-auto w-full">
+        <div className="h-auto w-full">
           <Code
             code={code.note ?? '코드설명은 없습니다.'}
             lang="markdown"
@@ -67,28 +64,29 @@ export default async function CodeReadPage({
           />
         </div>
         {/* markdown */}
-        <div
-          className="h-auto w-full">
+        <div className="h-auto w-full">
           <Code
             code={code.markdown ?? 'README 내용은 없습니다.'}
             lang="markdown"
             theme="everforest-dark"
           />
         </div>
-        <div className='h-auto w-full'>
+        <div className="h-auto w-full">
           <Image
             width={500}
             height={500}
             style={{ width: '100vw', height: 'auto' }}
-            src={(code.attachImageName === null || code.attachImageName === '' || code.attachImageName === undefined)
-              ? `/images/no-image.svg`
-              : `${process.env.NEXT_PUBLIC_BASE_URL}/images/Attach/${code.attachImageName}`}
-            alt='-' />
+            src={
+              code.attachImageName === null ||
+              code.attachImageName === '' ||
+              code.attachImageName === undefined
+                ? `/images/no-image.svg`
+                : `${process.env.NEXT_PUBLIC_BASE_URL}/images/Attach/${code.attachImageName}`
+            }
+            alt="-"
+          />
         </div>
-
       </div>
-
-
     </div>
   );
 }

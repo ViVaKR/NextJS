@@ -31,28 +31,6 @@ export default function CategoryAccordion({
       setExpanded(isExpanded ? panel : false);
     };
 
-  // const handleChange = useCallback(
-  //   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-  //     setExpanded(isExpanded ? panel : false);
-  //   },
-  //   []
-  // );
-
-  // useEffect(() => {
-  //   if (expanded) {
-  //     const accordionElement = accordionRefs.current.get(expanded);
-  //     if (accordionElement) {
-  //       const rect = accordionElement.getBoundingClientRect();
-  //       const scrollTop =
-  //         window.pageYOffset || document.documentElement.scrollTop;
-  //       window.scrollTo({
-  //         top: scrollTop + rect.top - 50, // 상단 여백 50px 추가
-  //         behavior: 'smooth',
-  //       });
-  //     }
-  //   }
-  // }, [expanded]);
-
   const pathname = usePathname() ?? '';
   const getLinkClasses = (url: string) => {
     const isActive = pathname?.startsWith(url);
@@ -147,3 +125,25 @@ export default function CategoryAccordion({
     </div>
   );
 }
+
+// const handleChange = useCallback(
+//   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+//     setExpanded(isExpanded ? panel : false);
+//   },
+//   []
+// );
+
+// useEffect(() => {
+//   if (expanded) {
+//     const accordionElement = accordionRefs.current.get(expanded);
+//     if (accordionElement) {
+//       const rect = accordionElement.getBoundingClientRect();
+//       const scrollTop =
+//         window.pageYOffset || document.documentElement.scrollTop;
+//       window.scrollTo({
+//         top: scrollTop + rect.top - 50, // 상단 여백 50px 추가
+//         behavior: 'smooth',
+//       });
+//     }
+//   }
+// }, [expanded]);

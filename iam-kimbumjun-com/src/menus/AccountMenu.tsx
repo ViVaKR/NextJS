@@ -3,10 +3,8 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import { PersonAdd, Settings, Logout, Login } from '@mui/icons-material';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,7 +13,8 @@ import { IMenu } from '@/interfaces/i-menu';
 import { useEffect, useState } from 'react';
 import { IFileInfo } from '@/interfaces/i-file-info';
 import { apiFetch } from '@/lib/api';
-import { useProfile } from '@/app/membership/profile/Profile';
+import { useProfile } from '@/app/(membership)/profile/Profile';
+import ClearAllOutlinedIcon from '@mui/icons-material/ClearAllOutlined';
 
 const iconMap: Record<string, React.ComponentType> = {
   profile: Avatar,
@@ -72,38 +71,28 @@ export default function AccountMenu() {
     return `${baseUrl}/images/${profile.user?.id}_${userAvata?.dbPath}`;
   };
 
+  const getFullName = () => {
+    return profile.user?.fullName;
+  };
+
+  const getRoles = () => {
+    return profile.user?.roles.join(', ');
+  };
+
   const avataHandleClick = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
 
-  // const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-  //   const tag = e.currentTarget.getAttribute('data-tag');
-  //   router.push(`${tag}`);
-  //   handleClose();
-  // };
-
   const handleMenuClick = (url: string) => {
-    // if (url === '/membership/sign-out') {
-    //   router.push('/');
-
-    // } else {
-    //   router.push(url);
-    // }
-
     handleClose();
     router.push(url);
   };
-
-  // const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorEl(e.currentTarget);
-  // };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const menus: IMenu[] = getMembershipItems();
-  // if (profileError) return null; // 프로필 에러 시 아무것도 렌더링 안 함
 
   // 메뉴 필터링
   const filteredMenus = getMembershipItems().filter((menu) => {
@@ -126,8 +115,15 @@ export default function AccountMenu() {
 
   if (profileError) return null;
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-      <Tooltip title="Account settings">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        marginRight: '0.5em',
+      }}>
+      {/* <Box className="flex gap-2 w-32"> */}
+      <Box className={`flex gap-2 text-nowrap`}>
         <IconButton
           onClick={avataHandleClick}
           size="small"
@@ -137,21 +133,25 @@ export default function AccountMenu() {
           aria-expanded={open ? 'true' : undefined}
           disabled={profileLoading} // 로딩 중 비활성화
         >
-          <Avatar sx={{ width: 32, height: 32, border: '2x solid #fff' }}>
+          <Avatar sx={{ width: 40, height: 40 }}>
             <Image
               src={
                 !isLoading
-                  ? getAvataUrl() ?? '/images/avata-1024.png'
-                  : '/images/avata-1024.png'
+                  ? getAvataUrl() ?? '/images/login-icon.png'
+                  : '/images/login-icon.png'
               }
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
               fill={true}
-              sizes="32px" // Avatar 크기에 맞춤
+              sizes="40px"
               alt="avata"
-              priority={true} // 초기 로드 속도 개선
             />
           </Avatar>
         </IconButton>
-      </Tooltip>
+        <div className="flex flex-col gap-1 text-xs justify-center max-md:hidden">
+          <span>{getFullName()}</span>
+          <span>{getRoles()}</span>
+        </div>
+      </Box>
 
       <Menu
         anchorEl={anchorEl}
@@ -190,20 +190,23 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
         {/* Filtered Menu */}
-        {filteredMenus.map((menu) => {
-          const IconComponent = iconMap[menu.url] || Avatar;
-          const isAvatar = IconComponent === Avatar;
+        {filteredMenus.map((menu, idx) => {
+          // const IconComponent = iconMap[menu.url] || Avatar;
+          // const isAvatar = IconComponent === Avatar;
           return (
-            <div key={menu.url}>
+            <div key={idx}>
               {menu.hasDivider && <Divider />}
-              <MenuItem onClick={() => handleMenuClick(menu.url)}>
-                {isAvatar ? (
+              <MenuItem
+                onClick={() => handleMenuClick(menu.url)}
+                className="gap-2">
+                {/* {isAvatar ? (
                   <Avatar />
                 ) : (
                   <ListItemIcon>
                     <IconComponent />
                   </ListItemIcon>
-                )}
+                )} */}
+                <ClearAllOutlinedIcon />
                 {menu.title}
               </MenuItem>
             </div>

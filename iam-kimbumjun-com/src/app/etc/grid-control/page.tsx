@@ -12,7 +12,7 @@ import { getCodes } from '@/lib/getCodes';
 import { ICategory } from '@/interfaces/i-category';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
-import Loading from '@/components/VivLoading';
+import VivLoading from '@/components/VivLoading';
 
 export default function GridControl() {
   const [codes, setCodes] = React.useState<ICode[]>([]);
@@ -129,7 +129,7 @@ export default function GridControl() {
   return (
     <>
       {isLoading ? (
-        <Loading params={{ choice: time }} />
+        <VivLoading params={{ choice: time }} />
       ) : (
         <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid

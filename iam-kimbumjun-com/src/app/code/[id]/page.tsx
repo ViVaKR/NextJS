@@ -1,5 +1,5 @@
 // src/app/code/page.tsx
-import VivTitle from '@/components/Title';
+import VivTitle from '@/components/VivTitle';
 import VivGridControl from '@/components/VivGridControl';
 import { ICode } from '@/interfaces/i-code';
 import { fetchCodes } from '@/lib/fetchCodes';
@@ -10,7 +10,7 @@ export default async function CodePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params ?? undefined;
+  const { id } = (await params) ?? undefined;
   const codes: ICode[] = await fetchCodes();
   const filteredCodes = codes.filter((code) => code.categoryId === Number(id));
   return (

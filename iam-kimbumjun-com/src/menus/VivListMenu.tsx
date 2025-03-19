@@ -21,15 +21,16 @@ export default function VivListMenu({
   const router = useRouter(); // --> 페이지 이동을 위한 useRouter
   const pathname = usePathname(); // 현재 경로 가져오기
   const open = Boolean(anchorEl);
+
   // 현재 경로와 비교해서 활성 상태 확인
   const isActive = items.some((item) => {
     const matches = item.url === pathname;
+    // if (matches) console.log(item.title, item.url);
     return matches;
   });
 
   // 활성 상태에 따른 클래스
   const baseClasses = isActive ? 'text-pink-400' : 'text-amber-50';
-
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -49,7 +50,7 @@ export default function VivListMenu({
   };
 
   return (
-    <div>
+    <div className="flex justify-center">
       <List
         component="nav"
         aria-label="Device settings"
@@ -57,17 +58,19 @@ export default function VivListMenu({
         sx={{ bgcolor: 'transparent' }}>
         <ListItemButton
           id="lock-button"
-          // aria-haspopup="listbox"
-          // aria-controls="lock-menu"
-          // aria-label="when device is locked"
+          aria-haspopup="listbox"
+          aria-controls="lock-menu"
+          aria-label="when device is locked"
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClickListItem}>
+          {text && (
+            <span className="material-symbols-outlined mr-2">stacks</span>
+          )}
           {text || <span className="material-symbols-outlined">menu</span>}
         </ListItemButton>
       </List>
       {/* 서브 항목 */}
       <Menu
-        id="lock-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}>

@@ -1,7 +1,9 @@
+import VivTitle from '@/components/VivTitle';
+
 export default function EtcPage() {
   return (
-    <>
-      <h1>EtcPage</h1>
-    </>
+    <div className="flex flex-col w-full min-h-screen">
+      <VivTitle title="잡동사니" />
+    </div>
   );
 }

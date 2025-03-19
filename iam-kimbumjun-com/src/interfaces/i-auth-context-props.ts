@@ -1,3 +1,4 @@
+import { IUserDetailDTO } from "@/dtos/i-userdetail-dto";
 import { IAuthResponse } from "./i-auth-response";
 
 export interface IAuthContextProps {
@@ -5,5 +6,6 @@ export interface IAuthContextProps {
     isAdmin: () => boolean;
     login: (email: string, password: string) => Promise<boolean>; // 실제 시그니처 반영
     logout: () => void;
+    fetchUsers: () => Promise<IUserDetailDTO[]>;
     loading: boolean;
 }

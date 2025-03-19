@@ -14,38 +14,38 @@
     "@emotion/styled": "^11.14.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@mui/icons-material": "^6.4.7",
-    "@mui/material": "^6.4.7",
+    "@mui/icons-material": "^6.4.8",
+    "@mui/material": "^6.4.8",
     "@mui/styled-engine-sc": "^6.4.6",
-    "@mui/utils": "^6.4.6",
-    "@mui/x-data-grid": "^7.27.3",
-    "@next/mdx": "^15.2.2",
+    "@mui/utils": "^6.4.8",
+    "@mui/x-data-grid": "^7.28.0",
+    "@next/mdx": "^15.2.3",
     "@toolpad/core": "^0.13.0",
     "@types/mdx": "^2.0.13",
     "beasties": "^0.2.0",
-    "highlight.js": "^11.11.1",
     "jwt-decode": "^4.0.0",
     "katex": "^0.16.21",
-    "next": "15.2.2",
+    "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "styled-components": "^6.1.15"
+    "react-hook-form": "^7.54.2",
+    "styled-components": "^6.1.16"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
-    "@next/eslint-plugin-next": "^15.2.2",
+    "@next/eslint-plugin-next": "^15.2.3",
     "@shikijs/twoslash": "^3.2.1",
     "@tailwindcss/postcss": "^4.0.14",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.13.10",
-    "@types/react": "^19.0.10",
+    "@types/react": "^19.0.11",
     "@types/react-dom": "^19.0.4",
     "eslint": "^9.22.0",
-    "eslint-config-next": "15.2.2",
+    "eslint-config-next": "15.2.3",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "postcss": "^8.5.3",
-    "sass": "^1.85.1",
+    "sass": "^1.86.0",
     "shiki": "^3.2.1",
     "tailwindcss": "^4.0.14",
     "typescript": "^5.8.2"
@@ -58,5 +58,6 @@
       "esbuild",
       "sharp"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.6.4"
 }

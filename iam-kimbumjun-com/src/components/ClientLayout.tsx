@@ -19,71 +19,52 @@ export default function ClientLayout({
 }: ClientLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false); // 토글 상태
 
-  // 그리드 클래스 동적 조정
-  const gridClasses = isCollapsed
-    ? 'grid grid-cols-[0_minmax(auto,1fr)] max-md:grid-cols-1 min-h-screen p-2'
-    : 'grid grid-cols-[300px_minmax(300px,1fr)] max-md:grid-cols-1 min-h-screen p-2';
-
-  const hidden = isCollapsed ? 'hidden' : 'max-md:hidden';
-
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev); // 토글
   };
 
+  const hide = isCollapsed ? 'hidden' : '';
+  const gridClass = isCollapsed
+    ? 'grid grid-cols-1 min-h-screen p-2'
+    : 'grid grid-cols-[300px_minmax(200px,1fr)] min-h-screen p-2';
   return (
-    <div className={gridClasses}>
-
+    <div className={gridClass}>
       <nav
         className="col-span-2
-        start-0
-        grid grid-cols-3
-        max-md:grid-cols-2
-        w-auto
-        gap-2
+        max-w-full
+        flex justify-evenly
         text-xs
         text-slate-600
         border-b-1
         border-slate-200
-        place-items-stretch
         mb-2">
+        {/*  */}
         <button
           type="button"
           className="cursor-pointer
           hover:text-red-600
-          start-0
-          max-md:hidden
-          text-center"
-          onClick={handleToggle} // 클릭 시 토글
-        >
+          start-0 shrink"
+          onClick={handleToggle}>
           <span className="material-symbols-outlined">
             {isCollapsed ? 'last_page' : 'first_page'}
           </span>
         </button>
-
+        {/*  */}
         <Link
           href="/code"
-          className="hover:text-red-600 max-md:start-0 text-center">
+          className="hover:text-red-600 shrink">
           <span className="material-symbols-outlined">in_home_mode</span>
         </Link>
-
+        {/*  */}
         <Link
           href="/code/create"
-          className="hover:text-red-600 max-md:start-1 text-center">
+          className="hover:text-red-600 shrink">
           <span className="material-symbols-outlined">edit_document</span>
         </Link>
       </nav>
       {/* Left Menu */}
-
-      <aside className="start-0 flex flex-col gap-1 mr-4">
-
-        <div className='bg-slate-200
-        h-12 w-full content-center
-        text-center text-slate-700
-        rounded-xl'>
-          space
-        </div>
-
-        <span className={`${hidden} max-h-[800px] overflow-y-scroll`} >
+      <aside className={`start-0 flex flex-col gap-1 mr-2 ${hide}`}>
+        <span className={`max-h-[800px] overflow-y-scroll`}>
           <CategoryAccordion
             categories={categories}
             codes={codes}
@@ -91,7 +72,8 @@ export default function ClientLayout({
         </span>
       </aside>
 
-      <main className="flex flex-col start-1 w-[100%] h-screen ">
+      {/*  */}
+      <main className="max-md:start-0 start-1 w-full h-screen overflow-x-scroll">
         {children}
       </main>
     </div>

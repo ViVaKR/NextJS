@@ -1,7 +1,3 @@
-/*
---> API 요청 유틸리티 (토큰 삽입)
-Angular의 token.interceptor.ts를 대체하기 위해, 공통 API 호출 함수에 토큰을 자동으로 추가합니다.
-*/
 
 async function refreshToken() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -33,12 +29,6 @@ export async function apiFetch(url, options = {}) {
     });
 
     if (response.status === 401) {
-        // 토큰 만료 시 리프레시 로직 추가 가능
-        // const refreshResponse = await refreshToken();
-        // if (refreshResponse.isSuccess) {
-        //     localStorage.setItem('user', JSON.stringify(refreshResponse));
-        //     return apiFetch(url, options); // 재시도
-        // }
         if (response.status === 401) {
             try {
                 const refreshResponse = await refreshToken();
@@ -52,15 +42,19 @@ export async function apiFetch(url, options = {}) {
             }
         }
         throw new Error(`API error: ${response.status}`);
-
     }
 
-    // 응답 본문이 없거나 비어 있을 경우 처리
     const text = await response.text();
     return text ? JSON.parse(text) : null;
 }
 
+export const fetcher = (...args) => fetch(...args).then(res => res.json);
+
 /*
 설명: apiFetch는 모든 API 호출에 토큰을 추가하고, 401 에러 발생 시 리프레시 토큰으로 새 토큰을 요청합니다. 이는 Angular의 인터셉터와 유사한 역할을 합니다.
+*/
 
+/*
+--> API 요청 유틸리티 (토큰 삽입)
+Angular의 token.interceptor.ts를 대체하기 위해, 공통 API 호출 함수에 토큰을 자동으로 추가합니다.
 */

@@ -3,12 +3,14 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { IAuthContextProps } from '@/interfaces/i-auth-context-props';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
+import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
 
 const AuthContext = createContext<IAuthContextProps>({
   user: null,
   isAdmin: () => false,
   login: () => Promise.resolve(false),
   logout: () => {},
+  fetchUsers: () => Promise.resolve([]),
   loading: true,
 });
 
@@ -49,6 +51,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const fetchUsers = async () => {
+    if (!user?.token) {
+      return [];
+    }
+    if (!isAdmin) {
+      return [];
+    }
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/account/list`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${user.token}`, // 최신 토큰 사용
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) throw new Error('인증실패');
+        if (response.status === 403) throw new Error('관리자 권한 필요');
+        throw new Error('회원목록을 가져오는데 실패하였습니다.');
+      }
+      return await response.json();
+    } catch (error) {
+      throw error; // 호출하는 쪽에서 처리 가능하도록 throw
+    }
+  };
+
   //* Sign Out
   const logout = () => {
     localStorage.removeItem('user');
@@ -57,17 +90,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // * Roles
-  const token = user?.token;
+
   let roles: string[] = [];
-  if (token) {
-    const decoded: any = jwtDecode(token);
+  if (user?.token) {
+    const decoded: any = jwtDecode(user.token);
     roles = decoded.role;
   }
 
-  const isAdmin = () => roles.includes('Admin') || false;
+  const isAdmin = () => {
+    if (!user?.token) return false;
+    const decoded: any = jwtDecode(user.token);
+    const roles: string[] = decoded.role || [];
+    return roles.includes('Admin');
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading, isAdmin, fetchUsers }}>
       {children}
     </AuthContext.Provider>
   );

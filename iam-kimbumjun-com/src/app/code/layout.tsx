@@ -4,7 +4,7 @@ import { fetchCodes } from '@/lib/fetchCodes';
 import { fetchCategories } from '@/lib/fetchCategories';
 import ClientLayout from '@/components/ClientLayout';
 import { Suspense } from 'react';
-import Loading from '@/components/VivLoading';
+import VivLoading from '@/components/VivLoading';
 
 async function fetchData() {
   const [codes, categories] = await Promise.all([
@@ -19,7 +19,7 @@ export default async function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { codes, categories } = await fetchData();
   return (
-    <Suspense fallback={<Loading params={{ choice: 3 }} />}>
+    <Suspense fallback={<VivLoading params={{ choice: 1 }} />}>
       <ClientLayout
         codes={codes}
         categories={categories}>

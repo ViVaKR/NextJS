@@ -1,4 +1,4 @@
-import VivTitle from '@/components/Title';
+import VivTitle from '@/components/VivTitle';
 
 export default function CreatePage() {
   return (
