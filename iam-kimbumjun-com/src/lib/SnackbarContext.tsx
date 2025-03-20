@@ -4,15 +4,25 @@ import * as React from 'react';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 import { createContext, useContext, useState, useCallback } from 'react';
+import { duration } from '@mui/material';
 
 interface SnackbarState {
   open: boolean;
   message: string;
   severity: AlertColor;
+  vertical: 'top' | 'bottom';
+  horizontal: 'left' | 'right' | 'center';
+  duration: number; // 자동 닫힘 시간
 }
 
 interface SnackbarContextType {
-  showSnackbar: (message: string, severity?: AlertColor) => void;
+  showSnackbar: (
+    message: string,
+    severity?: AlertColor,
+    vertical?: 'top' | 'bottom',
+    horizontal?: 'left' | 'right' | 'center',
+    duration?: number // 시간옵션
+  ) => void;
 }
 
 const SnackbarContext = React.createContext<SnackbarContextType | undefined>(
@@ -24,11 +34,27 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
     open: false,
     message: '',
     severity: 'info',
+    vertical: 'bottom', // 기본값
+    horizontal: 'center', // 기본값
+    duration: 6000, // 기본값 : 6초
   });
 
   const showSnackbar = useCallback(
-    (message: string, severity: AlertColor = 'info') => {
-      setSnackbar({ open: true, message, severity });
+    (
+      message: string,
+      severity: AlertColor = 'info',
+      vertical: 'top' | 'bottom' = 'bottom',
+      horizontal: 'left' | 'right' | 'center' = 'center',
+      duration: number = 2000 // 기본값 6_000ms 호출시에 변경 가능
+    ) => {
+      setSnackbar({
+        open: true,
+        message,
+        severity,
+        vertical,
+        horizontal,
+        duration,
+      });
     },
     []
   ); // 빈 배열로 메모이제이션
@@ -46,7 +72,11 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
       {children}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={snackbar.duration}
+        anchorOrigin={{
+          vertical: snackbar.vertical,
+          horizontal: snackbar.horizontal,
+        }} // 위치 지정
         onClose={handleClose}>
         <Alert
           onClose={handleClose}

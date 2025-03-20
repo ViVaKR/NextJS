@@ -5,6 +5,9 @@ import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
 import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
 
+// 확장된 User 타입 정의
+interface ExtendedUser extends IAuthResponse, IUserDetailDTO {}
+
 const AuthContext = createContext<IAuthContextProps>({
   user: null,
   isAdmin: () => false,
@@ -15,15 +18,46 @@ const AuthContext = createContext<IAuthContextProps>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<IAuthResponse | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setIsLoading] = useState(true);
 
   //* 페이지 로드시 localStorage 에서 토큰 확인
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // 토큰이 유효한지 확인 후 상세 정보 가져오기
+      fetchUserDetail(parsedUser.token).then((detailedUser) => {
+        if (detailedUser) setUser({ ...parsedUser, ...detailedUser });
+      });
+    }
     setIsLoading(false);
   }, []);
+
+  const fetchUserDetail = async (token: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/account/detail`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      if (!response.ok) throw new Error('Failed to fetch user details');
+      const detailedUser = await response.json();
+
+      // console.log('Detailed User:', detailedUser); // 디버깅 용
+      return detailedUser as IUserDetailDTO;
+    } catch (err) {
+      console.error('Error fetching user detail:', err);
+      return null;
+    }
+  };
 
   //* Sign In
   const login = async (email: string, password: string) => {
@@ -37,11 +71,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       );
 
-      const data = await response.json();
+      const data: IAuthResponse = await response.json();
+
       if (data.isSuccess) {
-        localStorage.setItem('user', JSON.stringify(data)); // 토큰 저장
+        const detailedUser = await fetchUserDetail(data.token);
+
+        if (!detailedUser) {
+          return false;
+        }
+
+        const updatedUser: ExtendedUser = {
+          id: detailedUser.id,
+          fullName: detailedUser.fullName,
+          email: detailedUser.email,
+          emailConfirmed: detailedUser.emailConfirmed,
+          roles: detailedUser.roles,
+          phoneNumber: detailedUser.phoneNumber,
+          twoFactorEnabled: detailedUser.twoFactorEnabled,
+          token: data.token,
+          refreshToken: data.refreshToken,
+          isSuccess: data.isSuccess,
+          message: data.message || '',
+          phoneNumberConformed: detailedUser.phoneNumberConformed || false,
+          accessFailedCount: detailedUser.accessFailedCount || 0,
+          avata: detailedUser.avata || '',
+        };
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
         document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`;
-        setUser(data);
+        setUser(updatedUser);
         return true;
       }
       return false;
@@ -52,13 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const fetchUsers = async () => {
-    if (!user?.token) {
+    if (!user?.token || !isAdmin()) {
       return [];
     }
-    if (!isAdmin) {
-      return [];
-    }
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/account/list`,
@@ -88,8 +142,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     document.cookie = 'user=; path=/; max-age=0'; // 쿠키 삭제
     setUser(null); // 상태 즉시 갱신
   };
-
-  // * Roles
 
   let roles: string[] = [];
   if (user?.token) {

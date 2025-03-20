@@ -48,8 +48,6 @@ export async function apiFetch(url, options = {}) {
     return text ? JSON.parse(text) : null;
 }
 
-export const fetcher = (...args) => fetch(...args).then(res => res.json);
-
 /*
 설명: apiFetch는 모든 API 호출에 토큰을 추가하고, 401 에러 발생 시 리프레시 토큰으로 새 토큰을 요청합니다. 이는 Angular의 인터셉터와 유사한 역할을 합니다.
 */

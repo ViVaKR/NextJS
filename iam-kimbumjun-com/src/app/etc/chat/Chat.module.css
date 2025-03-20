@@ -1,0 +1,94 @@
+.chatClientContainer {
+  background: url('/images/hills.webp');
+  background-size: cover;
+  background-position: center center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  max-height: 100vh;
+  min-height: 100vh;
+  font-family: var(--font-noto), sans-serif;
+  padding-bottom: 200px;
+}
+
+.chatContainer {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 25px;
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.7);
+  overflow-y: hidden;
+  padding: 15px;
+  position: relative;
+
+  max-height: 100%;
+  min-height: 100%;
+  max-width: 90%;
+  min-width: 90%;
+  margin: 1rem auto 5rem;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  list-style-type: none;
+  padding: 0;
+  height: auto;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.message {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50px;
+  box-shadow: 0px 15px 5px 0px rgba(0, 0, 0, 0.5);
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.message.left {
+  padding: 15px 20px 15px 70px;
+}
+
+.message.right {
+  align-self: flex-end;
+  padding: 15px 70px 15px 20px;
+}
+
+.logo {
+  border-radius: 50%;
+  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.7);
+  -o-object-fit: cover;
+  object-fit: cover;
+  position: absolute;
+  left: 10px;
+  top: -10px;
+  width: 50px;
+  height: 50px;
+}
+
+.message.right .logo {
+  left: auto;
+  right: 10px;
+}
+
+.message p {
+  margin: 0;
+}
+
+.text_input {
+  font-size: 1.5rem;
+  position: sticky;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  top: auto;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 10px;
+  opacity: 0.8 !important;
+  color: #064770;
+}

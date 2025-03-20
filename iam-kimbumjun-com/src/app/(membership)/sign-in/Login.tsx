@@ -1,6 +1,6 @@
 'use client';
 import { useAuth } from '@/lib/AuthContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Login.module.css';
 import Link from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -11,13 +11,23 @@ import {
   InputAdornment,
   InputLabel,
 } from '@mui/material';
+import { useSnackbar } from '@/lib/SnackbarContext';
+import { useRouter } from 'next/navigation';
+import React from 'react';
+import { userDetail } from '@/services/auth.service';
 
 export default function SignIn() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const auth = useAuth();
-  const { login, loading } = auth;
+  const { login, loading, user } = useAuth();
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -31,18 +41,31 @@ export default function SignIn() {
     event.preventDefault();
   };
 
+  const { showSnackbar } = useSnackbar();
+
   if (loading) return <div>Loading...</div>;
+
+  const showLoginSuccess = (message: string) => {
+    showSnackbar(message + '님 환영합니다.', 'success', 'top', 'right', 3000); // 메시지와 erverity 설정
+  };
+
+  const showLoginFailed = () =>
+    showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'center', 3000);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const success = await login(email, password);
     if (success) {
-      window.history.back();
+      const fullName = userDetail()?.fullName ?? '-';
       setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+        showLoginSuccess(fullName);
+        router.push('/');
+        // setTimeout(() => {
+        //   // window.location.reload(); // NavBar 의 우측 끝의 Avata 갱신 용.
+        // }, 3000);
+      }, 100);
     } else {
-      alert('Login failed');
+      showLoginFailed();
     }
   };
 

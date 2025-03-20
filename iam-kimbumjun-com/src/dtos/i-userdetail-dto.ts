@@ -1,4 +1,4 @@
-
+// 상세 정보용
 export interface IUserDetailDTO {
     id: string;
     fullName: string;

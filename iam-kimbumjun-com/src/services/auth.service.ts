@@ -1,7 +1,6 @@
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { IUser } from "@/interfaces/i-user";
 import { apiFetch } from "@/lib/api";
-import { useAuth } from "@/lib/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const userToken = 'user';
@@ -13,32 +12,9 @@ const getToken = (): string | null => {
   return userDetail.token;
 }
 
-// * get token
-// export const SavedToken = (): string | null | undefined => {
-//   const { user } = useAuth();
-//   return user?.token;
-// }
-
-// export const getUserDetail = () => {
-//   const token = getToken();
-
-//   if (!token) return null;
-
-//   const decoded: any = jwtDecode(token);
-
-//   const userDetail: IUserDetail = {
-//     id: decoded.nameid,
-//     fullName: decoded.name,
-//     email: decoded.email,
-//     roles: decoded.role
-//   };
-//   return userDetail;
-// }
-
 export const userDetail = () => {
 
   const token = getToken();
-  // const token = SavedToken();
   if (!token) return null;
   const decoded: any = jwtDecode(token);
   const roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role].filter(Boolean);
@@ -47,7 +23,6 @@ export const userDetail = () => {
     fullName: decoded.name,
     email: decoded.email,
     roles: roles
-    // roles: decoded.role
   };
   return userDetail;
 }

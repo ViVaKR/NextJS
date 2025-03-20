@@ -1,12 +1,10 @@
-// components/CategoryList.tsx
-'use client';
-
-import VivTitle from '@/components/VivTitle';
-
+import { Suspense } from 'react';
+import Chat from './Chat';
+import VivLoading from '@/components/VivLoading';
 export default function CodeList() {
   return (
-    <div>
-      <VivTitle title="능선따라" />
-    </div>
+    <Suspense fallback={<VivLoading params={{ choice: 5 }} />}>
+      <Chat />
+    </Suspense>
   );
 }

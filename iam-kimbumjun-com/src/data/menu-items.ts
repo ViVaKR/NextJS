@@ -2,8 +2,8 @@ import { IMenu } from "@/interfaces/i-menu";
 export const getNavMenuItems = (): IMenu[] => {
     return [
         { id: 0, title: '코드조각', url: '/code', icon: 'swipe_right', param: null },
-        { id: 2, title: '블러그', url: '/blog', icon: 'swipe_right', param: null },
-        { id: 4, title: '잡동사니', url: '/etc', icon: 'swipe_right', param: null },
+        { id: 1, title: '블러그', url: '/blog', icon: 'swipe_right', param: null },
+        { id: 2, title: '잡동사니', url: '/etc', icon: 'swipe_right', param: null },
     ];
 }
 
@@ -31,12 +31,13 @@ export const getMembershipItems = (): IMenu[] => {
 export const getEtcItems = (): IMenu[] => {
     return [
         { id: 0, title: '\u269E 잡동사니 \u269F', url: '/etc', icon: 'swipe_right', param: null },
-        { id: 0, title: '\u27A5 대화방', url: '/etc/chat', icon: 'swipe_right', param: null },
-        { id: 1, title: '\u27A5 아이피정보', url: '/etc/ip-address', icon: 'swipe_right', param: null },
-        { id: 2, title: '\u27A5 쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
-        { id: 3, title: '\u27A5 Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
-        { id: 4, title: '\u27A5 Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
-        { id: 5, title: '\u27A5 Stepper', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
+        { id: 1, title: '\u27A5 대화방', url: '/etc/chat', icon: 'swipe_right', param: null },
+        { id: 2, title: '\u27A5 아이피정보', url: '/etc/ip-address', icon: 'swipe_right', param: null },
+        { id: 3, title: '\u27A5 쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
+        { id: 4, title: '\u27A5 Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
+        { id: 5, title: '\u27A5 Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
+        { id: 6, title: '\u27A5 Stepper', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
+        { id: 7, title: '\u27A5 SnackBar', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
     ]
 }
 
@@ -68,11 +69,11 @@ export const getDotNetItems = (): IMenu[] => {
     return [
         { id: 0, title: 'C#', url: '/camp/csharp', icon: 'swipe_right', param: null },
         { id: 1, title: 'ASP.NET Core', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 1, title: 'ASP.NET Core API', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 1, title: 'SignalR', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 2, title: 'Blazor', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 3, title: 'MAUI', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 3, title: 'Winforms/Wpf', url: '/camp/csharp', icon: 'swipe_right', param: null },
-        { id: 3, title: 'Unity', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 2, title: 'ASP.NET Core API', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 3, title: 'SignalR', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 4, title: 'Blazor', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 5, title: 'MAUI', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 6, title: 'Winforms/Wpf', url: '/camp/csharp', icon: 'swipe_right', param: null },
+        { id: 7, title: 'Unity', url: '/camp/csharp', icon: 'swipe_right', param: null },
     ]
 }

@@ -75,7 +75,7 @@ export default function NavMenu() {
           text=""
         />
       </div>
-      {/* 회원 메뉴 */}
+      {/* 회원 메뉴, 아바타, fullName, roles */}
       <AccountMenu />
     </nav>
   );
