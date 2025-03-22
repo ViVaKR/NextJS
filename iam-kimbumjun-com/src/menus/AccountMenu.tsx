@@ -47,7 +47,6 @@ export default function AccountMenu() {
           console.error('Error fetching avatar:', err);
         }
         setError('Failed to load Avata. Please try again.');
-        console.log(error);
       } finally {
         setIsLoading(false);
       }

@@ -8,8 +8,8 @@
   justify-content: center;
   flex-direction: column;
 
-  max-height: 100vh;
-  min-height: 100vh;
+  max-height: calc(100% - 0px);
+  min-height: calc(100% - 0px);
   font-family: var(--font-noto), sans-serif;
   padding-bottom: 200px;
 }
@@ -18,12 +18,13 @@
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 25px;
   box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.7);
-  overflow-y: hidden;
+  overflow-y: scroll;
   padding: 15px;
-  position: relative;
+  position: absolute;
+  top: 10px;
 
-  max-height: 100%;
-  min-height: 100%;
+  max-height: 62%;
+  min-height: 62%;
   max-width: 90%;
   min-width: 90%;
   margin: 1rem auto 5rem;
@@ -46,16 +47,17 @@
   border-radius: 50px;
   box-shadow: 0px 15px 5px 0px rgba(0, 0, 0, 0.5);
   position: relative;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 }
 
 .message.left {
-  padding: 15px 20px 15px 70px;
+  padding: 10px;
+  align-self: flex-start;
 }
 
 .message.right {
   align-self: flex-end;
-  padding: 15px 70px 15px 20px;
+  padding: 10px;
 }
 
 .logo {
@@ -65,7 +67,7 @@
   object-fit: cover;
   position: absolute;
   left: 10px;
-  top: -10px;
+  top: -18px;
   width: 50px;
   height: 50px;
 }
@@ -91,4 +93,22 @@
   border-radius: 10px;
   opacity: 0.8 !important;
   color: #064770;
+}
+
+.footer {
+  opacity: 0.7;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  height: auto;
+  width: 100%;
+  top: 98%;
+  text-align: center;
+  z-index: 999;
+}
+
+.pre {
+  padding: 0.5rem !important; /* shiki의 기본 스타일을 덮어씌움 */
+  overflow-wrap: break-word; /* word-wrap의 현대적 대안 */
+  white-space: pre-wrap;
+  font-family: var(--font-fira);
 }

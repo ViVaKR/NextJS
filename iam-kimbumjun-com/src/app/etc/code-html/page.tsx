@@ -1,6 +1,6 @@
+import VivTitle from '@/components/VivTitle';
 import React from 'react';
 import { codeToHtml } from 'shiki';
-import styles from './CodeHtml.module.css';
 
 const code = `// Using 'typeof' to infer types
 const person = { name: "Alice", age: 30 };
@@ -82,7 +82,7 @@ function combine<T, U>(first: T, second: U): [T, U] {
 
 const Page = async () => {
   const html = await codeToHtml(code, {
-    theme: 'everforest-dark',
+    theme: 'min-light',
     lang: 'typescript',
     // transformers: [
     //   {
@@ -96,9 +96,9 @@ const Page = async () => {
 
   return (
     <React.Fragment>
-      <h1>Code To HTML</h1>
+      <VivTitle title="Code To HTML" />
       <div
-        className={`text-sm max-md:hidden min-w-md rounded-2xl`}
+        className={`text-sm max-md:hidden min-w-md mx-4 rounded-2xl`}
         dangerouslySetInnerHTML={{ __html: html }}></div>
     </React.Fragment>
   );
