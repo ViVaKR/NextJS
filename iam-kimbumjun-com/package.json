@@ -19,6 +19,7 @@
     "@mui/material": "^6.4.8",
     "@mui/styled-engine-sc": "^6.4.6",
     "@mui/utils": "^6.4.8",
+    "@mui/x-charts": "^7.28.0",
     "@mui/x-data-grid": "^7.28.0",
     "@next/mdx": "^15.2.3",
     "@toolpad/core": "^0.13.0",

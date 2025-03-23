@@ -14,6 +14,7 @@ export default function CodeRunner() {
   // 컴포넌트 마운트 시 초기 실행 (ngAfterViewInit 대체)
   useEffect(() => {
     runScript();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // 스크립트 실행 (fetch로 변환)
   const runScript = async () => {

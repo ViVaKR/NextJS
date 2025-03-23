@@ -24,7 +24,7 @@ export const getMembershipItems = (): IMenu[] => {
         { id: 12, title: '\u27A5 비밀번호 찾기', url: '/find-password', icon: 'home', param: null, hideWhenAuth: true },
         { id: 13, title: '\u27A5 비밀번호 변경', url: '/reset-password', icon: 'home', param: null, requiresAuth: true },
         { id: 14, title: '\u27A5 로그아웃', url: '/sign-out', icon: 'home', param: null, requiresAuth: true },
-        { id: 15, title: '\u27A5 회원탈퇴', url: '/code-category', icon: 'home', param: null, requiresAuth: true },
+        { id: 15, title: '\u27A5 회원탈퇴', url: '/cancel-membership', icon: 'home', param: null, requiresAuth: true },
     ];
 };
 
@@ -36,8 +36,10 @@ export const getEtcItems = (): IMenu[] => {
         { id: 3, title: '\u27A5 쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
         { id: 4, title: '\u27A5 Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
         { id: 5, title: '\u27A5 Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
-        { id: 6, title: '\u27A5 Stepper', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
-        { id: 7, title: '\u27A5 SnackBar', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
+        { id: 6, title: '\u27A5 단계', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
+        { id: 7, title: '\u27A5 스넥바', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
+        { id: 8, title: '\u27A5 카드', url: '/etc/card', icon: 'swipe_right', param: null },
+        { id: 9, title: '\u27A5 박스', url: '/etc/box', icon: 'swipe_right', param: null },
     ]
 }
 
