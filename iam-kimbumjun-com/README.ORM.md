@@ -6,6 +6,8 @@
 
 ```bash
 npm install prisma --save-dev
+npm install tsx --save-dev
+npm install @prisma/extension-accelerate
 npm install @prisma/client
 npx prisma init
 npm install class-validator class-transformer
@@ -27,7 +29,7 @@ docker exec -it viv-postgres psql -U bj -d bj -c "\dt"
 ## Create DB, User
 
 ```bash
-CREATE USER text WITH PASSWORD 'B9038!m8947#';
+CREATE USER text WITH PASSWORD '비밀번호';
 CREATE DATABASE text OWNER text;
 GRANT ALL PRIVILEGES ON DATABASE text TO text;
 
@@ -87,3 +89,21 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO bj;
   }
 }
 ```
+
+## 오류수정
+
+```bash
+# 캐시 및 모듈 삭제
+rm -rf node_modules pnpm-lock.yaml .next
+
+# 패키지 재설치
+pnpm install
+
+# Prisma 클라이언트 생성
+npx prisma generate
+
+# 개발 서버 실행
+pnpm dev
+
+
+````

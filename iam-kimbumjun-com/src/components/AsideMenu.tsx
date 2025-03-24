@@ -2,9 +2,6 @@
 import { IMenu } from '@/interfaces/i-menu';
 import VivListMenu from '@/menus/VivListMenu';
 import VivNavigation from '@/menus/VivNavigation';
-import { Tooltip } from '@mui/material';
-import { usePathname } from 'next/navigation';
-
 import { useEffect, useState } from 'react';
 export default function AsideMenu({
   menus,

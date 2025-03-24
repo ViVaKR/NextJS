@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { IMenu } from '@/interfaces/i-menu';
 import { usePathname, useRouter } from 'next/navigation';
+import { Divider } from '@mui/material';
 
 export default function VivListMenu({
   items,
@@ -25,7 +26,6 @@ export default function VivListMenu({
   // 현재 경로와 비교해서 활성 상태 확인
   const isActive = items.some((item) => {
     const matches = item.url === pathname;
-    // if (matches) console.log(item.title, item.url);
     return matches;
   });
 
@@ -53,7 +53,6 @@ export default function VivListMenu({
     <div className="flex justify-center">
       <List
         component="nav"
-        aria-label="Device settings"
         className={`${baseClasses} ${className}`} // 활성상태 클래스 적용
         sx={{ bgcolor: 'transparent' }}>
         <ListItemButton
@@ -75,13 +74,17 @@ export default function VivListMenu({
         open={open}
         onClose={handleClose}>
         {items.map((item, index) => (
-          <MenuItem
-            key={item.id}
-            selected={index === selectedIndex}
-            onClick={(event) => handleMenuItemClick(event, index)}>
-            <span className="material-symbols-outlined mr-4">{item.icon}</span>
-            {`${item.title}`}
-          </MenuItem>
+          <div key={item.id}>
+            {item.hasDivider && <Divider />}
+            <MenuItem
+              selected={index === selectedIndex}
+              onClick={(event) => handleMenuItemClick(event, index)}>
+              <span className="material-symbols-outlined mr-4">
+                {item.icon}
+              </span>
+              {`${item.title}`}
+            </MenuItem>
+          </div>
         ))}
       </Menu>
     </div>

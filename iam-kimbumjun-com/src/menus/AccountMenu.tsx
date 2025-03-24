@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import { IFileInfo } from '@/interfaces/i-file-info';
 import { apiFetch } from '@/lib/api';
 import { useProfile } from '@/app/(membership)/profile/Profile';
-import ClearAllOutlinedIcon from '@mui/icons-material/ClearAllOutlined';
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -160,7 +159,9 @@ export default function AccountMenu() {
             <MenuItem
               onClick={() => handleMenuClick(menu.url)}
               className="gap-2">
-              <ClearAllOutlinedIcon />
+              {/* <ClearAllOutlinedIcon /> */}
+              <span className="material-symbols-outlined">{menu.icon}</span>
+
               {menu.title}
             </MenuItem>
           </div>

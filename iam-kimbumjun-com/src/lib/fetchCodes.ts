@@ -22,3 +22,8 @@ export async function fetchCodes(): Promise<ICode[]> {
         throw error;
     }
 }
+
+export async function fetchCodeById(id: number): Promise<ICode | null> {
+    const codes = await fetchCodes(); // 전체 목록 가져오기 가정
+    return codes.find((c) => c.id === id) || null;
+}

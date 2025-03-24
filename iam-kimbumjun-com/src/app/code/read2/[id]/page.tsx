@@ -1,4 +1,3 @@
-// src/app/code/read/page.tsx
 import Code from '@/components/Code';
 import VivTitle from '@/components/VivTitle';
 import { getLanguageName } from '@/data/category';
@@ -7,15 +6,14 @@ import { fetchCodeById } from '@/lib/fetchCodes';
 import Image from 'next/image';
 import React from 'react';
 
-export default async function CodeReadPage({
+export default async function CodeRead2Page({
   params,
 }: {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
 }) {
-  // const codes: ICode[] | null | undefined = await fetchCodes();
   const { id } = await params;
-  // const code: ICode | null | undefined = codes.find((c) => c.id == id);
   const code: ICode | null = await fetchCodeById(Number(id)); // id를 숫자로 변환
+
   if (!code) return <div>Code not found</div>;
 
   return (
@@ -28,11 +26,9 @@ export default async function CodeReadPage({
         <span className="text-slate-400">
           {new Date(code.created).toLocaleDateString()}
         </span>
-
         <span className="flex-1 text-slate-400 text-center">
           {code.userName}
         </span>
-
         <span className="text-slate-400">
           {new Date(code.modified).toLocaleDateString()}
         </span>
@@ -41,14 +37,12 @@ export default async function CodeReadPage({
       {/* code */}
       <div className="min-w-full flex flex-col">
         <div className="w-full h-auto">
-          {/* content */}
           <Code
             code={code.content}
             lang={getLanguageName(code.categoryId)}
             theme="min-light"
           />
         </div>
-        {/* subContent */}
         <div className="h-auto w-full">
           <Code
             code={code.subContent ?? '연관된 코드는 없습니다.'}
@@ -56,7 +50,6 @@ export default async function CodeReadPage({
             theme="everforest-dark"
           />
         </div>
-        {/* note */}
         <div className="h-auto w-full">
           <Code
             code={code.note ?? '코드설명은 없습니다.'}
@@ -64,8 +57,6 @@ export default async function CodeReadPage({
             theme="everforest-dark"
           />
         </div>
-
-        {/* markdown */}
         <div className="h-auto w-full">
           <Code
             code={code.markdown ?? 'README 내용은 없습니다.'}

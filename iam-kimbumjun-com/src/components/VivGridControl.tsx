@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { ICode } from '@/interfaces/i-code';
@@ -8,16 +7,17 @@ import { ICategory } from '@/interfaces/i-category';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
+import { useEffect, useState } from 'react';
 
 export default function VivGridControl({ data }: { data: ICode[] }) {
-  const [codes, setCodes] = React.useState<ICode[]>(
+  const [codes, setCodes] = useState<ICode[]>(
     [...data].sort((a, b) => b.id - a.id)
   );
-  const [categories, setCategories] = React.useState<ICategory[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const time = 1;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
@@ -34,7 +34,7 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
   }, []); // 빈 배열: 컴포넌트 마운트 시 한 번만 실행
 
   // 코드 데이터 정렬
-  React.useEffect(() => {
+  useEffect(() => {
     const sortedCodes = [...data].sort((a, b) => b.id - a.id);
     setCodes(sortedCodes);
   }, [data]); // data가 변경될 때만 실행
@@ -48,6 +48,9 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
       width: 80,
       filterable: true,
       type: 'number',
+      renderCell: (params: GridRenderCellParams<ICode, string>) => (
+        <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+      ),
     },
     {
       field: 'title',
@@ -111,18 +114,6 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
           <DataGrid
             rows={codes}
             columns={columns}
-            // autosizeOptions={{
-            //   columns: [
-            //     'id',
-            //     'title',
-            //     'categorId',
-            //     'userName',
-            //     'attachFileName',
-            //     'modified',
-            //   ],
-            //   includeOutliers: true,
-            //   includeHeaders: false,
-            // }}
             pageSizeOptions={[5, 25, 40, 100]}
           />
         </Box>

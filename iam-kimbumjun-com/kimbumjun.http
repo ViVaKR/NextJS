@@ -10,10 +10,15 @@ GET {{helloUrl}} HTTP/1.1
 GET {{categoryUrl}} HTTP/1.1
 
 ###
-GET {{url}}/api/headers HTTP/1.1
+GET {{url}}/api/posts HTTP/1.1
 
 ###
 
+POST {{url}}/api/demo HTTP/1/1
+
+###
+GET {{url}}/api/demo HTTP/1.1
+###
 GET http://localhost:3000/api/search?query=hello
 # curl http://localhost:3000/api/search --url-query query=hi -w "\n"
 # echo '-w "\n"' >> ~/.curlrc

@@ -4,11 +4,12 @@ import './globals.css';
 import NavMenu from '@/menus/NavMenu';
 import { AuthProvider } from '@/lib/AuthContext';
 import { SnackbarProvider } from '@/lib/SnackbarContext';
+
 const noto = Noto_Sans_KR({
   variable: '--font-noto',
   subsets: ['latin'],
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
 const poppins = Poppins({
@@ -16,7 +17,7 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400'],
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
 const cute = Cute_Font({
@@ -24,7 +25,7 @@ const cute = Cute_Font({
   subsets: ['latin'],
   weight: ['400'],
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
 const fira = Fira_Code({
@@ -32,7 +33,7 @@ const fira = Fira_Code({
   subsets: ['latin'],
   weight: ['400'],
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -47,8 +48,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+        />
+      </head>
       <body
-        className={`${noto.variable} ${cute.variable}  ${poppins.variable} ${fira.variable} antialiased`}>
+        className={`${noto.variable}
+        ${cute.variable}
+        ${poppins.variable}
+        ${fira.variable}
+        antialiased`}>
         <AuthProvider>
           <SnackbarProvider>
             <div className="w-full h-[72px] bg-sky-900">

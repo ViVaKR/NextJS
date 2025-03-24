@@ -2,67 +2,69 @@ import { IMenu } from "@/interfaces/i-menu";
 export const getNavMenuItems = (): IMenu[] => {
     return [
         { id: 0, title: '코드조각', url: '/code', icon: 'swipe_right', param: null },
+
         { id: 1, title: '블러그', url: '/blog', icon: 'swipe_right', param: null },
         { id: 2, title: '잡동사니', url: '/etc', icon: 'swipe_right', param: null },
+        { id: 3, title: 'Dashboard', url: '/app-bar', icon: 'swipe_right', param: null },
     ];
 }
 
 export const getMembershipItems = (): IMenu[] => {
     return [
-        { id: 0, title: '\u269E 나의정보 \u269F', url: '/profile', icon: 'home', param: null, requiresAuth: true },
-        { id: 1, title: '\u27A5 권한관리', url: '/role', icon: 'home', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 2, title: '\u27A5 회원관리', url: '/account', icon: 'home', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 3, title: '\u27A5 과목관리', url: '/code-category', icon: 'home', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 4, title: '\u27A5 코드작성', url: '/my-code', icon: 'home', param: null, requiresAuth: true },
-        { id: 5, title: '\u27A5 코드백업', url: '/code-backup', icon: 'home', param: null, requiresAuth: true },
-        { id: 6, title: '\u27A5 비밀번호 변경', url: '/change-password', icon: 'home', param: null, requiresAuth: true },
-        { id: 7, title: '\u27A5 필명변경', url: '/change-name', icon: 'home', param: null, requiresAuth: true },
-        { id: 8, title: '\u27A5 회원가입', url: '/sign-up', icon: 'home', param: null, hideWhenAuth: true },
-        { id: 9, title: '\u27A5 메일인증', url: '/confirm-email', icon: 'home', param: null, requiresAuth: true },
-        { id: 10, title: '\u27A5 메일인증 회신', url: '/confirm-email-replay', icon: 'home', param: null, requiresAuth: true },
-        { id: 11, title: '\u27A5 로그인', url: '/sign-in', icon: 'home', param: null, hideWhenAuth: true },
-        { id: 12, title: '\u27A5 비밀번호 찾기', url: '/find-password', icon: 'home', param: null, hideWhenAuth: true },
-        { id: 13, title: '\u27A5 비밀번호 변경', url: '/reset-password', icon: 'home', param: null, requiresAuth: true },
-        { id: 14, title: '\u27A5 로그아웃', url: '/sign-out', icon: 'home', param: null, requiresAuth: true },
-        { id: 15, title: '\u27A5 회원탈퇴', url: '/cancel-membership', icon: 'home', param: null, requiresAuth: true },
+        { id: 0, title: '나의정보', url: '/profile', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 1, title: ' 권한관리', url: '/role', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true, requiredRoles: ['Admin'] },
+        { id: 2, title: '회원관리', url: '/account', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
+        { id: 3, title: '과목관리', url: '/code-category', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
+        { id: 4, title: '코드작성', url: '/my-code', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true },
+        { id: 5, title: '코드백업', url: '/code-backup', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 6, title: '비밀번호 변경', url: '/change-password', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 7, title: '필명변경', url: '/change-name', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 8, title: '회원가입', url: '/sign-up', icon: 'manage_accounts', param: null, hideWhenAuth: true },
+        { id: 9, title: '메일인증', url: '/confirm-email', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 10, title: '메일인증 회신', url: '/confirm-email-replay', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true },
+        { id: 11, title: '로그인', url: '/sign-in', icon: 'manage_accounts', param: null, hideWhenAuth: true },
+        { id: 12, title: '비밀번호 찾기', url: '/find-password', icon: 'manage_accounts', param: null, hideWhenAuth: true },
+        { id: 13, title: '비밀번호 변경', url: '/reset-password', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 14, title: '로그아웃', url: '/sign-out', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 15, title: '회원탈퇴', url: '/cancel-membership', icon: 'manage_accounts', param: null, requiresAuth: true },
     ];
 };
 
 export const getEtcItems = (): IMenu[] => {
     return [
-        { id: 0, title: '\u269E 잡동사니 \u269F', url: '/etc', icon: 'swipe_right', param: null },
-        { id: 1, title: '\u27A5 대화방', url: '/etc/chat', icon: 'swipe_right', param: null },
-        { id: 2, title: '\u27A5 아이피정보', url: '/etc/ip-address', icon: 'swipe_right', param: null },
-        { id: 3, title: '\u27A5 쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
-        { id: 4, title: '\u27A5 Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
-        { id: 5, title: '\u27A5 Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
-        { id: 6, title: '\u27A5 단계', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
-        { id: 7, title: '\u27A5 스넥바', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
-        { id: 8, title: '\u27A5 카드', url: '/etc/card', icon: 'swipe_right', param: null },
-        { id: 9, title: '\u27A5 박스', url: '/etc/box', icon: 'swipe_right', param: null },
+        { id: 0, title: '잡동사니', url: '/etc', icon: 'event_list', param: null },
+        { id: 1, title: '대화방', url: '/etc/chat', icon: 'swipe_right', param: null },
+        { id: 2, title: '아이피정보', url: '/etc/ip-address', icon: 'swipe_right', param: null },
+        { id: 3, title: '쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
+        { id: 4, title: 'Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
+        { id: 5, title: 'Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
+        { id: 6, title: '단계', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
+        { id: 7, title: '스넥바', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
+        { id: 8, title: '카드', url: '/etc/card', icon: 'swipe_right', param: null },
+        { id: 9, title: '박스', url: '/etc/box', icon: 'swipe_right', param: null },
     ]
 }
 
 
 export const getBlogItems = (): IMenu[] => {
     return [
-        { id: 0, title: '\u269E 블러그 \u269F', url: '/blog', icon: 'swipe_right', param: null },
-        { id: 1, title: '\u27A5 .NET', url: '/blog/csharp', icon: 'swipe_right', param: null },
-        { id: 2, title: '\u27A5 JavaScript', url: '/blog/javascript', icon: 'swipe_right', param: null },
-        { id: 3, title: '\u27A5 TypeScript', url: '/blog/typescript', icon: 'swipe_right', param: null },
-        { id: 4, title: '\u27A5 Angular', url: '/blog/angular', icon: 'swipe_right', param: null },
-        { id: 5, title: '\u27A5 Next.js', url: '/blog/nextjs', icon: 'swipe_right', param: null },
-        { id: 6, title: '\u27A5 Node.js', url: '/blog/nodejs', icon: 'swipe_right', param: null },
-        { id: 7, title: '\u27A5 Docker', url: '/blog/docker', icon: 'swipe_right', param: null },
-        { id: 8, title: '\u27A5 NGINX', url: '/blog/nginx', icon: 'swipe_right', param: null },
-        { id: 9, title: '\u27A5 DBMS', url: '/blog/dbms', icon: 'swipe_right', param: null },
-        { id: 10, title: '\u27A5 Git', url: '/blog/git', icon: 'swipe_right', param: null },
-        { id: 11, title: '\u27A5 Assembly', url: '/blog/assembly', icon: 'swipe_right', param: null },
-        { id: 12, title: '\u27A5 HTML', url: '/blog/html', icon: 'swipe_right', param: null },
-        { id: 13, title: '\u27A5 CSS/SCSS', url: '/blog/css', icon: 'swipe_right', param: null },
-        { id: 14, title: '\u27A5 Shell/PowerShell', url: '/blog/shell', icon: 'swipe_right', param: null },
-        { id: 15, title: '\u27A5 Dart', url: '/blog/dart', icon: 'swipe_right', param: null },
-        { id: 16, title: '\u27A5 Go', url: '/blog/go', icon: 'swipe_right', param: null },
+        { id: 0, title: '블러그', url: '/blog', icon: 'event_list', param: null },
+        { id: 1, title: '.NET', url: '/blog/csharp', icon: 'swipe_right', param: null },
+        { id: 2, title: 'JavaScript', url: '/blog/javascript', icon: 'swipe_right', param: null },
+        { id: 3, title: 'TypeScript', url: '/blog/typescript', icon: 'swipe_right', param: null },
+        { id: 4, title: 'Angular', url: '/blog/angular', icon: 'swipe_right', param: null },
+        { id: 5, title: 'Next.js', url: '/blog/nextjs', icon: 'swipe_right', param: null },
+        { id: 6, title: 'Node.js', url: '/blog/nodejs', icon: 'swipe_right', param: null },
+        { id: 7, title: 'Docker', url: '/blog/docker', icon: 'swipe_right', param: null, hasDivider: true },
+        { id: 8, title: 'NGINX', url: '/blog/nginx', icon: 'swipe_right', param: null },
+        { id: 9, title: 'DBMS', url: '/blog/dbms', icon: 'swipe_right', param: null },
+        { id: 10, title: 'Git', url: '/blog/git', icon: 'swipe_right', param: null },
+        { id: 11, title: 'Assembly', url: '/blog/assembly', icon: 'swipe_right', param: null },
+        { id: 12, title: 'HTML', url: '/blog/html', icon: 'swipe_right', param: null },
+        { id: 13, title: 'CSS/SCSS', url: '/blog/css', icon: 'swipe_right', param: null },
+        { id: 14, title: 'Shell/PowerShell', url: '/blog/shell', icon: 'swipe_right', param: null },
+        { id: 15, title: 'Dart', url: '/blog/dart', icon: 'swipe_right', param: null },
+        { id: 16, title: 'Go', url: '/blog/go', icon: 'swipe_right', param: null },
 
     ]
 }
