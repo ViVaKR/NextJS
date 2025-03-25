@@ -13,12 +13,16 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
+import { IRegisterRequest } from '@/interfaces/i-register-request';
+import { IAuthResponse } from '@/interfaces/i-auth-response';
+
 type SignUpFormData = {
   email: string;
   fullName: string;
   password: string;
   passwordConfirm: string;
 };
+
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -30,10 +34,10 @@ export default function SignUpPage() {
     watch,
   } = useForm<SignUpFormData>({
     defaultValues: {
-      email: '',
-      fullName: '',
-      password: '',
-      passwordConfirm: '',
+      email: 'hellobuddham@gmail.com',
+      fullName: '붓다핸섬',
+      password: 'A8947*t5k21#',
+      passwordConfirm: 'A8947*t5k21#',
     },
   });
 
@@ -55,11 +59,11 @@ export default function SignUpPage() {
       return;
     }
 
-    const signUpData = {
+    const signUpData: IRegisterRequest = {
       email: data.email,
       fullName: data.fullName,
       password: data.password,
-      roles: ['User'],
+      roles: ['User', 'Writer'],
     };
 
     try {
@@ -72,14 +76,17 @@ export default function SignUpPage() {
         }
       );
 
-      const result = await response.json();
+      const result: IAuthResponse = await response.json();
       if (result.isSuccess) {
+        alert('회원가입 성공');
         router.push('/membership/sign-in');
+        // router.push('/membership/sign-in');
       } else {
+        console.log(result);
         alert(result.message || '회원가입에 실패했습니다.');
       }
-    } catch (error) {
-      console.error('SignUp failed:', error);
+    } catch (error: any) {
+      console.error('SignUp failed:', error.message);
       alert('서버 오류가 발생했습니다.');
     }
   };
@@ -115,130 +122,88 @@ export default function SignUpPage() {
                 bg-transparent
                 py-5
                 px-10">
-        {/* 아이디 */}
-        <FormControl
-          sx={{ m: 1, width: '100%' }}
-          variant="filled">
-          <InputLabel
-            className="!text-white"
-            htmlFor="email">
-            아이디 / 이메일
-          </InputLabel>
-          {/* <FilledInput
-            name="email"
-            className="!text-lime-400"
-          /> */}
+        {/* 이메일 */}
+        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+          <InputLabel htmlFor="email">아이디 / 이메일</InputLabel>
           <Controller
             name="email"
             control={control}
             rules={{ required: '이메일을 입력해주세요.' }}
             render={({ field }) => (
-              <FilledInput
-                {...field}
-                id="email"
-                className="!text-lime-400"
-                aria-describedby="email-helper-text"
-              />
+              <FilledInput {...field} id="email" aria-describedby="email-helper-text" />
             )}
           />
-          <FormHelperText id="email-helper-text">
-            {errors.email?.message}
-          </FormHelperText>
+          <FormHelperText>{errors.email?.message}</FormHelperText>
         </FormControl>
 
-        {/* 이름 또는 필명 */}
-        <FormControl
-          sx={{ m: 1, width: '100%' }}
-          variant="filled">
-          <InputLabel
-            className="!text-white"
-            htmlFor="name">
-            필명
-          </InputLabel>
-          <FilledInput
-            id="name"
-            name="name"
-            className="!text-lime-400"
-            // endAdornment={
-            //   <InputAdornment position="end">{/* kg */}</InputAdornment>
-            // }
-            aria-describedby="filled-weight-helper-text"
-            inputProps={{
-              'aria-label': 'weight',
-            }}
+        {/* 필명 */}
+        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+          <InputLabel htmlFor="fullName">필명</InputLabel>
+          <Controller
+            name="fullName"
+            control={control}
+            rules={{ required: '필명을 입력해주세요.' }}
+            render={({ field }) => (
+              <FilledInput {...field} id="fullName" aria-describedby="fullName-helper-text" />
+            )}
           />
-          <FormHelperText id="filled-weight-helper-text">
-            {/* 오류처리 */}
-          </FormHelperText>
+          <FormHelperText>{errors.fullName?.message}</FormHelperText>
         </FormControl>
 
         {/* 비밀번호 */}
-        <FormControl
-          sx={{ m: 1 }}
-          fullWidth
-          variant="filled">
-          <InputLabel
-            className="!text-white"
-            htmlFor="filled-adornment-password">
-            비밀번호
-          </InputLabel>
-          <FilledInput
-            id="password"
+        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+          <InputLabel htmlFor="password">비밀번호</InputLabel>
+          <Controller
             name="password"
-            className="!text-lime-400"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  className="!text-lime-400"
-                  aria-label={
-                    showPassword ? 'hide the password' : 'display the password'
-                  }
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  onMouseUp={handleMouseUpPassword}
-                  edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
+            control={control}
+            rules={{ required: '비밀번호를 입력해주세요.' }}
+            render={({ field }) => (
+              <FilledInput
+                {...field}
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            )}
           />
-          <FormHelperText id="filled-weight-helper-text">
-            {/* 오류처리 */}
-          </FormHelperText>
+          <FormHelperText>{errors.password?.message}</FormHelperText>
         </FormControl>
 
         {/* 비밀번호 확인 */}
-        <FormControl
-          sx={{ m: 1 }}
-          fullWidth
-          variant="filled">
-          <InputLabel
-            htmlFor="filled-adornment-password"
-            className="!text-white">
-            비밀번호 확인
-          </InputLabel>
-          <FilledInput
-            id="password-confirm"
-            name="password-confirm"
-            className="!text-lime-400"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  className="!text-lime-400"
-                  aria-label={
-                    showPassword ? 'hide the password' : 'display the password'
-                  }
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  onMouseUp={handleMouseUpPassword}
-                  edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
+        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+          <InputLabel htmlFor="passwordConfirm">비밀번호 확인</InputLabel>
+          <Controller
+            name="passwordConfirm"
+            control={control}
+            rules={{ required: '비밀번호 확인을 입력해주세요.' }}
+            render={({ field }) => (
+              <FilledInput
+                {...field}
+                id="passwordConfirm"
+                type={showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            )}
           />
+          <FormHelperText>{errors.passwordConfirm?.message}</FormHelperText>
         </FormControl>
 
         {/* 버튼그룹 */}

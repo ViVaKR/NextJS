@@ -22,6 +22,7 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, loading, user } = useAuth();
+
   useEffect(() => {
     if (user) {
       router.push('/');
@@ -29,6 +30,7 @@ export default function SignIn() {
   }, [user, router]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -60,9 +62,6 @@ export default function SignIn() {
       setTimeout(() => {
         showLoginSuccess(fullName);
         router.push('/');
-        // setTimeout(() => {
-        //   // window.location.reload(); // NavBar 의 우측 끝의 Avata 갱신 용.
-        // }, 3000);
       }, 100);
     } else {
       showLoginFailed();
@@ -73,6 +72,7 @@ export default function SignIn() {
     <div className={styles.signinForm}>
       <div className={styles.box}>
         <span className={styles.borderLine}></span>
+
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-4
@@ -80,6 +80,7 @@ export default function SignIn() {
           form p-4 border-4
           !bg-slate-200
           border-slate-600">
+
           <h1 className={styles.title}>Sign In</h1>
           <div className="w-full">
             <FormControl

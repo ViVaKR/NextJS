@@ -29,6 +29,7 @@ export async function apiFetch(url, options = {}) {
     });
 
     if (response.status === 401) {
+
         if (response.status === 401) {
             try {
                 const refreshResponse = await refreshToken();
@@ -43,7 +44,6 @@ export async function apiFetch(url, options = {}) {
         }
         throw new Error(`API error: ${response.status}`);
     }
-
     const text = await response.text();
     return text ? JSON.parse(text) : null;
 }

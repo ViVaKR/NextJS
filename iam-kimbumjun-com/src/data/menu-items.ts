@@ -5,7 +5,7 @@ export const getNavMenuItems = (): IMenu[] => {
 
         { id: 1, title: '블러그', url: '/blog', icon: 'swipe_right', param: null },
         { id: 2, title: '잡동사니', url: '/etc', icon: 'swipe_right', param: null },
-        { id: 3, title: 'Dashboard', url: '/app-bar', icon: 'swipe_right', param: null },
+
     ];
 }
 
@@ -36,12 +36,14 @@ export const getEtcItems = (): IMenu[] => {
         { id: 1, title: '대화방', url: '/etc/chat', icon: 'swipe_right', param: null },
         { id: 2, title: '아이피정보', url: '/etc/ip-address', icon: 'swipe_right', param: null },
         { id: 3, title: '쉘실행기', url: '/etc/code-runner', icon: 'swipe_right', param: null },
-        { id: 4, title: 'Grid Control', url: '/etc/grid-control', icon: 'swipe_right', param: null },
-        { id: 5, title: 'Code To HTML', url: '/etc/code-html', icon: 'swipe_right', param: null },
-        { id: 6, title: '단계', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
-        { id: 7, title: '스넥바', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
-        { id: 8, title: '카드', url: '/etc/card', icon: 'swipe_right', param: null },
-        { id: 9, title: '박스', url: '/etc/box', icon: 'swipe_right', param: null },
+        { id: 4, title: '대시보드', url: '/app-bar', icon: 'swipe_right', param: null },
+        { id: 5, title: '그리드뷰', url: '/etc/grid-control', icon: 'swipe_right', param: null },
+        { id: 6, title: '코드서식', url: '/etc/code-html', icon: 'swipe_right', param: null },
+        { id: 7, title: '단계', url: '/etc/stepper-text', icon: 'swipe_right', param: null },
+        { id: 8, title: '스넥바', url: '/etc/snack-bar', icon: 'swipe_right', param: null },
+        { id: 9, title: '카드', url: '/etc/card', icon: 'swipe_right', param: null },
+        { id: 10, title: '박스', url: '/etc/box', icon: 'swipe_right', param: null },
+        { id: 11, title: '데모(ORM)', url: '/etc/orm-demo', icon: 'swipe_right', param: null },
     ]
 }
 

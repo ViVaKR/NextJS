@@ -4,15 +4,16 @@ import { IAuthContextProps } from '@/interfaces/i-auth-context-props';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
 import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 // 확장된 User 타입 정의
-interface ExtendedUser extends IAuthResponse, IUserDetailDTO {}
+interface ExtendedUser extends IAuthResponse, IUserDetailDTO { }
 
 const AuthContext = createContext<IAuthContextProps>({
   user: null,
   isAdmin: () => false,
   login: () => Promise.resolve(false),
-  logout: () => {},
+  logout: () => { },
   fetchUsers: () => Promise.resolve([]),
   loading: true,
 });
@@ -51,13 +52,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) throw new Error('Failed to fetch user details');
       const detailedUser = await response.json();
 
-      // console.log('Detailed User:', detailedUser); // 디버깅 용
       return detailedUser as IUserDetailDTO;
     } catch (err) {
       console.error('Error fetching user detail:', err);
       return null;
     }
   };
+
+  //* 회원가입
+  const signup = async (req: NextApiRequest, res: NextApiResponse) => {
+    //
+    const data = req.body;
+    res.status(200).json(data);
+  }
 
   //* Sign In
   const login = async (email: string, password: string) => {

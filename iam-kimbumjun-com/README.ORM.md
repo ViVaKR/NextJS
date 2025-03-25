@@ -9,9 +9,11 @@ npm install prisma --save-dev
 npm install tsx --save-dev
 npm install @prisma/extension-accelerate
 npm install @prisma/client
+
 npx prisma init
 npm install class-validator class-transformer
 
+npx prisma migrate dev --name init
 npx prisma migrate resolve --applied init
 pnpx prisma db push
 

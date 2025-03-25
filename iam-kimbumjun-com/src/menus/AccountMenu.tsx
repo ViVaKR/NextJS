@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getMembershipItems } from '@/data/menu-items';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { IFileInfo } from '@/interfaces/i-file-info';
 import { apiFetch } from '@/lib/api';
 import { useProfile } from '@/app/(membership)/profile/Profile';
@@ -18,7 +18,7 @@ export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const [userAvata, setAvata] = useState<IFileInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [avatarSrc, setAvatarSrc] = useState<string>('/images/login-icon.png');
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -28,6 +28,7 @@ export default function AccountMenu() {
     if (!user) {
       setAvata(null);
       setIsLoading(false);
+      setAvatarSrc('/images/login-icon.png');
       return;
     }
     const controller = new AbortController();
@@ -37,35 +38,54 @@ export default function AccountMenu() {
         const result = await apiFetch('/api/FileManager/GetUserImage', {
           signal: controller.signal,
         });
-        if (!result) return;
         const isAvata = (data: any): data is IFileInfo => 'dbPath' in data;
-        if (isAvata(result)) setAvata(result);
-        setError(null);
+        if (isAvata(result)) {
+          setAvata(result);
+        } else {
+          setAvata(null); // 유효하지 않은 데이터면 null 설정
+        }
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error('Error fetching avatar:', err);
         }
-        setError('Failed to load Avata. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
     fetchAvata();
     return () => controller.abort();
-  }, [user, error]);
+  }, [user]);
+  /*
+    문제: getAvataUrl이 컴포넌트 렌더링마다 새 함수로 생성됨 → useEffect 의존성 배열에 포함되면 매번 실행됨.
+    원인: 함수는 기본적으로 객체처럼 참조가 매번 달라지니까, useEffect가 불필요하게 재실행돼.
+    해결: useCallback으로 함수를 메모이제이션(Memoization)해서 참조를 고정.
+    */
 
-  const getAvataUrl = () => {
-    if (!user || !userAvata?.dbPath) return '/images/login-icon.png';
-    return `${baseUrl}/images/${user.id}_${userAvata.dbPath}`;
-  };
+  // 타입 정의 유지
+  const getAvataUrl = useCallback(() => {
+    if (!user || isLoading || !userAvata?.dbPath) {
+      return '/images/login-icon.png';
+    }
+    const dbPath = userAvata.dbPath.trim();
+    if (!dbPath || dbPath === '-' || !/\.(jpg|jpeg|png|gif)$/i.test(dbPath)) {
+      return '/images/login-icon.png';
+    }
+    return `${baseUrl}/images/${user.id}_${dbPath}`;
+  }, [user, isLoading, userAvata, baseUrl]); // 의존성 배열 추가
 
-  const getFullName = () => {
-    return user?.fullName || '';
-  };
+  useEffect(() => {
+    const url = getAvataUrl();
+    if (url !== '/images/login-icon.png') {
+      fetch(url)
+        .then((res) => setAvatarSrc(res.ok ? url : '/images/login-icon.png'))
+        .catch(() => setAvatarSrc('/images/login-icon.png'));
+    } else {
+      setAvatarSrc(url);
+    }
+  }, [getAvataUrl]);
 
-  const getRoles = () => {
-    return user?.roles?.join(', ') || ''; // roles가 없으면 빈 문자열
-  };
+  const getFullName = () => user?.fullName || '';
+  const getRoles = () => user?.roles?.join(', ') || '';
 
   const avataHandleClick = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
@@ -95,6 +115,8 @@ export default function AccountMenu() {
   });
 
   if (profileError) return null;
+
+  //--> Start
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '0.5em' }}>
       <Box className="flex gap-2 text-nowrap">
@@ -108,7 +130,7 @@ export default function AccountMenu() {
           disabled={profileLoading}>
           <Avatar sx={{ width: 40, height: 40 }}>
             <Image
-              src={!isLoading ? getAvataUrl() : '/images/login-icon.png'}
+              src={avatarSrc}
               style={{ objectFit: 'cover', objectPosition: 'center' }}
               fill={true}
               sizes="40px"

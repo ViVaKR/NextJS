@@ -3,10 +3,9 @@
 ## Run
 
 ```bash
-npm run dev
-# or
-pnpm dev
 
+
+pnpm dev
 pnpm add --save-dev eslint-config-prettier
 npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
 npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
@@ -22,6 +21,15 @@ pnpm @emotion/react
 
 pnpm add @mui/utils
 pnpm @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+
+pnpm install prisma --save-dev
+pnpm install tsx --save-dev
+pnpm install @prisma/extension-accelerate
+pnpx prisma init
+pnpx prisma migrate dev --name init
+
+pnpx prisma db seed
+pnpx prisma studio
 
 openssl rand -base64 129 | tr -d '\n' | pbcopy
 ```
