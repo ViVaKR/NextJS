@@ -1,7 +1,9 @@
+// src/app/etc/layout.tsx
 import React from 'react';
 import { getEtcItems } from '@/data/menu-items';
 import { IMenu } from '@/interfaces/i-menu';
 import AsideMenu from '@/components/AsideMenu';
+import { ScopedCssBaseline } from '@mui/material';
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const menus: IMenu[] = getEtcItems();
@@ -17,7 +19,9 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         />
       </aside>
       <main className="flex flex-col h-screen gap-4 p-0">
-        <section>{children}</section>
+        <ScopedCssBaseline>
+          {children}
+        </ScopedCssBaseline>
       </main>
     </div>
   );

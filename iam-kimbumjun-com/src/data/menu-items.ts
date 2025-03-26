@@ -5,6 +5,7 @@ export const getNavMenuItems = (): IMenu[] => {
 
         { id: 1, title: '블러그', url: '/blog', icon: 'swipe_right', param: null },
         { id: 2, title: '잡동사니', url: '/etc', icon: 'swipe_right', param: null },
+        { id: 3, title: '데모', url: '/demos', icon: 'swipe_right', param: null },
 
     ];
 }
@@ -44,6 +45,8 @@ export const getEtcItems = (): IMenu[] => {
         { id: 9, title: '카드', url: '/etc/card', icon: 'swipe_right', param: null },
         { id: 10, title: '박스', url: '/etc/box', icon: 'swipe_right', param: null },
         { id: 11, title: '데모(ORM)', url: '/etc/orm-demo', icon: 'swipe_right', param: null },
+        { id: 12, title: 'MUI Grid2', url: '/etc/mui-grid', icon: 'swipe_right', param: null },
+        { id: 13, title: 'MUI Container', url: '/etc/mui-container', icon: 'swipe_right', param: null },
     ]
 }
 
@@ -67,7 +70,13 @@ export const getBlogItems = (): IMenu[] => {
         { id: 14, title: 'Shell/PowerShell', url: '/blog/shell', icon: 'swipe_right', param: null },
         { id: 15, title: 'Dart', url: '/blog/dart', icon: 'swipe_right', param: null },
         { id: 16, title: 'Go', url: '/blog/go', icon: 'swipe_right', param: null },
+    ]
+}
 
+export const getDemoItems = (): IMenu[] => {
+    return [
+        { id: 0, title: 'Accordion', url: '/demos/accordion', icon: 'swipe_right', param: null },
+        { id: 1, title: 'Tooltip', url: '/demos/tooltip', icon: 'swipe_right', param: null },
     ]
 }
 

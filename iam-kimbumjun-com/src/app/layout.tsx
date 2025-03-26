@@ -4,6 +4,7 @@ import './globals.css';
 import NavMenu from '@/menus/NavMenu';
 import { AuthProvider } from '@/lib/AuthContext';
 import { SnackbarProvider } from '@/lib/SnackbarContext';
+import { CssBaseline } from '@mui/material';
 
 const noto = Noto_Sans_KR({
   variable: '--font-noto',
@@ -66,6 +67,7 @@ export default function RootLayout({
         antialiased`}>
         <AuthProvider>
           <SnackbarProvider>
+
             <div className="w-full h-[72px] bg-sky-900">
               <NavMenu />
             </div>
