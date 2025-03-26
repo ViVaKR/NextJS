@@ -77,6 +77,19 @@ export const getDemoItems = (): IMenu[] => {
     return [
         { id: 0, title: 'Accordion', url: '/demos/accordion', icon: 'swipe_right', param: null },
         { id: 1, title: 'Tooltip', url: '/demos/tooltip', icon: 'swipe_right', param: null },
+        { id: 2, title: 'TextField', url: '/demos/text-field', icon: 'swipe_right', param: null },
+        { id: 3, title: 'Button', url: '/demos/button', icon: 'swipe_right', param: null },
+        { id: 4, title: 'Checkbox', url: '/demos/checkbox', icon: 'swipe_right', param: null },
+        { id: 5, title: 'DataGrid A', url: '/demos/data-grid', icon: 'swipe_right', param: null },
+        { id: 6, title: 'DataGrid B', url: '/demos/data-grid-2', icon: 'swipe_right', param: null },
+        { id: 7, title: 'Badge', url: '/demos/badge', icon: 'swipe_right', param: null },
+        { id: 8, title: 'Avata', url: '/demos/avata', icon: 'swipe_right', param: null },
+        { id: 9, title: 'Backdrop', url: '/demos/backdrop', icon: 'swipe_right', param: null },
+        { id: 10, title: 'Screen Dialog', url: '/demos/screen-dialog', icon: 'swipe_right', param: null },
+        { id: 11, title: 'Scroll Dialog', url: '/demos/scroll-dialog', icon: 'swipe_right', param: null },
+        { id: 12, title: 'Progress', url: '/demos/progress', icon: 'swipe_right', param: null },
+        { id: 13, title: 'Snackbar', url: '/demos/snackbar', icon: 'swipe_right', param: null },
+        { id: 14, title: 'Dashboard', url: '/demos/dashboard', icon: 'swipe_right', param: null },
     ]
 }
 

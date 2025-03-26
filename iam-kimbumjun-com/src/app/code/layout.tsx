@@ -6,6 +6,7 @@ import { fetchCategories } from '@/lib/fetchCategories';
 import ClientLayout from '@/components/ClientLayout';
 import { Suspense } from 'react';
 import VivLoading from '@/components/VivLoading';
+import VivDrawer from "@/components/VivDrawer"; // Drawer 경로
 
 async function fetchData() {
   const [codes, categories] = await Promise.all([

@@ -1,15 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap');
-
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 /* 테마 사용자 정의  */
-
 @theme {
   --font-poppins: 'Poppins', sans-serif;
-  --font-cute: 'Cute Font', sans-serif;
   --font-noto: 'Noto Sans KR', sans-serif;
-  --font-fira: 'Fira Code', monospace;
 
   --color-red-50: oklch(0.971 0.013 17.38);
   --color-red-100: oklch(0.936 0.032 17.717);
@@ -345,22 +341,25 @@
     margin-bottom: 0.5em;
   }
 }
-/* 유니코드 범위로 한글/영문 분리 (더 정교한 방법) */
-@supports (font-family: 'Poppins') {
-  /* 영문 (ASCII 범위) */
-  body:lang(en),
-  body [lang='en'] {
-    font-family: var(--font-poppins);
-  }
-  /* 한글 (Hangul Syllables: U+AC00–U+D7AF) */
-  body:lang(ko),
-  body [lang='ko'] {
-    font-family: var(--font-noto);
-  }
-}
 
 html {
   font-size: 16px;
+  font-family: var(--font-poppins), sans-serif; /* 영문 기본 : Poppins */
+}
+
+/* 한글 (Hangul Syllables) */
+/* 유니코드 범위로 한글/영문 분리 (더 정교한 방법) */
+@supports (font-family: 'Poppins') {
+  /* 한글 (Hangul Syllables: U+AC00–U+D7AF) */
+  [lang='ko'],
+  *:lang(kor) {
+    font-family: var(--font-noto), sans-serif;
+  }
+}
+
+/* 한글일 경우 Note Sans KR 적용 */
+:lang(ko) {
+  font-family: var(--font-noto), sans-serif;
 }
 
 html,
@@ -373,6 +372,11 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/* 특정 요소에 강제로 적용하고 싶을 때 */
+[lang='ko'] {
+  font-family: var(--font-noto), sans-serif;
 }
 
 pre {

@@ -18,7 +18,6 @@ export default async function CodePage() {
       <VivTitle title="코드조각" />
       <Suspense fallback={<VivLoading params={{ choice: 1 }} />}>
         <CodeList />
-        <CodeList />
       </Suspense>
     </>
   );

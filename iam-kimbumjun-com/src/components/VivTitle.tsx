@@ -1,16 +1,27 @@
+import { Cute_Font } from 'next/font/google'
+const cute = Cute_Font({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+});
+
+interface VivTitleProps {
+  title: string;
+  fontColor?: string;
+}
+
 export default function VivTitle({
   title,
   fontColor,
-}: {
-  title: string;
-  fontColor?: string;
-}) {
+}: VivTitleProps) {
   return (
-    <div
-      className={`${
-        fontColor ?? 'text-sky-800'
-      } w-full text-center text-3xl my-4 font-cute`}>
+    <h2
+      className={`${fontColor ?? 'text-sky-800'
+        } ${cute.className}
+        rounded-full
+         text-center
+         font-cute`}>
       {title}
-    </div>
+    </h2>
   );
 }

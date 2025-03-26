@@ -13,7 +13,7 @@ export default function NavMenu() {
     <nav
       className={`w-full
                 text-lg
-                h-full
+                h-[72px]
               bg-sky-900
               text-white
                 flex

@@ -22,7 +22,7 @@ export interface DrawerProps {
     setOpen: (value: boolean) => void;
 }
 
-const drawerWidth = 250;
+const drawerWidth = 'auto';
 
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -31,7 +31,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-export default function VivDrawerComponent({ open = false, setOpen }: DrawerProps) {
+export default function VivDrawer({ open = false, setOpen }: DrawerProps) {
     const theme = useTheme();
     const menus: IMenu[] = getDemoItems();
 
@@ -39,21 +39,28 @@ export default function VivDrawerComponent({ open = false, setOpen }: DrawerProp
         <Drawer
             sx={{
                 width: drawerWidth,
+
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
                     width: drawerWidth,
-                    height: "100vh",
+                    height: "auto",
+                    top: '5em',
+                    overflowY: 'scroll',
+                    textWrap: 'nowrap',
+                    borderRadius: '0.5em',
+                    mr: '1em',
                     boxSizing: "border-box",
                 },
             }}
             variant="temporary"
-            anchor="left"
+            anchor="right"
             open={open}
+
             onClose={() => setOpen(false)}
         >
             <DrawerHeader>
                 <IconButton onClick={() => setOpen(false)}>
-                    {theme.direction === "ltr" ? (
+                    {theme.direction === "rtl" ? (
                         <ChevronLeftIcon />
                     ) : (
                         <ChevronRightIcon />
@@ -69,6 +76,9 @@ export default function VivDrawerComponent({ open = false, setOpen }: DrawerProp
                             href={menu.url}
                             onClick={() => setOpen(false)}
                         >
+                            <span className="material-symbols-outlined mr-2">
+                                {menu.icon}
+                            </span>
                             <ListItemText primary={menu.title} />
                         </ListItemButton>
                     </ListItem>
