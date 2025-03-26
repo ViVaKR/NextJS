@@ -96,7 +96,7 @@ function getLangId(id: number) {
         case 24:
             return 50;
         case 25:
-            return 78;
+            return 79;
         case 26:
             return 16;
         case 27:

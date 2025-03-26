@@ -5,8 +5,6 @@ import { fetchCodes } from '@/lib/fetchCodes';
 import { fetchCategories } from '@/lib/fetchCategories';
 import ClientLayout from '@/components/ClientLayout';
 import { Suspense } from 'react';
-import VivLoading from '@/components/VivLoading';
-import VivDrawer from "@/components/VivDrawer"; // Drawer 경로
 
 async function fetchData() {
   const [codes, categories] = await Promise.all([
@@ -21,12 +19,16 @@ export default async function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { codes, categories } = await fetchData();
   return (
-    <Suspense fallback={<VivLoading params={{ choice: 1 }} />}>
-      <ClientLayout
-        codes={codes}
-        categories={categories}>
+    // <ClientLayout
+    //   codes={codes}
+    //   categories={categories}>
+    //   {children}
+    // </ClientLayout>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ClientLayout codes={codes} categories={categories}>
         {children}
       </ClientLayout>
     </Suspense>
+
   );
 }

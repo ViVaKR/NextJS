@@ -4,6 +4,12 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import styles from './Home.module.css';
 import React, { useEffect } from 'react';
+import { Cute_Font } from 'next/font/google'
+const cute = Cute_Font({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+});
 
 export default function Home() {
   const mathRef = React.useRef<HTMLDivElement>(null); // DOM 요소 참조
@@ -54,7 +60,7 @@ export default function Home() {
                 relative
                 flex
                 max-xl:text-7xl text-slate-300
-                font-cute max-md:text-5xl font-extrabold`}>
+                ${cute.className} max-md:text-5xl font-extrabold`}>
                 {/* 인간이 이해하는 코드 조각 */}
                 {characters.map((char, index) => (
                   <span key={index}>

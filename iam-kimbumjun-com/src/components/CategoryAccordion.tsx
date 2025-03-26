@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useRef } from 'react';
+import React from 'react';
 
 interface CategoryAccordionProps {
   categories: ICategory[];
@@ -23,15 +23,13 @@ export default function CategoryAccordion({
   codes,
 }: CategoryAccordionProps) {
   const [expanded, setExpanded] = React.useState<string | false>(false);
-
-  const accordionRefs = useRef<Map<string, HTMLDivElement>>(new Map()); // 각 Accordion에 대한 ref
+  const pathname = usePathname() ?? '';
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
 
-  const pathname = usePathname() ?? '';
   const getLinkClasses = (url: string) => {
     const isActive = pathname?.startsWith(url);
     const baseClasses = isActive ? 'text-red-500' : 'text-slate-700';
@@ -65,10 +63,6 @@ export default function CategoryAccordion({
               <Accordion
                 expanded={expanded === category.name}
                 onChange={handleChange(category.name)}
-                ref={(el) => {
-                  if (el) accordionRefs.current.set(category.name, el);
-                  else accordionRefs.current.delete(category.name);
-                }} // ref 동적 할당
               >
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -125,25 +119,3 @@ export default function CategoryAccordion({
     </div>
   );
 }
-
-// const handleChange = useCallback(
-//   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-//     setExpanded(isExpanded ? panel : false);
-//   },
-//   []
-// );
-
-// useEffect(() => {
-//   if (expanded) {
-//     const accordionElement = accordionRefs.current.get(expanded);
-//     if (accordionElement) {
-//       const rect = accordionElement.getBoundingClientRect();
-//       const scrollTop =
-//         window.pageYOffset || document.documentElement.scrollTop;
-//       window.scrollTo({
-//         top: scrollTop + rect.top - 50, // 상단 여백 50px 추가
-//         behavior: 'smooth',
-//       });
-//     }
-//   }
-// }, [expanded]);

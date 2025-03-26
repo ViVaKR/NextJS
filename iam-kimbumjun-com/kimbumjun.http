@@ -1,13 +1,8 @@
-@helloUrl = http://localhost:3000/api/hello
-@categoryUrl = https://api.vivabm.com/api/category/list
-@url = http://localhost:3000
+@url = https://localhost:41086
+@vivabmUrl = https://api.vivabm.com
 ###
 
-GET {{helloUrl}} HTTP/1.1
-
-###
-
-GET {{categoryUrl}} HTTP/1.1
+GET {{vivabmUrl}}/api/category/list HTTP/1.1
 
 ###
 GET {{url}}/api/posts HTTP/1.1
@@ -19,7 +14,8 @@ POST {{url}}/api/demo HTTP/1/1
 ###
 GET {{url}}/api/demo HTTP/1.1
 ###
-GET http://localhost:3000/api/search?query=hello
+
+GET {{url}}/api/search?query=hello
 # curl http://localhost:3000/api/search --url-query query=hi -w "\n"
 # echo '-w "\n"' >> ~/.curlrc
 # curl http://localhost:3000/api/search --url-query query=hi -w "\nstatus=%{http_code} %{redirect_url} size=%{size_download} time=%{time_total} content-type=\"%{content_type}\"\n"

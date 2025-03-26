@@ -7,7 +7,7 @@ import CategoryAccordion from '@/components/CategoryAccordion';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { Box, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -29,7 +29,6 @@ export default function ClientLayout({
 
   const hide = isCollapsed ? 'hidden' : '';
 
-  //* 자주 호출되므로 useMemo 로 최적화
   const gridClass = useMemo(() =>
     isCollapsed
       ? 'grid grid-cols-1 min-h-screen p-2'
@@ -41,18 +40,8 @@ export default function ClientLayout({
     <div className={gridClass}>
 
       {/* 상단 아이콘 메뉴 */}
-      <Box
-        component={`nav`}
-        sx={{
-          gridColumn: "span 2",
-          maxWidth: "100%",
-          display: "flex",
-          justifyContent: "space-evenly",
-          fontSize: "0.75rem",
-          borderBottom: "1px solid",
-          borderColor: "slate.200",
-          mb: 2,
-        }}
+      <div
+        className='col-span-2 max-w-full flex justify-evenly text-base border-b-slate-200 border-b-2 mb-2'
       >
 
         {/* 메뉴 숨김/보기 */}
@@ -84,7 +73,7 @@ export default function ClientLayout({
             fontSize: '1.2rem',
           }}>edit_document</span>
         </Link>
-      </Box>
+      </div>
 
       {/* Left Menu */}
       <aside className={`start-0 flex flex-col gap-1 mr-2 ${hide}`}>
@@ -104,14 +93,16 @@ export default function ClientLayout({
         </span>
       </aside>
 
-      {/*  */}
+      {/* <main className="max-md:start-0 start-1 w-full h-screen overflow-x-scroll">
+        {children}
+      </main> */}
       <AnimatePresence mode="wait">
         <motion.main
           key={pathname}
           className="max-md:start-0 start-1 w-full h-screen overflow-x-scroll"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.5 }}
         >
           {children}
         </motion.main>

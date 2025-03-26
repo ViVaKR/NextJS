@@ -1,4 +1,13 @@
+
+import { Fira_Code } from 'next/font/google'
+const fira = Fira_Code({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+});
+
 import { BundledLanguage, BundledTheme, codeToHtml } from 'shiki';
+
 type Props = {
   code: string;
   lang?: BundledLanguage;
@@ -18,7 +27,7 @@ export default async function Code({
   return (
     <>
       <div
-        className="text-sm max-md:hidden min-w-md"
+        className={`${fira.className} text-sm max-md:hidden min-w-md`}
         dangerouslySetInnerHTML={{ __html: html }}>
       </div>
     </>

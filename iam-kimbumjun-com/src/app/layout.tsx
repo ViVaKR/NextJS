@@ -43,14 +43,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
       <body
@@ -59,22 +53,23 @@ export default function RootLayout({
         antialiased`}>
         <AuthProvider>
           <SnackbarProvider>
-            <nav aria-label='Main Navigation'>
-              <NavMenu />
-            </nav>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+              <nav aria-label='Main Navigation'>
+                <NavMenu />
+              </nav>
 
-            <Suspense fallback={<div>Loading...</div>}>
               <main
                 className='min-h-[calc(100vh_-_72px_-_248px)]'
               >
                 {children}
               </main>
+
+              <footer
+                className='bg-slate-200 xs:h-auto md:h-[248px]' // 모바일
+              >
+                <VivBottomNav />
+              </footer>
             </Suspense>
-            <footer
-              className='bg-slate-200 xs:h-auto md:h-[248px]' // 모바일
-            >
-              <VivBottomNav />
-            </footer>
           </SnackbarProvider>
         </AuthProvider>
       </body>
