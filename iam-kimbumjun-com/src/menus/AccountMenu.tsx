@@ -12,7 +12,7 @@ import { getMembershipItems } from '@/data/menu-items';
 import { useEffect, useState, useCallback } from 'react';
 import { IFileInfo } from '@/interfaces/i-file-info';
 import { apiFetch } from '@/lib/api';
-import { useProfile } from '@/app/(membership)/profile/Profile';
+import { useProfile } from '@/app/(root)/membership/profile/Profile';
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;

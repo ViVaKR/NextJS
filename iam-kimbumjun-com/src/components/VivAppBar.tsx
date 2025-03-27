@@ -6,95 +6,52 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LayersIcon from '@mui/icons-material/Layers';
+
 import { AppProvider, Navigation, Router } from '@toolpad/core/AppProvider';
-import { DashboardLayout, DashboardLayoutSlotProps } from '@toolpad/core/DashboardLayout';
-import { PageContainer } from '@toolpad/core/PageContainer';
-import Grid from '@mui/material/Grid2';
-import { usePathname, useRouter } from 'next/navigation'; // useRouter 추가
+import { DashboardLayout } from '@toolpad/core/DashboardLayout';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import DashboardPage from '@/app/dashboard/page';
-import VivSelect from './VivSelect';
-import { VivButton } from './VivButton';
-import VivDataGrid from './VivDataGrid';
-import VivDrawer from './VivDrawer';
-import VivBarChart from './VivBarChart';
-import { Box, Typography } from '@mui/material';
-import { AppTitle } from '@toolpad/core/DashboardLayout/AppTitle';
 
 const NAVIGATION: Navigation = [
   {
-    kind: 'header',
-    title: 'Main items',
-  },
-  {
-    segment: 'dashboard',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    segment: 'orders',
-    title: 'Orders',
-    icon: <ShoppingCartIcon />,
-  },
-  {
-    kind: 'divider',
-  },
-  {
-    kind: 'header',
-    title: 'Analytics',
-  },
-  {
-    segment: 'reports',
-    title: 'Reports',
-    icon: <BarChartIcon />,
+    segment: 'app-bar',
+    title: 'ViV Dashboard',
     children: [
+      { kind: 'header', title: 'Main items' },
+      { segment: 'dashboard', title: 'Dashboard', icon: <DashboardIcon /> },
+      { segment: 'orders', title: 'Orders', icon: <ShoppingCartIcon /> },
+      { kind: 'divider' },
+      { kind: 'header', title: 'Analytics' },
       {
-        segment: 'sales',
-        title: 'Sales',
-        icon: <DescriptionIcon />,
+        segment: 'reports',
+        title: 'Reports',
+        icon: <BarChartIcon />,
+        children: [
+          { segment: 'sales', title: 'Sales', icon: <DescriptionIcon /> },
+          { kind: 'divider' },
+          { segment: 'traffic', title: 'Traffic', icon: <DescriptionIcon /> },
+        ],
       },
-      {
-        kind: 'divider',
-      },
-      {
-        segment: 'traffic',
-        title: 'Traffic',
-        icon: <DescriptionIcon />,
-      },
+      { segment: 'integrations', title: 'Integrations', icon: <LayersIcon /> },
     ],
-  },
-  {
-    segment: 'integrations',
-    title: 'Integrations',
-    icon: <LayersIcon />,
   },
 ];
 
 const demoTheme = extendTheme({
   colorSchemes: { light: true, dark: true },
   colorSchemeSelector: 'class',
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
+  breakpoints: { values: { xs: 0, sm: 600, md: 600, lg: 1200, xl: 1536, }, },
 });
-
 
 
 function useDemoRouter(): Router {
   const pathname = usePathname(); // 현재 경로를 Next.js에서 가져옴
   const router = useRouter();
-  const [currentPath, setCurrentPath] = React.useState(
-    pathname || '/dashboard'
-  );
+  const [currentPath, setCurrentPath] = React.useState(pathname || '/app-bar');
 
   React.useEffect(() => {
-    setCurrentPath(pathname || '/dashboard');
+    console.log(pathname);
+    setCurrentPath(pathname || '/app-bar');
   }, [pathname]);
 
   const toolpadRouter = React.useMemo(() => {
@@ -112,6 +69,7 @@ function useDemoRouter(): Router {
   return toolpadRouter;
 }
 
+
 const Skeleton = styled('div')<{ height: number }>(({ theme, height }) => ({
   backgroundColor: theme.palette.action.hover,
   borderRadius: theme.shape.borderRadius,
@@ -119,7 +77,9 @@ const Skeleton = styled('div')<{ height: number }>(({ theme, height }) => ({
   content: '" "',
 }));
 
-export default function VivAppBar() {
+export default function VivAppBar(
+  { children }: { children: React.ReactNode }
+) {
   const router = useDemoRouter();
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -135,55 +95,6 @@ export default function VivAppBar() {
       </div>
     );
   }
-
-  const renderContent = (pathname: string) => {
-    switch (pathname) {
-      case '/dashboard':
-        return (
-          <div>
-            <Typography variant="h5" gutterBottom>
-              Dashboard
-            </Typography>
-            <VivBarChart />
-          </div>
-        );
-      case '/orders':
-        return <VivBarChart />
-      case '/reports/sales':
-        return <div>Sales Reports</div>;
-      case '/reports/traffic':
-        return <div>Traffic Reports</div>;
-      case '/integrations':
-        return <div>Integrations Content</div>;
-      default:
-        return (
-          <>
-            <Typography variant="h4" gutterBottom>
-              Welcome
-            </Typography>
-            <VivBarChart />
-          </>
-        );
-    }
-  };
-
-  // function DemoPageContent({ pathname }: { pathname: string }) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         py: 4,
-  //         display: 'flex',
-  //         flexDirection: 'column',
-  //         alignItems: 'center',
-  //         textAlign: 'center',
-  //       }}
-  //     >
-  //       {renderContent(pathname)}
-  //       {/* <Typography>Dashboard content for {pathname}</Typography>
-  //       <VivBarChart /> */}
-  //     </Box>
-  //   );
-  // }
 
   return (
     <AppProvider
@@ -207,14 +118,43 @@ export default function VivAppBar() {
       router={router}
       theme={demoTheme}
     >
-      <DashboardLayout> {/* 기본 타이틀 비활성화 */}
-        {renderContent(router.pathname)}
-        {/* <DemoPageContent pathname={router.pathname} /> */}
-        {/* <PageContainer>
-          {renderContent()}
-        </PageContainer> */}
-
-      </DashboardLayout>
+      <DashboardLayout> {children} </DashboardLayout>
     </AppProvider >
   );
 }
+
+
+
+
+// const renderContent = (pathname: string) => {
+//   switch (pathname) {
+//     case '/app-bar/dashboard':
+//       return (
+//         <div>
+//           <VivTitle title='대시보드' fontColor='text-slate-700' />
+//           <VivBarChart />
+//         </div>
+//       );
+//     case '/orders':
+//       return (
+//         <div>
+//           <VivTitle title='Order' />
+//         </div>
+//       )
+//     case '/reports/sales':
+//       return <div>Sales Reports</div>;
+//     case '/reports/traffic':
+//       return <div>Traffic Reports</div>;
+//     case '/integrations':
+//       return <div>Integrations Content</div>;
+//     default:
+//       return (
+//         <div>
+//           <Typography variant="h4" gutterBottom>
+//             Welcome
+//           </Typography>
+//           <VivBarChart />
+//         </div>
+//       );
+//   }
+// };

@@ -2,7 +2,7 @@
 import VivNavigation from '@/menus/VivNavigation';
 import { getMembershipItems } from '@/data/menu-items';
 import React from 'react';
-import { useProfile } from '@/app/(membership)/profile/Profile';
+import { useProfile } from '@/app/(root)/membership/profile/Profile';
 import VivListMenu from '@/menus/VivListMenu';
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {

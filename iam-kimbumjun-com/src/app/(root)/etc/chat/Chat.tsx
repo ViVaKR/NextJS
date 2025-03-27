@@ -8,10 +8,11 @@ import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
 import { IChatUser } from '@/interfaces/i-chat-user';
 import { IChatMessage } from '@/interfaces/i-chat-message';
 import { IFileInfo } from '@/interfaces/i-file-info';
-import { useProfile } from '@/app/(membership)/profile/Profile';
+import { useProfile } from '@/app/(root)/membership/profile/Profile';
 import { apiFetch } from '@/lib/api';
 
 export default function ChatPage() {
+
   const hubUrl = process.env.NEXT_PUBLIC_CHAT_URL;
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const [userAvata, setAvata] = useState<IFileInfo | null>(null);
@@ -206,8 +207,7 @@ export default function ChatPage() {
       const textToCopy = messages
         .map(
           (msg) =>
-            `${msg.userName} (${new Date(msg.sendTime).toLocaleString()}): ${
-              msg.message
+            `${msg.userName} (${new Date(msg.sendTime).toLocaleString()}): ${msg.message
             }`
         )
         .join('\n');
@@ -236,14 +236,14 @@ export default function ChatPage() {
                 className={`${styles.message} ${
                   // currentUser.userId === message.userId
                   isMe(message.userId) ? styles.left : styles.right
-                } `}>
+                  } `}>
                 <div
                   className={`${
                     // currentUser.userId === message.userId
                     isMe(message.userId)
                       ? 'flex items-center'
                       : 'flex flex-row-reverse items-center'
-                  }`}>
+                    }`}>
                   <Image
                     src={message.avata || defaultImage}
                     width={50}
@@ -258,7 +258,7 @@ export default function ChatPage() {
                         isMe(message.userId)
                           ? 'text-end pr-4'
                           : 'text-start pl-4'
-                      } `}>
+                        } `}>
                       {message.userName}
                     </p>
                     <p className="!text-sm !text-slate-400">
@@ -273,7 +273,7 @@ export default function ChatPage() {
                       isMe(message.userId)
                         ? 'flex justify-start pl-2 text-teal-700'
                         : 'flex justify-end text-amber-900'
-                    } !text-base !p-0 !m-0`}>
+                      } !text-base !p-0 !m-0`}>
                     {message.message}
                   </code>
                 </pre>
