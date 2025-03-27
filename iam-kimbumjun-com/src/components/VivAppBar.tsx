@@ -7,13 +7,21 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LayersIcon from '@mui/icons-material/Layers';
 import { AppProvider, Navigation, Router } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
+import { DashboardLayout, DashboardLayoutSlotProps } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
 import Grid from '@mui/material/Grid2';
-import { usePathname } from 'next/navigation'; // Next.js 경로 가져오기
+import { usePathname, useRouter } from 'next/navigation'; // useRouter 추가
+import Image from 'next/image';
+import DashboardPage from '@/app/dashboard/page';
+import VivSelect from './VivSelect';
+import { VivButton } from './VivButton';
+import VivDataGrid from './VivDataGrid';
+import VivDrawer from './VivDrawer';
+import VivBarChart from './VivBarChart';
+import { Box, Typography } from '@mui/material';
+import { AppTitle } from '@toolpad/core/DashboardLayout/AppTitle';
 
 const NAVIGATION: Navigation = [
-  // 동일
   {
     kind: 'header',
     title: 'Main items',
@@ -46,6 +54,9 @@ const NAVIGATION: Navigation = [
         icon: <DescriptionIcon />,
       },
       {
+        kind: 'divider',
+      },
+      {
         segment: 'traffic',
         title: 'Traffic',
         icon: <DescriptionIcon />,
@@ -73,21 +84,32 @@ const demoTheme = extendTheme({
   },
 });
 
+
+
 function useDemoRouter(): Router {
   const pathname = usePathname(); // 현재 경로를 Next.js에서 가져옴
+  const router = useRouter();
   const [currentPath, setCurrentPath] = React.useState(
     pathname || '/dashboard'
   );
 
-  const router = React.useMemo(() => {
+  React.useEffect(() => {
+    setCurrentPath(pathname || '/dashboard');
+  }, [pathname]);
+
+  const toolpadRouter = React.useMemo(() => {
     return {
       pathname: currentPath,
       searchParams: new URLSearchParams(),
-      navigate: (path: string | URL) => setCurrentPath(String(path)),
+      navigate: (path: string | URL) => {
+        const newPath = String(path);
+        setCurrentPath(newPath); // Toolpad UI 동기화
+        router.push(newPath); // Next.js 라우팅으로 페이지 이동
+      },
     };
-  }, [currentPath]);
+  }, [currentPath, router]);
 
-  return router;
+  return toolpadRouter;
 }
 
 const Skeleton = styled('div')<{ height: number }>(({ theme, height }) => ({
@@ -100,6 +122,7 @@ const Skeleton = styled('div')<{ height: number }>(({ theme, height }) => ({
 export default function VivAppBar() {
   const router = useDemoRouter();
   const [isMounted, setIsMounted] = React.useState(false);
+
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -113,50 +136,85 @@ export default function VivAppBar() {
     );
   }
 
+  const renderContent = (pathname: string) => {
+    switch (pathname) {
+      case '/dashboard':
+        return (
+          <div>
+            <Typography variant="h5" gutterBottom>
+              Dashboard
+            </Typography>
+            <VivBarChart />
+          </div>
+        );
+      case '/orders':
+        return <VivBarChart />
+      case '/reports/sales':
+        return <div>Sales Reports</div>;
+      case '/reports/traffic':
+        return <div>Traffic Reports</div>;
+      case '/integrations':
+        return <div>Integrations Content</div>;
+      default:
+        return (
+          <>
+            <Typography variant="h4" gutterBottom>
+              Welcome
+            </Typography>
+            <VivBarChart />
+          </>
+        );
+    }
+  };
+
+  // function DemoPageContent({ pathname }: { pathname: string }) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         py: 4,
+  //         display: 'flex',
+  //         flexDirection: 'column',
+  //         alignItems: 'center',
+  //         textAlign: 'center',
+  //       }}
+  //     >
+  //       {renderContent(pathname)}
+  //       {/* <Typography>Dashboard content for {pathname}</Typography>
+  //       <VivBarChart /> */}
+  //     </Box>
+  //   );
+  // }
+
   return (
     <AppProvider
       navigation={NAVIGATION}
+      branding={{
+        logo: (
+          <Image
+            src="/images/viv.webp"
+            width={30}
+            height={0}
+            sizes="100vw"
+            style={{ borderRadius: '50%' }}
+            alt="-"
+          />
+        ),
+        title: 'ViV',
+        homeUrl: '/app-bar',
+
+      }}
+
       router={router}
-      theme={demoTheme}>
-      <DashboardLayout>
-        <PageContainer>
-          <Grid
-            container
-            spacing={1}>
-            <Grid size={5} />
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-            <Grid size={4}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={8}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={12}>
-              <Skeleton height={150} />
-            </Grid>
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-          </Grid>
-        </PageContainer>
+      theme={demoTheme}
+    >
+      <DashboardLayout> {/* 기본 타이틀 비활성화 */}
+        {renderContent(router.pathname)}
+        {/* <DemoPageContent pathname={router.pathname} /> */}
+        {/* <PageContainer>
+          {renderContent()}
+        </PageContainer> */}
+
       </DashboardLayout>
-    </AppProvider>
+    </AppProvider >
   );
 }
