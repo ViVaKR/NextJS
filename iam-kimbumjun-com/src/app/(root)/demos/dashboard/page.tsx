@@ -9,7 +9,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import { AppProvider, Navigation, Router } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 const NAVIGATION: Navigation = [
   {
@@ -108,7 +108,7 @@ export default function DashboardLayoutBasic(props: any) {
       navigation={NAVIGATION}
       router={router}
       theme={demoTheme}
-      //   window={demoWindow}
+    //   window={demoWindow}
     >
       <DashboardLayout>
         <PageContainer>

@@ -1,11 +1,13 @@
-import VivCRUD from '@/components/VivCRUD';
-import VivTitle from '@/components/VivTitle';
-import { Suspense } from 'react';
 export default function CrudPage() {
 
     return (
-        <Suspense>
-            <VivCRUD />
-        </Suspense>
+        <div>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero corrupti voluptates unde, sed error quos repudiandae rerum corporis distinctio explicabo dolorem ipsum necessitatibus repellendus molestias incidunt saepe expedita doloremque qui.
+            </p>
+        </div>
+        // <Suspense>
+        //     <VivCRUD />
+        // </Suspense>
     );
 }

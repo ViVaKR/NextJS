@@ -45,7 +45,7 @@ export const getEtcItems = (): IMenu[] => {
         { id: 9, title: '카드', url: '/etc/card', icon: 'swipe_right', param: null },
         { id: 10, title: '박스', url: '/etc/box', icon: 'swipe_right', param: null },
         { id: 11, title: '데모(ORM)', url: '/etc/orm-demo', icon: 'swipe_right', param: null },
-        { id: 12, title: 'MUI Grid2', url: '/etc/mui-grid', icon: 'swipe_right', param: null },
+        { id: 12, title: 'MUI Grid', url: '/etc/mui-grid', icon: 'swipe_right', param: null },
         { id: 13, title: 'MUI Container', url: '/etc/mui-container', icon: 'swipe_right', param: null },
         { id: 14, title: 'CRUD', url: '/etc/crud', icon: 'swipe_right', param: null },
     ]

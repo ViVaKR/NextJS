@@ -1,11 +1,9 @@
-import VivAppBar from '@/components/VivAppBar';
-import VivBarChart from '@/components/VivBarChart';
+import VivTitle from "@/components/VivTitle";
 
 export default function AppBarPage() {
   return (
     <div>
-
-      <VivBarChart />
+      <VivTitle title="ETC" />
     </div>
   );
 }

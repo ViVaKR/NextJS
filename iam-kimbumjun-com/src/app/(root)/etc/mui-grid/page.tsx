@@ -2,8 +2,7 @@
 import VivTitle from '@/components/VivTitle';
 import { VivStyledButton } from '@/styled/VivStyled';
 import { Box, Button, Divider, Paper, Stack, styled, Typography } from '@mui/material';
-import { yellow } from '@mui/material/colors';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: 'var(--color-slate-400)',
@@ -23,7 +22,7 @@ const StyledButton = styled(Button)`
 }
 `;
 
-export default function MuiGrid2Page() {
+export default function MuiGridPage() {
 
     return (
         <Box className="relative flex flex-col p-4 gap-4 min-h-screen">

@@ -21,7 +21,6 @@ const AuthContext = createContext<IAuthContextProps>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setIsLoading] = useState(true);
-
   //* 페이지 로드시 localStorage 에서 토큰 확인
   useEffect(() => {
     const storedUser = localStorage.getItem('user');

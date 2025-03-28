@@ -122,39 +122,3 @@ export default function VivAppBar(
     </AppProvider >
   );
 }
-
-
-
-
-// const renderContent = (pathname: string) => {
-//   switch (pathname) {
-//     case '/app-bar/dashboard':
-//       return (
-//         <div>
-//           <VivTitle title='대시보드' fontColor='text-slate-700' />
-//           <VivBarChart />
-//         </div>
-//       );
-//     case '/orders':
-//       return (
-//         <div>
-//           <VivTitle title='Order' />
-//         </div>
-//       )
-//     case '/reports/sales':
-//       return <div>Sales Reports</div>;
-//     case '/reports/traffic':
-//       return <div>Traffic Reports</div>;
-//     case '/integrations':
-//       return <div>Integrations Content</div>;
-//     default:
-//       return (
-//         <div>
-//           <Typography variant="h4" gutterBottom>
-//             Welcome
-//           </Typography>
-//           <VivBarChart />
-//         </div>
-//       );
-//   }
-// };

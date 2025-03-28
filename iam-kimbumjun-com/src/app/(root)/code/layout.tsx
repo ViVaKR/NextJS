@@ -19,11 +19,6 @@ export default async function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { codes, categories } = await fetchData();
   return (
-    // <ClientLayout
-    //   codes={codes}
-    //   categories={categories}>
-    //   {children}
-    // </ClientLayout>
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <ClientLayout codes={codes} categories={categories}>
         {children}

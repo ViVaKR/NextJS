@@ -7,6 +7,7 @@ import {
   createTheme,
   CssBaseline,
   Divider,
+  Grid,
   Pagination,
   Paper,
   Stack,
@@ -15,9 +16,7 @@ import {
   ThemeProvider,
 } from '@mui/material';
 
-import Grid from '@mui/material/Grid2';
 import VivSpeedDial from '@/components/VivSpeedDial';
-import VivBarChart from '@/components/VivBarChart';
 import VivSelect from '@/components/VivSelect';
 import VivVertMenu from '@/components/VivVertMenu';
 
@@ -62,7 +61,6 @@ export default function BoxPage() {
         <VivTitle title="Box" />
         <VivVertMenu />
         <VivSelect />
-        <VivBarChart />
         <Stack
           spacing={2}
           mb={4}>

@@ -1,10 +1,10 @@
 // src/app/demos/layout.tsx
 "use client";
-import VivDrawer from "@/components/VivDrawer";
 import { Button, Box, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion"; // Framer Motion 추가
 import { usePathname } from "next/navigation";
+import VivDrawer from "@/components/VivDrawer";
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [open, setOpen] = useState(false);

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Tooltip } from '@mui/material';
+import { Title } from '@mui/icons-material';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -52,26 +53,31 @@ export default function ClientLayout({
           text-slate-400
           start-0 shrink"
           onClick={handleToggle}>
-          <Tooltip title={isCollapsed ? '메뉴보기' : '메뉴숨김'} arrow>
+          <Tooltip title={isCollapsed ? '카테고리 보기' : '카테고리 숨김'} arrow>
             <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
-              {isCollapsed ? 'last_page' : 'first_page'}
+              {isCollapsed ? 'close_fullscreen' : 'open_in_full'}
             </span>
           </Tooltip>
         </button>
-        {/* 전체목록 */}
+
+        {/* 데이터 목록 */}
         <Link
           href="/code"
           className="hover:text-red-400 text-slate-400 shrink">
-          <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>in_home_mode</span>
+          <Tooltip title="데이터 목록" arrow>
+            <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>table</span>
+          </Tooltip>
         </Link>
 
         {/* 글쓰기 */}
         <Link
           href="/code/create"
           className="hover:text-red-400 shrink text-slate-400">
-          <span className="material-symbols-outlined" style={{
-            fontSize: '1.2rem',
-          }}>edit_document</span>
+          <Tooltip title="글쓰기" arrow>
+            <span className="material-symbols-outlined" style={{
+              fontSize: '1.2rem',
+            }}>edit_document</span>
+          </Tooltip>
         </Link>
       </div>
 
@@ -93,9 +99,6 @@ export default function ClientLayout({
         </span>
       </aside>
 
-      {/* <main className="max-md:start-0 start-1 w-full h-screen overflow-x-scroll">
-        {children}
-      </main> */}
       <AnimatePresence mode="wait">
         <motion.main
           key={pathname}
