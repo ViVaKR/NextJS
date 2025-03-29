@@ -15,6 +15,9 @@ import { useSnackbar } from '@/lib/SnackbarContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { userDetail } from '@/services/auth.service';
+import { error } from 'console';
+import { useForm } from 'react-hook-form';
+import { ISignInRequest } from '@/interfaces/i-signin-request';
 
 export default function SignIn() {
   const router = useRouter();
@@ -28,6 +31,21 @@ export default function SignIn() {
       router.push('/');
     }
   }, [user, router]);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<ISignInRequest>(
+    {
+      defaultValues: {
+        email: '',
+        password: '',
+
+      }
+    }
+  )
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -54,7 +72,7 @@ export default function SignIn() {
   const showLoginFailed = () =>
     showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'center', 3000);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const success = await login(email, password);
     if (success) {
@@ -74,7 +92,7 @@ export default function SignIn() {
         <span className={styles.borderLine}></span>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
           className="flex flex-col gap-4
           rounded-xl
           form p-4 border-4

@@ -3,8 +3,6 @@
 import { useAuth } from '@/lib/AuthContext';
 import { IUser } from '@/interfaces/i-user';
 
-// AuthContext의 user는 ExtendedUser 타입
-
 export function useProfile() {
   const { user, loading, isAdmin } = useAuth();
   return {

@@ -9,12 +9,15 @@ import React from 'react';
 
 export async function CodeReadContent({ id }: { id: number }) {
     const code: ICode | null = await fetchCodeById(Number(id)); // id를 숫자로 변환
+
     if (!code) return <div>Code not found</div>;
 
     return (
         <div className="flex flex-col w-full px-4 ml-2 items-center h-screen">
             <VivTitle title={`${code.id}. ${code.title}`} />
             <h4 className="text-slate-400 font-cute">{code.subTitle}</h4>
+
+            {JSON.stringify(code)}
 
             {/* info */}
             <div className="w-full flex justify-evenly px-8">

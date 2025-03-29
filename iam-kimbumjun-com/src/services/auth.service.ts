@@ -1,11 +1,16 @@
+// src/services/auth.service.ts
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { IUser } from "@/interfaces/i-user";
 import { apiFetch } from "@/lib/api";
 import { jwtDecode } from "jwt-decode";
 
+
+const isClient = typeof window !== 'undefined';
 const userToken = 'user';
 
-const getToken = (): string | null => {
+
+export const getToken = (): string | null => {
+  if (!isClient) return null;
   const user = localStorage.getItem(userToken);
   if (!user) return null;
   const userDetail: IAuthResponse = JSON.parse(user);
@@ -18,13 +23,13 @@ export const userDetail = () => {
   if (!token) return null;
   const decoded: any = jwtDecode(token);
   const roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role].filter(Boolean);
-  const userDetail: IUserDetail = {
+  const detail: IUserDetail = {
     id: decoded.nameid,
     fullName: decoded.name,
     email: decoded.email,
     roles: roles
   };
-  return userDetail;
+  return detail;
 }
 
 // 추가된 로직

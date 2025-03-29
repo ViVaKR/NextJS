@@ -3,6 +3,7 @@ import { languages } from "./languages"
 import { BundledLanguage } from "shiki";
 
 const categories: ICategory[] = [];
+
 function addCategory(category: ICategory) {
     categories.push(category);
 }

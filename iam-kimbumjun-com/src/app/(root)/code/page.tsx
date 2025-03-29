@@ -19,7 +19,6 @@ async function CodeList() {
 export default async function CodePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-
       <CodeList />
     </Suspense>
   );

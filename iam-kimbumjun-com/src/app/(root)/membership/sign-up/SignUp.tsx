@@ -27,6 +27,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const router = useRouter();
+
   const {
     control,
     handleSubmit,
@@ -39,6 +40,7 @@ export default function SignUpPage() {
       password: 'A8947*t5k21#',
       passwordConfirm: 'A8947*t5k21#',
     },
+    mode: 'onTouched'
   });
 
   const handleMouseDownPassword = (
@@ -80,9 +82,7 @@ export default function SignUpPage() {
       if (result.isSuccess) {
         alert('회원가입 성공');
         router.push('/membership/sign-in');
-        // router.push('/membership/sign-in');
       } else {
-        console.log(result);
         alert(result.message || '회원가입에 실패했습니다.');
       }
     } catch (error: any) {
@@ -122,6 +122,7 @@ export default function SignUpPage() {
                 bg-transparent
                 py-5
                 px-10">
+
         {/* 이메일 */}
         <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
           <InputLabel htmlFor="email">아이디 / 이메일</InputLabel>
@@ -130,7 +131,10 @@ export default function SignUpPage() {
             control={control}
             rules={{ required: '이메일을 입력해주세요.' }}
             render={({ field }) => (
-              <FilledInput {...field} id="email" aria-describedby="email-helper-text" />
+              <FilledInput
+                {...field}
+                error={!!errors.email}
+                id="email" />
             )}
           />
           <FormHelperText>{errors.email?.message}</FormHelperText>
@@ -144,7 +148,9 @@ export default function SignUpPage() {
             control={control}
             rules={{ required: '필명을 입력해주세요.' }}
             render={({ field }) => (
-              <FilledInput {...field} id="fullName" aria-describedby="fullName-helper-text" />
+              <FilledInput {...field}
+                error={!!errors.fullName}
+                id="fullName" aria-describedby="fullName-helper-text" />
             )}
           />
           <FormHelperText>{errors.fullName?.message}</FormHelperText>
@@ -161,6 +167,7 @@ export default function SignUpPage() {
               <FilledInput
                 {...field}
                 id="password"
+                error={!!errors.password}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
@@ -189,6 +196,7 @@ export default function SignUpPage() {
               <FilledInput
                 {...field}
                 id="passwordConfirm"
+                error={!!errors.passwordConfirm}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">

@@ -45,7 +45,7 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
       severity: AlertColor = 'info',
       vertical: 'top' | 'bottom' = 'bottom',
       horizontal: 'left' | 'right' | 'center' = 'center',
-      duration: number = 2000 // 기본값 6_000ms 호출시에 변경 가능
+      duration: number = 6_000 // 기본값 6_000ms 호출시에 변경 가능
     ) => {
       setSnackbar({
         open: true,

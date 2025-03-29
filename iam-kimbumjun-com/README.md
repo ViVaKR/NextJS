@@ -426,6 +426,15 @@ Zig	zig
 
 ```
 
+## react-dropzone
+
+Angular 코드에서 직접 HTML5 Drag and Drop API(onDragOver, onFileDrop)를 사용했는데,
+react-dropzone은 이 과정을 훨씬 간소화해줌.
+파일 유형 제한, 멀티 파일 처리, 업로드 상태 관리 등을 기본 제공.
+커뮤니티에서 널리 사용되고, Next.js와 잘 호환됨.
+
+
+
 ## Angular vs React, Next.js 어떤 대화
 
 ======================================= 문

@@ -96,10 +96,7 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
         return attached ? (
           '-'
         ) : (
-          <Link href={`/`}>
-            {' '}
-            <AttachFileIcon />{' '}
-          </Link>
+          <Link href={`/`}><AttachFileIcon /></Link>
         );
       },
     },
