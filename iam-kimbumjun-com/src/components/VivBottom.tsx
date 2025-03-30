@@ -16,7 +16,7 @@ export default function VivBottomNav() {
 
     return (
         <BottomNavigation
-            sx={{ width: '100%', borderTop: '3px solid #ff0000' }}
+            sx={{ width: '100%', borderTop: '2px solid var(--color-slate-400)', marginTop: '0' }}
             value={value}
             onChange={handleChange}>
             <BottomNavigationAction

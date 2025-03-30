@@ -30,6 +30,7 @@
     "@types/mdx": "^2.0.13",
     "axios": "^1.8.4",
     "beasties": "^0.2.0",
+    "file-type": "^20.4.1",
     "framer-motion": "^12.6.2",
     "jwt-decode": "^4.0.0",
     "katex": "^0.16.21",
@@ -39,6 +40,8 @@
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.55.0",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
     "styled-components": "^6.1.16"
   },
   "devDependencies": {

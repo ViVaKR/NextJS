@@ -1,6 +1,6 @@
 // src/components/ClientLayout.tsx
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ICode } from '@/interfaces/i-code';
 import { ICategory } from '@/interfaces/i-category';
 import CategoryAccordion from '@/components/CategoryAccordion';
@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Tooltip } from '@mui/material';
-import { Title } from '@mui/icons-material';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -21,14 +20,36 @@ export default function ClientLayout({
   categories,
   children,
 }: ClientLayoutProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false); // 좌측 메뉴 토글
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 여부 확인
   const pathname = usePathname();
+
+  // 클라이언트에서만 localStorage를 읽고 상태 업데이트
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem('menuCollapsed');
+      if (savedState !== null) {
+        setIsCollapsed(JSON.parse(savedState));
+      }
+    } catch (e: any) {
+      console.error('Failed to parse menuCollapsed from localStorage:', e);
+      setIsCollapsed(false); // 기본값으로 복구
+    }
+
+    setIsMounted(true); // 클라이언트 마운트 완료
+  }, []);
+
+  // 상태가 변경될 때 localStorage에 저장
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('menuCollapsed', JSON.stringify(isCollapsed));
+    }
+  }, [isCollapsed, isMounted]);
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev); // 토글
   };
-
-  const hide = isCollapsed ? 'hidden' : '';
 
   const gridClass = useMemo(() =>
     isCollapsed
@@ -36,13 +57,28 @@ export default function ClientLayout({
       : 'grid grid-cols-[300px_minmax(200px,1fr)] min-h-screen p-2',
     [isCollapsed]);
 
+  // Left Menu 애니메이션 variants 정의
+  const menuVariants = {
+    open: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3, ease: 'easeInOut' },
+    },
+    closed: {
+      opacity: 0,
+      x: -20, // 왼쪽으로 살짝 밀려나면서 사라짐
+      transition: { duration: 0.3, ease: 'easeInOut' },
+    },
+  };
+
   // * Start Point
   return (
     <div className={gridClass}>
 
       {/* 상단 아이콘 메뉴 */}
       <div
-        className='col-span-2 max-w-full flex justify-evenly text-base border-b-slate-200 border-b-2 mb-2'
+        className='col-span-2 max-w-full flex justify-evenly
+        text-base border-b-slate-200 border-b-2 mb-2'
       >
 
         {/* 메뉴 숨김/보기 */}
@@ -52,12 +88,23 @@ export default function ClientLayout({
           hover:text-red-400
           text-slate-400
           start-0 shrink"
-          onClick={handleToggle}>
-          <Tooltip title={isCollapsed ? '카테고리 보기' : '카테고리 숨김'} arrow>
-            <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
-              {isCollapsed ? 'close_fullscreen' : 'open_in_full'}
-            </span>
-          </Tooltip>
+          onClick={handleToggle}
+          aria-label={isCollapsed ? '카테고리 보기' : '카테고리 숨김'}
+        >
+
+          {!isMounted ? (
+            <Tooltip title='카테고리 숨김' arrow>
+              <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
+                open_in_full
+              </span>
+            </Tooltip>
+          ) : (
+            <Tooltip title={isCollapsed ? '카테고리 보기' : '카테고리 숨김'} arrow>
+              <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
+                {isCollapsed ? 'close_fullscreen' : 'open_in_full'}
+              </span>
+            </Tooltip>
+          )}
         </button>
 
         {/* 데이터 목록 */}
@@ -79,26 +126,31 @@ export default function ClientLayout({
             }}>edit_document</span>
           </Tooltip>
         </Link>
-      </div>
+      </div >
 
-      {/* Left Menu */}
-      <aside className={`start-0 flex flex-col gap-1 mr-2 ${hide}`}>
-        <h5 className='h-12 w-full
-                      bg-slate-100
-                      rounded-full
-                      shadow-cyan-500/50
-                      shadow-xs
-                      content-center text-center'>
-          카테고리
-        </h5>
-        <span className={`max-h-[80vh] overflow-y-scroll`}>
-          <CategoryAccordion
-            categories={categories}
-            codes={codes}
-          />
-        </span>
-      </aside>
-
+      {/* Left Menu with Animation */}
+      <AnimatePresence>
+        {
+          !isCollapsed && (
+            <motion.aside
+              className="start-0 flex flex-col gap-1 mr-2"
+              variants={menuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+            >
+              <h5
+                className="h-12 w-full bg-slate-100 rounded-full shadow-cyan-500/50 shadow-xs content-center text-center"
+              >
+                카테고리
+              </h5>
+              <span className="max-h-[80vh] overflow-y-scroll">
+                <CategoryAccordion categories={categories} codes={codes} />
+              </span>
+            </motion.aside>
+          )
+        }
+      </AnimatePresence >
       <AnimatePresence mode="wait">
         <motion.main
           key={pathname}
@@ -110,6 +162,6 @@ export default function ClientLayout({
           {children}
         </motion.main>
       </AnimatePresence>
-    </div>
+    </div >
   );
 }

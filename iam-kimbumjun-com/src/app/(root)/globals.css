@@ -379,6 +379,13 @@ body {
   font-family: var(--font-noto), sans-serif;
 }
 
+.sticky-footer {
+  @apply flex flex-col min-h-screen;
+}
+.grow-main {
+  @apply flex-grow;
+}
+
 pre {
   padding: 2rem !important; /* shiki의 기본 스타일을 덮어씌움 */
   border-radius: 1em;

@@ -48,9 +48,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
       <body
-        className={`${noto.variable}
-        ${poppins.variable}
-        antialiased`}>
+        className={`
+          sticky-footer
+          ${noto.variable}
+          ${poppins.variable}
+          antialiased`}>
+
         <AuthProvider>
           <SnackbarProvider>
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
@@ -59,7 +62,8 @@ export default function RootLayout({
               </nav>
 
               <main
-                className='min-h-[calc(100vh_-_72px_-_248px)]'
+                // className='min-h-[calc(100vh_-_72px_-_248px)]'
+                className='grow-main'
               >
                 {children}
               </main>
