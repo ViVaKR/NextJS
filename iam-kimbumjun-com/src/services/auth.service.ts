@@ -4,10 +4,8 @@ import { IUser } from "@/interfaces/i-user";
 import { apiFetch } from "@/lib/api";
 import { jwtDecode } from "jwt-decode";
 
-
 const isClient = typeof window !== 'undefined';
 const userToken = 'user';
-
 
 export const getToken = (): string | null => {
   if (!isClient) return null;
@@ -18,7 +16,6 @@ export const getToken = (): string | null => {
 }
 
 export const userDetail = () => {
-
   const token = getToken();
   if (!token) return null;
   const decoded: any = jwtDecode(token);

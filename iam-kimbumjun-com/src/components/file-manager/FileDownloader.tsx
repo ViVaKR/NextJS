@@ -70,7 +70,7 @@ const FileDownloader: React.FC<FileDownloaderProps> = ({ fileUrl }) => {
         }}>
             <em className="text-xs text-red-300">{fileUrl}</em>
             <Button color='primary' onClick={downloadFile}>
-                파일 다운로드
+                첨부파일 다운로드
             </Button>
         </Box>
 

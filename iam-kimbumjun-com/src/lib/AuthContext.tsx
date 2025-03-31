@@ -1,13 +1,14 @@
+// src/lib/AuthContext.tsx
+
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { IAuthContextProps } from '@/interfaces/i-auth-context-props';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
 import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
-import type { NextApiRequest, NextApiResponse } from 'next'
-
+import { ExtendedUser } from '@/interfaces/i-extended-user'; // 인터페이스 재사용
 // 확장된 User 타입 정의
-interface ExtendedUser extends IAuthResponse, IUserDetailDTO { }
+// interface ExtendedUser extends IAuthResponse, IUserDetailDTO { }
 
 const AuthContext = createContext<IAuthContextProps>({
   user: null,
@@ -169,6 +170,5 @@ export const useAuth = () => {
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
   }
-
   return context;
 };

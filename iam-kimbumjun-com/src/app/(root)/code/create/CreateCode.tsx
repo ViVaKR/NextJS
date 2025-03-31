@@ -2,7 +2,7 @@
 'use client'
 import { CodeData } from '@/types/code-form-data';
 import { userDetail, getToken } from '@/services/auth.service';
-import { Box, Button, ButtonGroup, ButtonProps, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import FileManager from '@/components/file-manager/FileManager';
 import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
-
+import FileUploader from '@/components/file-manager/FileUploader';
 
 export default function CreateCodePage() {
 
@@ -49,7 +49,7 @@ export default function CreateCodePage() {
     const genButtons = Array.from({ length: numberOfButtons }).map((_, index) => {
         const currentValue = startValue + (index * stepValue);
         return (
-            <Button key={currentValue} onClick={() => handleRowsClick(currentValue)}>
+            <Button tabIndex={-1} key={currentValue} onClick={() => handleRowsClick(currentValue)}>
                 {currentValue}
             </Button>
         )
@@ -103,7 +103,6 @@ export default function CreateCodePage() {
                     reset();
                     router.push('/code'); // 목록 페이지로 이동
                 }
-
             }
         } catch (err: any) {
             snackbar.showSnackbar(err.message, 'error')
@@ -138,10 +137,11 @@ export default function CreateCodePage() {
                             )}
                         />
                     </Grid>
-                    <Grid size={5}>
+                    <Grid tabIndex={-1} size={5}>
                         {/* 카테고리 */}
                         <Controller
                             name="categoryId"
+
                             control={control}
                             rules={{ required: "카테고리를 선택하여 주세요." }}
                             render={({ field }) => (
@@ -154,6 +154,8 @@ export default function CreateCodePage() {
                                     variant="filled"
                                     color="success"
                                     fullWidth
+                                    tabIndex={-1} // 최상위에 설
+                                    slotProps={{ select: { tabIndex: -1 } }}
                                     error={!!errors.categoryId}
                                     helperText={errors.categoryId?.message}
                                 >
@@ -175,6 +177,7 @@ export default function CreateCodePage() {
                 <Controller
                     name="subTitle"
                     control={control}
+
                     rules={{ required: '부제목을 입력해주세요.' }}
                     render={({ field }) => (
                         <TextField
@@ -190,7 +193,8 @@ export default function CreateCodePage() {
                     )}
                 />
 
-                <div className='w-full p-0 flex justify-center items-center overflow-x-scroll'>
+                <div tabIndex={-1}
+                    className='w-full p-0 flex justify-center items-center overflow-x-scroll'>
                     <ButtonGroup size='small' sx={{ mx: 'auto' }} color='success'>
                         {genButtons}
                     </ButtonGroup>
@@ -287,21 +291,24 @@ export default function CreateCodePage() {
                     </IconButton>
                 </div>
 
-                {/*  */}
+                {/* 이미지 드레그앤드롭 */}
                 <FileManager
                     title='코드관련 이미지 (drag & drop)'
                     choice={1} // 첨부 이미지 모드
-                    // onLoadFinished prop은 choice={0}일 때를 위해 남겨두거나,
-                    // choice={1} 시나리오에서는 사용하지 않으므로 제거해도 무방하네.
-                    // onLoadFinished={(fileInfo) => { console.log('Avatar uploaded:', fileInfo); }}
-
-                    // choice={1}이므로 onAttachImageFinished prop 사용
                     onAttachImageFinished={(dbPath: string) => {
-                        // setValue를 호출하여 attachImageName 필드 업데이트
-                        setValue('attachImageName', dbPath, { shouldDirty: true }); // 수정됨 상태로 변경
-                        // snackbar.showSnackbar(`이미지 첨부 완료: ${dbPath}`, 'success'); // 성공 피드백
+                        setValue('attachImageName', dbPath, { shouldDirty: true });
                     }}
                 />
+
+                {/* 파일 업로드 */}
+                <FileUploader
+                    title="압축 파일 업로드 (최대 30MB)"
+                    onUploadComplete={(filePath: string) => {
+                        setValue('attachFileName', filePath, { shouldDirty: true });
+                    }}
+                />
+
+                {watch('attachFileName')}
 
                 {/* watch로 값이 잘 들어갔는지 확인 */}
                 {watch('attachImageName') && (
@@ -312,9 +319,7 @@ export default function CreateCodePage() {
                         <Typography variant="body2" style={{ wordBreak: 'break-all' }}>
                             {watch('attachImageName')}
                         </Typography>
-                        {/* 실제 이미지 미리보기를 원한다면 next/image나 img 태그 사용 */}
-                        {/* 예시: <img src={watch('attachImageName')} alt="첨부 이미지 미리보기" width="100" /> */}
-                        {/* 단, next/image를 사용하려면 해당 이미지 호스트를 next.config.js에 등록해야 할 수도 있네! */}
+
                     </div>
                 )}
 
@@ -334,114 +339,12 @@ export default function CreateCodePage() {
                 </div>
             </form >
 
-
-
             <small className='text-xs text-slate-400'>
                 {watch('title')}
                 {isLoading ? (<div>Loading...</div>) : (<div>Loaded..</div>)}
                 {/* // 수정 여부 알림 */}
                 {isDirty && <Typography sx={{ fontSize: '0.75em' }}>변경된 내용이 있습니다!</Typography>}
             </small>
-
-            {/*
-            // 버튼 클릭 시 title 값 변경
-            <Button onClick={() => setValue('title', 'New Title', { shouldValidate: true })}>
-                제목 변경
-            </Button>
-
-            // API 응답으로 값 설정
-            useEffect(() => {
-                fetchSomeData().then((data) => setValue('content', data.content));
-            }, []);
-
-            */}
-            {/* <p>
-                {watch('created')?.toLocaleDateString()}
-            </p> */}
-            {/* <div className="flex justify-evenly mt-6">
-                <CustomButton type="button">취소</CustomButton>
-                <CustomButton type="button" className='!text-red-400' onClick={() => console.log('Clicked')}>이미회원이신가요? 로그인</CustomButton>
-                <CustomButton type="submit">회원가입</CustomButton>
-            </div> */}
-
-
-            {/* <Form action={`/search`} onSubmit={}>
-                <input type="text" className='px-4 py-2 w-full border rounded-full text-slate-600' value={`Hello, World`} />
-                <button>Hello</button>
-            </Form> */}
-        </Box>
+        </Box >
     );
 }
-
-/*
-
-{errors.subContent && <span>{errors.subContent.message}</span>}
-
-  newForm(val: string): void {
-    this.form = this.fb.group({
-      id: 0,
-      title: [val, Validators.required],
-      subTitle: [val, Validators.required],
-      content: [val, Validators.required],
-      subContent: [val],
-      markdown: [val],
-      created: [null],
-      modified: [new Date()],
-      note: [val],
-      categoryId: [1],
-      userId: [val],
-      userName: [val],
-      myIp: [val],
-      attachFileName: [val],
-      attachImageName: [val]
-    });
-  }
-
-// const now = new Intl.DateTimeFormat("ko-KR", {
-//     dateStyle: 'full',
-//     timeStyle: 'full',
-//     timeZone: 'Asia/Seoul'
-// }).format(new Date());
-// created: new Date(today.toISOString().split('T')[0]),
-*/
-
-
-
-// interface CustomButtonProps extends ButtonProps {
-//     children: React.ReactNode;
-// }
-
-// const ITEM_HEIGHT = 48;
-// const ITEM_PADDING_TOP = 8;
-// const MenuProps = {
-//     PaperProps: {
-//         style: {
-//             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-//             width: 250,
-//         },
-//     },
-// };
-
-// function getStyles(name: string, personName: readonly string[], theme: Theme) {
-//     return {
-//         fontWeight: personName.includes(name)
-//             ? theme.typography.fontWeightMedium
-//             : theme.typography.fontWeightRegular,
-//     };
-// }
-
-// const CustomButton = ({ children, ...props }: CustomButtonProps) => (
-//     <Button
-//         variant="outlined"
-//         color="primary"
-//         className="!font-bold hover:!bg-sky-500 hover:!text-white"
-//         {...props}
-//     >
-//         {children}
-//     </Button>
-// );
-
-// function formatDate(now: string) {
-//     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-//     return new Date(now).toLocaleDateString();
-// }

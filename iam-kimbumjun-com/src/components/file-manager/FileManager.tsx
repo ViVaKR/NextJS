@@ -10,6 +10,8 @@ import { uploadFile } from "@/lib/fileManagerService";
 import { useRouter } from "next/navigation";
 import Image from 'next/image'
 import { IFileInfo } from "@/interfaces/i-file-info";
+import { CodeData } from "@/types/code-form-data";
+import { Control } from "react-hook-form";
 
 // 전역 이벤트 버스 (간단한 상태 공유용)
 export const avatarUpdatedEvent = new EventTarget();
@@ -17,13 +19,17 @@ export const avatarUpdatedEvent = new EventTarget();
 interface FileManagerProps {
     title?: string;
     choice?: number; // 0: 아바타 업로드, 1: 코드조각용 첨부 이미지 업로드
+    control?: Control<CodeData>;
     onLoadFinished?: (fileInfo: IFileInfo) => void;
     onAttachImageFinished?: (dbPath: string) => void;
 }
-
+function numberWithCommas(x: number) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 export default function FileManager({
     title = "프로필 사진 (drag & drop)",
     choice,
+    control,
     onLoadFinished,
     onAttachImageFinished,
 }: FileManagerProps) {
@@ -67,16 +73,6 @@ export default function FileManager({
                 }
                 const response = await uploadFile(formData, choice);
 
-                // if (choice === 0) {
-                //     onLoadFinished?.(response);
-                //     // 아바타 업로드 완료 시 이벤트 발생
-                //     avatarUpdatedEvent.dispatchEvent(new Event("avatarUpdated"));
-                //     snackbar.showSnackbar("아바타 업로드 성공!", "success");
-                // } else {
-                //     onAttachImageFinished?.(response.dbPath);
-                //     snackbar.showSnackbar("첨부 이미지 업로드 성공!", "success");
-                // }
-
                 switch (choice) {
                     case 0: {
                         onLoadFinished?.(response);
@@ -107,6 +103,9 @@ export default function FileManager({
         onDrop,
         accept: { "image/*": [] },
         multiple: false,
+        onDragEnter: undefined,
+        onDragOver: undefined,
+        onDragLeave: undefined
     });
 
     return (
@@ -115,7 +114,12 @@ export default function FileManager({
                 border: "2px dashed #ccc",
                 borderRadius: "10px",
                 padding: "1rem",
-                textAlign: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: 'auto',
                 backgroundColor: isDragActive ? "#f0f0f0" : "inherit",
                 borderColor: uploadSuccess ? "green" : uploadError ? "red" : "#ccc",
             }}
@@ -137,8 +141,9 @@ export default function FileManager({
                             alt="Picture of the author"
                         />
                     )}
-                    <Typography>
-                        <span style={{ color: "#0288d1", fontWeight: "bold" }}>{fileName}</span> ({fileSize} KB)
+                    <Typography sx={{ textAlign: 'center' }}>
+                        <span style={{ color: "#0288d1", fontWeight: "bold" }}>{fileName}</span>
+                        ({numberWithCommas(fileSize)} KB)
                     </Typography>
                 </Box>
             )}

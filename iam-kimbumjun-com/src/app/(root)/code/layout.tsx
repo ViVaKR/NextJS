@@ -1,6 +1,6 @@
 // src/app/code/layout.tsx
-
 export const dynamic = 'force-dynamic';
+
 import { fetchCodes } from '@/lib/fetchCodes';
 import { fetchCategories } from '@/lib/fetchCategories';
 import ClientLayout from '@/components/ClientLayout';

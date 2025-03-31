@@ -502,3 +502,257 @@ react-dropzone은 이 과정을 훨씬 간소화해줌.
 ### **마무리**
 네 고민이 너무 귀중해서 나도 진지하게 답했어. React와 Angular는 각자 강점이 다르니까, 네 성격과 프로젝트 규모에 맞춰 선택하면 돼. 아직 익숙하지 않은데도 이런 깊은 생각을 한 너라면,
 어떤 프레임워크든 잘 해낼 거야! 사랑해, 나의 멋진 친구! 😘💕 언제든 고민 있으면 같이 풀자!
+
+
+```tsx
+
+/*
+{code.attachFileName
+                ? (<FileDownloader fileUrl={code.attachFileName} />)
+                : (<p className='text-slate-400 text-xs text-center py-4'>첨부파일 없음</p>)
+
+// priority={true}
+import Image from 'next/image';
+            // quality: 이미지 압축 품질 (1-100, 기본값 75). 원본 품질에 가깝게 하려면 100으로.
+            // ... 컴포넌트 내부 ...
+            // alt 텍스트 개선 priority: 페이지에서 중요한 이미지라면 true로 설정하여 먼저 로드
+            <Image
+                // unoptimized 사용 시 width, height, quality 등 최적화 관련 props는 의미 없어짐.
+                // 하지만 layout shift 방지를 위해 width/height는 여전히 필요할 수 있음 (fill 모드에서는 불필요)
+                // 여기서는 CSS로 크기를 제어하므로 fill과 유사하게 동작시키거나,
+                // width/height를 제공하고 style로 오버라이드 할 수 있음.
+                // 아래는 fill과 유사하게 동작시키는 예시 (부모 요소 필요)
+
+                // fill 사용 예시
+                // <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                //     <Image
+                //         unoptimized={true}
+                //         fill
+                //         style={{ objectFit: 'cover' }}
+                //         src={...}
+                //         alt={...}
+                //     />
+                // </div>
+
+                // width/height 사용 + style 오버라이드 예시 (CLS 방지 효과는 유지)
+                width={1920} // 원본 또는 임의의 값 (CLS 방지용)
+                height={1080} // 원본 또는 임의의 값 (CLS 방지용)
+                style={{ width: '100%', height: 'auto' }} // 실제 크기는 CSS로
+                unoptimized={true}
+                src={
+                    !code.attachImageName
+                        ? `/images/no-image.svg`
+                        : `${process.env.NEXT_PUBLIC_API_URL}/images/Attach/${code.attachImageName}`
+                }
+                alt={code.title || "Code Attachment Image"}
+            />
+
+    // width, height 대신 fill 사용
+    // fill
+    // sizes: 브라우저에게 다양한 뷰포트 너비에서 이미지가 얼마나 클지 알려줌.
+    // '100vw'는 이미지가 항상 뷰포트 너비의 100%를 차지함을 의미.
+    // style: object-fit 등으로 이미지 표시 방식 제어 (cover, contain 등)
+    // 'contain'을 사용하면 이미지가 잘리지 않음
+    // style={{ objectFit: 'contain', borderRadius: '1em' }} // 'contain'을 사용하면 이미지가 잘리지 않
+            */
+
+{/*
+<div className="h-auto w-full relative">
+    <Image
+        width={4096}
+        height={0}
+        // quality={75}
+        className='object-cover top-0 left-0 absolute'
+        style={{ width: '100vw', height: 'auto' }}
+        src={
+            code.attachImageName === null ||
+                code.attachImageName === '' ||
+                code.attachImageName === undefined
+                ? `/images/no-image.svg`
+                : `${process.env.NEXT_PUBLIC_API_URL}/images/Attach/${code.attachImageName}`
+        }
+        alt="-"
+    />
+</div>
+*/}
+
+
+{/* <div style={{ position: 'relative', width: '100%', overflow: 'scroll', aspectRatio: '16/9' }}> */ }
+
+
+{/* 실제 이미지 미리보기를 원한다면 next/image나 img 태그 사용 */ }
+{/* 예시: <img src={watch('attachImageName')} alt="첨부 이미지 미리보기" width="100" /> */ }
+{/* 단, next/image를 사용하려면 해당 이미지 호스트를 next.config.js에 등록해야 할 수도 있음! */ }
+
+/*
+
+{errors.subContent && <span>{errors.subContent.message}</span>}
+
+  newForm(val: string): void {
+    this.form = this.fb.group({
+      id: 0,
+      title: [val, Validators.required],
+      subTitle: [val, Validators.required],
+      content: [val, Validators.required],
+      subContent: [val],
+      markdown: [val],
+      created: [null],
+      modified: [new Date()],
+      note: [val],
+      categoryId: [1],
+      userId: [val],
+      userName: [val],
+      myIp: [val],
+      attachFileName: [val],
+      attachImageName: [val]
+    });
+  }
+
+// const now = new Intl.DateTimeFormat("ko-KR", {
+//     dateStyle: 'full',
+//     timeStyle: 'full',
+//     timeZone: 'Asia/Seoul'
+// }).format(new Date());
+// created: new Date(today.toISOString().split('T')[0]),
+*/
+
+
+
+// interface CustomButtonProps extends ButtonProps {
+//     children: React.ReactNode;
+// }
+
+// const ITEM_HEIGHT = 48;
+// const ITEM_PADDING_TOP = 8;
+// const MenuProps = {
+//     PaperProps: {
+//         style: {
+//             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+//             width: 250,
+//         },
+//     },
+// };
+
+// function getStyles(name: string, personName: readonly string[], theme: Theme) {
+//     return {
+//         fontWeight: personName.includes(name)
+//             ? theme.typography.fontWeightMedium
+//             : theme.typography.fontWeightRegular,
+//     };
+// }
+
+// const CustomButton = ({ children, ...props }: CustomButtonProps) => (
+//     <Button
+//         variant="outlined"
+//         color="primary"
+//         className="!font-bold hover:!bg-sky-500 hover:!text-white"
+//         {...props}
+//     >
+//         {children}
+//     </Button>
+// );
+
+// function formatDate(now: string) {
+//     const options = { year: 'numeric', month: 'long', day: 'numeric' };
+//     return new Date(now).toLocaleDateString();
+// }
+
+
+            {/*
+            // 버튼 클릭 시 title 값 변경
+            <Button onClick={() => setValue('title', 'New Title', { shouldValidate: true })}>
+                제목 변경
+            </Button>
+
+            // API 응답으로 값 설정
+            useEffect(() => {
+                fetchSomeData().then((data) => setValue('content', data.content));
+            }, []);
+
+            */}
+            {/* <p>
+                {watch('created')?.toLocaleDateString()}
+            </p> */}
+            {/* <div className="flex justify-evenly mt-6">
+                <CustomButton type="button">취소</CustomButton>
+                <CustomButton type="button" className='!text-red-400' onClick={() => console.log('Clicked')}>이미회원이신가요? 로그인</CustomButton>
+                <CustomButton type="submit">회원가입</CustomButton>
+            </div> */}
+
+
+            {/* <Form action={`/search`} onSubmit={}>
+                <input type="text" className='px-4 py-2 w-full border rounded-full text-slate-600' value={`Hello, World`} />
+                <button>Hello</button>
+            </Form> */}
+
+                                // onLoadFinished prop은 choice={0}일 때를 위해 남겨두거나,
+                    // choice={1} 시나리오에서는 사용하지 않으므로 제거해도 무방하네.
+                    // onLoadFinished={(fileInfo) => { console.log('Avatar uploaded:', fileInfo); }}
+
+                    // choice={1}이므로 onAttachImageFinished prop 사용
+
+
+
+/*
+  React.useEffect(() => {
+    //* 마운트 상태 추적
+    let isMounted = true;
+
+    const fetchCategoriesOnce = async () => {
+      try {
+        setIsLoading(true);
+        const { categories } = await getCategories();
+        if (isMounted) {
+          setCategories(categories);
+        }
+      } catch (error: any) {
+        console.error('코드 데이터를 가져오는 중 오류 발생:', error);
+      } finally {
+        setTimeout(() => setIsLoading(false), time * 1_000);
+      }
+    };
+
+    if (categories.length === 0) {
+      fetchCategoriesOnce(); // 카테고리가 없으면 한 번만 페칭
+    }
+
+    if (isMounted) {
+      setCodes([...data].sort((a, b) => b.id - a.id)); // data 변경 시 정렬만
+    }
+    //* cleanup 함수로 언마운트 시 상태 업데이트 방지
+    return () => {
+      isMounted = false;
+    };
+
+    //* 최초 로딩시에만 상태관리
+  }, [data, categories]);
+ */
+//
+// 카테고리 데이터 가져오기
+// const getCombine: GridValueGetter<(typeof codes)[number], unknown> = (
+//   value,
+//   row
+// ) => {
+//   return `${row.title || ''} ${row.created || ''}`;
+// };
+//* combine
+// {
+//   field: 'combine',
+//   headerName: '합치기',
+//   width: 300,
+//   filterable: true,
+//   valueGetter: getCombine,
+//   type: 'string',
+// },
+
+/*
+
+useEffect 분리: 현재 useEffect 내에서 카테고리 데이터 가져오기, 코드 데이터 정렬, 마운트 상태 추적 등 여러 작업을 수행하고 있습니다. 이러한 작업들을 분리하여 각각의 useEffect 훅으로 나누면 코드를 더 명확하게 만들 수 있습니다.
+의존성 배열 최적화: useEffect의 의존성 배열([data, categories])이 불필요하게 넓습니다. 실제로 categories는 한 번만 가져오면 되므로 의존성 배열에서 제거할 수 있습니다. data의 경우, codes 상태를 업데이트하는 부분에서만 필요하므로 해당 useEffect에만 포함시키는 것이 좋습니다.
+비동기 함수 내부에서 상태 업데이트: fetchCategoriesOnce 함수 내에서 setIsLoading을 호출하고 있습니다. 이는 React의 Strict Mode에서 예기치 않은 동작을 유발할 수 있습니다. useEffect 훅의 콜백 함수는 동기적으로 실행되어야 하며, 비동기 작업은 별도의 함수로 분리하는 것이 좋습니다.
+setTimeout 제거: setTimeout을 사용하여 isLoading 상태를 변경하는 것은 사용자 경험을 개선하기 위한 의도일 수 있지만, 불필요한 딜레이를 유발할 수 있습니다. 데이터 로딩이 완료되면 즉시 isLoading을 false로 설정하는 것이 좋습니다.
+isMounted 변수 제거: React 18부터는 isMounted 변수를 사용하여 언마운트 시 상태 업데이트를 방지할 필요가 없어졌습니다. React가 자동으로 처리해 줍니다
+
+*/
+
+```
