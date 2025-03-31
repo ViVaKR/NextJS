@@ -1,12 +1,13 @@
 // src/app/code/read/DeleteButton.tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { deleteCode } from '@/lib/fetchCodes';
 import { getToken, userDetail } from '@/services/auth.service';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { ICodeResponse } from '@/interfaces/i-code-response';
+import { useAuthCheck } from '@/hooks/useAuthCheck';
 
 interface DeleteButtonProps {
     codeId: number;
@@ -14,26 +15,14 @@ interface DeleteButtonProps {
 }
 
 export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
-    const [canDelete, setCanDelete] = useState(false);
+
     const [open, setOpen] = useState(false); // 다이얼로그 상태
     const router = useRouter();
     const snackbar = useSnackbar();
-
-    useEffect(() => {
-        const token = getToken();
-        if (!token) return;
-
-        const user = userDetail();
-        if (user) {
-            const isAdmin = user.roles?.includes('Admin') || false;
-            const isAuthor = user.id === userId;
-            setCanDelete(isAdmin || isAuthor);
-        }
-    }, [userId]);
+    const [canDelete, loading] = useAuthCheck(userId);
 
     const handleOpen = () => setOpen(true); // 다이얼로그 열기
     const handleClose = () => setOpen(false); // 다이얼로그 닫기
-
     const handleDelete = async () => {
         try {
             const response: ICodeResponse = await deleteCode(codeId);
@@ -52,15 +41,15 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
         }
     };
 
+    if (loading) <span>Loading...</span>
     if (!canDelete) return null;
-
     return (
-        <>
+        <div>
             <button
                 onClick={handleOpen} // 클릭 시 다이얼로그 열기
-                className="px-4 py-2
+                className="px-8 py-2
                 bg-red-500 text-white
-                rounded-full hover:bg-red-600 mb-8"
+                rounded-full hover:bg-red-600"
             >
                 삭제
             </button>
@@ -85,6 +74,6 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </div>
     );
 }

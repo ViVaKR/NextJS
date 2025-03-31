@@ -3,17 +3,14 @@ import FileDownloader from '@/components/file-manager/FileDownloader';
 import VivCopyClipboard from '@/components/VivCopyClipboard';
 import VivTitle from '@/components/VivTitle';
 import { getLanguageName } from '@/data/category';
-import { ICode } from '@/interfaces/i-code';
 import { fetchCodeById } from '@/lib/fetchCodes';
 import Image from 'next/image';
-import Link from 'next/link';
 import { remark } from 'remark';
 import html from 'remark-html';
 import { Typography } from '@mui/material';
 import Code from '@/components/Code'; // 서버 컴포넌트 유지
 import DeleteButton from './DeleteButton'; // 클라이언트 컴포넌트로 분리
-import { useAuth } from '@/lib/AuthContext';
-import { userDetail } from '@/services/auth.service';
+import UpdateButton from './UpdateButton';
 
 async function markdownToHtml(markdown: string) {
     const result = await remark().use(html).process(markdown);
@@ -28,9 +25,6 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
     if (!code) {
         return <Typography>코드를 찾을 수 없습니다.</Typography>;
     }
-    // const session = await getServerSession(authOptions);
-    // const canDelete = user &&
-    //     (user.roles?.some(role => role.toLowerCase().includes('admin')));
 
     const noteHtml = code.note ? await markdownToHtml(code.note) : '';
     const markdownHtml = code.markdown ? await markdownToHtml(code.markdown) : '';
@@ -158,15 +152,9 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                     </span>
                 </div>
 
-                <div className="flex justify-evenly items-center gap-4">
-                    {/* {canDelete && <DeleteButton codeId={code.id} userId={code.userId} />} */}
-
-                    <Link
-                        href={`/code/update/${code.id}`}
-                        className="px-4 py-2 bg-sky-500 text-white rounded-full hover:bg-sky-600 mb-8"
-                    >
-                        수정
-                    </Link>
+                <div className="flex justify-evenly items-center gap-4 mb-48">
+                    <DeleteButton codeId={code.id} userId={code.userId} />
+                    <UpdateButton codeId={code.id} userId={code.userId} />
                 </div>
             </div>
         </div>

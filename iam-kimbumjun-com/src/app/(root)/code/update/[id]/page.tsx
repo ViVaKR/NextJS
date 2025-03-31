@@ -297,7 +297,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           )}
         />
 
-        {watch('attachImageName') && (
+        {/* {watch('attachImageName') && (
           <div
             className='mt-4 border border-dashed border-slate-400 p-8 flex flex-col gap-4 items-center rounded-lg'
           >
@@ -328,7 +328,46 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
             />
 
           </div>
-        )}
+        )} */}
+
+
+        {/*  */}
+        <div
+          className='mt-4 border border-dashed border-slate-400 p-8 flex flex-col gap-4 items-center rounded-lg'
+        >
+          <FileManager
+            title="사진변경 (drag & drop)"
+            choice={1}
+            onAttachImageFinished={(dbPath: string) => {
+              setValue('attachImageName', dbPath, { shouldDirty: true, shouldValidate: true });
+            }}
+          />
+
+          <Typography variant="caption" display="block"
+            sx={{ mt: 4, color: 'gray' }} gutterBottom>
+            현재 이미지 (25%)
+          </Typography>
+
+          {
+            watch('attachImageName') && (
+              <Image
+                width={768}
+                height={500}
+                // sizes="(max-width: 1024px) 100vw, 50vw" // 반응형 크기 조정
+                sizes="100%" // 반응형 크기 조정
+                style={{ objectFit: 'contain', borderRadius: '1.5em', width: '25%' }}
+
+                src={`${process.env.NEXT_PUBLIC_API_URL}/images/Attach/${watch('attachImageName')}`}
+                alt={watch('attachImageName')!}
+                quality={100}
+                key={watch('attachImageName')}
+              />
+            )
+          }
+
+        </div>
+
+        {/*  */}
 
         {watch('attachFileName') && (
           <div style={{ marginTop: '10px', border: '1px dashed lightgrey', padding: '1rem', borderRadius: '1rem' }}>

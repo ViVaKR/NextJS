@@ -38,31 +38,6 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
     fetchCategories();
   }, [data]); // 빈 배열: 컴포넌트 마운트 시 한 번만 실행
 
-  // 코드 데이터 정렬
-  // useEffect(() => {
-  //   const sortedCodes = [...data].sort((a, b) => b.id - a.id);
-  //   setCodes(sortedCodes);
-  // }, [data]); // data가 변경될 때만 실행
-
-  // 데이터 갱신 함수
-  // const refreshData = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const freshCodes = await fetchCodes(); // 최신 데이터 가져오기
-  //     setCodes([...freshCodes].sort((a, b) => b.id - a.id));
-  //   } catch (error: any) {
-  //     console.error('데이터 갱신 중 오류 발생:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // 전역 이벤트 리스너로 갱신 트리거
-  // useEffect(() => {
-  //   const handleRefresh = () => refreshData();
-  //   window.addEventListener('refreshCodes', handleRefresh);
-  //   return () => window.removeEventListener('refreshCodes', handleRefresh);
-  // }, []);
 
   const columns: GridColDef[] = [
     {
@@ -139,5 +114,5 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
         </Box>
       )}
     </>
-  );
+  )
 }

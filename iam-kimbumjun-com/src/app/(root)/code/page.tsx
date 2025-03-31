@@ -11,7 +11,7 @@ async function CodeList() {
   return (
     <>
       <VivTitle title={`코드조각 (total: ${codes.length})`} />
-      <VivGridControl data={codes} />;
+      <VivGridControl data={codes} />
     </>
   )
 }
@@ -21,5 +21,5 @@ export default async function CodePage() {
     <Suspense fallback={<div>Loading...</div>}>
       <CodeList />
     </Suspense>
-  );
+  )
 }

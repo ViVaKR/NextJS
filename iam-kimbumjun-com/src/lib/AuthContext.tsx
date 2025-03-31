@@ -98,8 +98,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         localStorage.setItem('user', JSON.stringify(updatedUser));
+
         document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`;
+
         setUser(updatedUser);
+
         return true;
       }
       return false;

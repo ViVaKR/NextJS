@@ -15,6 +15,27 @@ export const getToken = (): string | null => {
   return userDetail.token;
 }
 
+export function getTokenWithCookie() {
+  const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('user='))
+    ?.split('=')[1];
+  if (!token) return null;
+
+  try {
+    const decoded: any = jwtDecode(token);
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp < now) {
+      document.cookie = 'user=; path=/; max-age=0'; // 만료된 토큰 삭제
+      localStorage.removeItem('user');
+      return null;
+    }
+    return token;
+  } catch {
+    return null;
+  }
+}
+
 export const userDetail = () => {
   const token = getToken();
   if (!token) return null;
@@ -36,7 +57,7 @@ export const isAdmin = () => {
 };
 
 // 추가된 로직
-export const fetchUserDetail = async () => {
+export const fetchUserDetail = async (tkn: string) => {
   const token = getToken();
   if (!token) return null;
   try {

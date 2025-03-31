@@ -30,6 +30,8 @@ pnpx prisma db seed
 pnpx prisma studio
 
 openssl rand -base64 129 | tr -d '\n' | pbcopy
+
+"dev": "next dev -p 41086 --turbopack --experimental-https",
 ```
 
 ## Top-level folders
