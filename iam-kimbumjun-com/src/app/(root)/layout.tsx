@@ -6,8 +6,7 @@ import { AuthProvider } from '@/lib/AuthContext';
 import { SnackbarProvider } from '@/lib/SnackbarContext';
 import VivBottomNav from '@/components/VivBottom';
 import { Suspense } from 'react';
-import { SessionProvider } from 'next-auth/react';
-import ClientLayout from '@/components/ClientLayout';
+import ClientSessionProvider from '@/components/ClientSessionProvider';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -55,29 +54,31 @@ export default function RootLayout({
           ${noto.variable}
           ${poppins.variable}
           antialiased`}>
-        <AuthProvider>
-          <SnackbarProvider>
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <ClientSessionProvider>
+          <AuthProvider>
+            <SnackbarProvider>
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
 
-              <nav aria-label='Main Navigation'>
-                <NavMenu />
-              </nav>
+                <nav aria-label='Main Navigation'>
+                  <NavMenu />
+                </nav>
 
-              <main
-                // className='min-h-[calc(100vh_-_72px_-_248px)]'
-                className='grow-main'
-              >
-                {children}
-              </main>
+                <main
+                  // className='min-h-[calc(100vh_-_72px_-_248px)]'
+                  className='grow-main'
+                >
+                  {children}
+                </main>
 
-              <footer
-                className='bg-slate-200 xs:h-auto md:h-[248px]' // 모바일
-              >
-                <VivBottomNav />
-              </footer>
-            </Suspense>
-          </SnackbarProvider>
-        </AuthProvider>
+                <footer
+                  className='bg-slate-200 xs:h-auto md:h-[248px]' // 모바일
+                >
+                  <VivBottomNav />
+                </footer>
+              </Suspense>
+            </SnackbarProvider>
+          </AuthProvider>
+        </ClientSessionProvider>
       </body>
     </html>
   );

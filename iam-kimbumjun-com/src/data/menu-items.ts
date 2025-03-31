@@ -28,6 +28,7 @@ export const getMembershipItems = (): IMenu[] => {
         { id: 13, title: '비밀번호 변경', url: '/membership/reset-password', icon: 'manage_accounts', param: null, requiresAuth: true },
         { id: 14, title: '로그아웃', url: '/membership/sign-out', icon: 'manage_accounts', param: null, requiresAuth: true },
         { id: 15, title: '회원탈퇴', url: '/membership/cancel-membership', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 16, title: '구글로그인', url: '/membership/google', icon: 'manage_accounts', param: null },
     ];
 };
 
