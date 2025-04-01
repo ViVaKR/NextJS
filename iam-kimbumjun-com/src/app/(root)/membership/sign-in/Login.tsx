@@ -165,7 +165,23 @@ export default function SignIn() {
                 width={15}
                 height={15}
                 src="/images/google-icon.svg"
-                alt="Google" /> 구글로그인
+                alt="Google" /> Google Login
+
+            </button>
+            <button
+              type="button"
+              className="px-8 py-2
+                        cursor-pointer
+                        hover:text-white
+                        hover:bg-red-400
+                        rounded-full flex gap-2
+                        text-slate-500 font-bold"
+              onClick={() => signIn("github")}>
+              <Image
+                width={15}
+                height={15}
+                src="/images/github-mark.svg"
+                alt="GitHub" /> GitHub Login
 
             </button>
           </div>

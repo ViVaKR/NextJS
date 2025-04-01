@@ -1,6 +1,7 @@
 // * src/app/(root)/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import { ExtendedUser } from "@/interfaces/i-extended-user";
 
 const handler = NextAuth({
@@ -8,6 +9,10 @@ const handler = NextAuth({
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        }),
+        GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID!,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
@@ -26,7 +31,7 @@ const handler = NextAuth({
                     token: "", // Google 토큰은 여기 안 넣음
                     refreshToken: "",
                     isSuccess: true,
-                    message: "Google login success",
+                    message: "Google Login Success",
                     phoneNumberConformed: false,
                     accessFailedCount: 0,
                     avata: user.image || "/images/login-icon.png",

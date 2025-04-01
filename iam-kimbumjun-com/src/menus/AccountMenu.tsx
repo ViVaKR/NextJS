@@ -50,7 +50,6 @@ export default function AccountMenu() {
     if (menu.requiresAuth && !isAuthenticated) return false;
     if (menu.hideWhenAuth && isAuthenticated) return false;
 
-
     if (menu.requiredRoles && !menu.requiredRoles.some((role) => userRoles.includes(role))) {
       return false;
     }
