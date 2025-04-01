@@ -10,6 +10,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import { getMembershipItems } from "@/data/menu-items";
 import { useProfile } from "@/app/(root)/membership/profile/Profile";
+import { useSession } from "next-auth/react";
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -17,15 +18,18 @@ export default function AccountMenu() {
   const open = Boolean(anchorEl);
   const router = useRouter();
   const { user, isLoading: profileLoading, error: profileError } = useProfile();
+  const { data: session, status } = useSession();
 
   const getAvataUrl = () => {
     if (user == null || user.avata == null) return null;
+    if (session && status === 'authenticated') {
+      return session.user.avata;
+    }
     return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
   };
 
   const getFullName = () => user?.fullName || "";
   const getRoles = () => user?.roles?.join(", ") || "";
-
   const avataHandleClick = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -42,11 +46,15 @@ export default function AccountMenu() {
   const filteredMenus = getMembershipItems().filter((menu) => {
     const isAuthenticated = !!user;
     const userRoles = user?.roles || [];
+    if (session && !menu.sessionMenu) return false;
     if (menu.requiresAuth && !isAuthenticated) return false;
     if (menu.hideWhenAuth && isAuthenticated) return false;
+
+
     if (menu.requiredRoles && !menu.requiredRoles.some((role) => userRoles.includes(role))) {
       return false;
     }
+
     return true;
   });
 

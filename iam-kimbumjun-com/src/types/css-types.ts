@@ -1,4 +1,3 @@
-
 // 'black', 'blue', 'white'만 허용하도록 타입 정의
 export type VivColor = 'black'
     | 'red' | 'orange' | 'amber' | 'yellow'

@@ -7,6 +7,8 @@ import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
 import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user'; // 인터페이스 재사용
+import { signOut, useSession } from 'next-auth/react';
+
 // 확장된 User 타입 정의
 // interface ExtendedUser extends IAuthResponse, IUserDetailDTO { }
 
@@ -22,20 +24,42 @@ const AuthContext = createContext<IAuthContextProps>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setIsLoading] = useState(true);
-  //* 페이지 로드시 localStorage 에서 토큰 확인
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
+  const { data: session, status } = useSession(); // next-auth 세션 가져오기
 
-      // 토큰이 유효한지 확인 후 상세 정보 가져오기
-      fetchUserDetail(parsedUser.token).then((detailedUser) => {
-        if (detailedUser) setUser({ ...parsedUser, ...detailedUser });
-      });
+  //* next-auth 세션과 동기화
+  useEffect(() => {
+
+    if (status === "authenticated" && session?.user) {
+      // Google 로그인 시 세션만 사용
+      const sessionUser = session.user as ExtendedUser;
+      setUser(sessionUser);
+      localStorage.setItem('user', JSON.stringify(sessionUser));
+      setIsLoading(false);
+    } else if (status === "unauthenticated") {
+
+      // * 인증되지 않은 경우에만 자체 자체 로그인 확인
+      const storedUser = localStorage.getItem('user');
+
+      if (storedUser) {
+
+        const parsedUser = JSON.parse(storedUser);
+
+        setUser(parsedUser);
+
+        // 토큰이 유효한지 확인 후 상세 정보 가져오기
+        fetchUserDetail(parsedUser.token).then((detailedUser) => {
+          if (detailedUser) {
+            setUser({ ...parsedUser, ...detailedUser });
+          }
+          else {
+            setUser(null); // 유효하지 않으면 초기화
+            localStorage.removeItem('user');
+          }
+        });
+      }
     }
     setIsLoading(false);
-  }, []);
+  }, [status, session]);
 
   const fetchUserDetail = async (token: string) => {
     try {
@@ -51,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
       if (!response.ok) throw new Error('Failed to fetch user details');
       const detailedUser = await response.json();
-
       return detailedUser as IUserDetailDTO;
     } catch (err) {
       console.error('Error fetching user detail:', err);
@@ -59,9 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  //* Sign In
+  //* 로그인
   const login = async (email: string, password: string) => {
     try {
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/account/signin`,
         {
@@ -76,9 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.isSuccess) {
         const detailedUser = await fetchUserDetail(data.token);
 
-        if (!detailedUser) {
-          return false;
-        }
+        if (!detailedUser) return false;
 
         const updatedUser: ExtendedUser = {
           id: detailedUser.id,
@@ -98,18 +120,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         localStorage.setItem('user', JSON.stringify(updatedUser));
-
         document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`;
-
         setUser(updatedUser);
-
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('로그인 실패:', error);
       return false;
     }
+  };
+
+  //* Sign Out
+  const logout = () => {
+    localStorage.removeItem('user');
+    document.cookie = 'user=; path=/; max-age=0'; // 쿠키 삭제
+    setUser(null); // 상태 즉시 갱신
+    signOut({ callbackUrl: "/" }); // next-auth 로그아웃도 함께 호출
   };
 
   const fetchUsers = async () => {
@@ -139,13 +166,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  //* Sign Out
-  const logout = () => {
-    localStorage.removeItem('user');
-    document.cookie = 'user=; path=/; max-age=0'; // 쿠키 삭제
-    setUser(null); // 상태 즉시 갱신
-  };
-
   let roles: string[] = [];
   if (user?.token) {
     const decoded: any = jwtDecode(user.token);
@@ -160,8 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, login, logout, loading, isAdmin, fetchUsers }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin, fetchUsers }}>
       {children}
     </AuthContext.Provider>
   );

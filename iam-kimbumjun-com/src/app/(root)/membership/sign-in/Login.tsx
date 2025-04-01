@@ -15,9 +15,10 @@ import { useSnackbar } from '@/lib/SnackbarContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { userDetail } from '@/services/auth.service';
-import { error } from 'console';
 import { useForm } from 'react-hook-form';
 import { ISignInRequest } from '@/interfaces/i-signin-request';
+import { signIn } from "next-auth/react";
+import Image from 'next/image'
 
 export default function SignIn() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function SignIn() {
 
   const { showSnackbar } = useSnackbar();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>로딩 중...</div>;
 
   const showLoginSuccess = (message: string) => {
     showSnackbar(message + '님 환영합니다.', 'success', 'top', 'right', 3000); // 메시지와 erverity 설정
@@ -148,6 +149,25 @@ export default function SignIn() {
           <div className={styles.links}>
             <Link href="/membership/forget-password">Forget pasword</Link>
             <Link href="/membership/sign-up">Do not have an account</Link>
+
+          </div>
+          <div className='flex justify-center text-xs items-center'>
+            <button
+              type="button"
+              className="px-8 py-2
+                        cursor-pointer
+                        hover:text-white
+                        hover:bg-red-400
+                        rounded-full flex gap-2
+                        text-slate-500 font-bold"
+              onClick={() => signIn("google")}>
+              <Image
+                width={15}
+                height={15}
+                src="/images/google-icon.svg"
+                alt="Google" /> 구글로그인
+
+            </button>
           </div>
 
           <div className="w-1/2 flex justify-center items-center">

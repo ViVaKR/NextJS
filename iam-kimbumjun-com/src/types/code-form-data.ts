@@ -5,7 +5,7 @@ export type CodeData = {
     content: string; // content
     subContent: string; // sub_content
     markdown: string; // markdown
-    note?: string; //note
+    note?: string; //노트, note
     categoryId: number; // category_id
     created?: Date; // DataType.Date
     modified?: Date; // DataType.DateTime

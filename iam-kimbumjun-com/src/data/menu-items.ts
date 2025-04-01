@@ -12,23 +12,23 @@ export const getNavMenuItems = (): IMenu[] => {
 
 export const getMembershipItems = (): IMenu[] => {
     return [
-        { id: 0, title: '나의정보', url: '/membership/profile', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 1, title: ' 권한관리', url: '/membership/role', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 2, title: '회원관리', url: '/membership/account', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 3, title: '과목관리', url: '/membership/code-category', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'] },
-        { id: 4, title: '코드작성', url: '/membership/my-code', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true },
-        { id: 5, title: '코드백업', url: '/membership/code-backup', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 6, title: '비밀번호 변경', url: '/membership/change-password', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 7, title: '필명변경', url: '/membership/change-name', icon: 'manage_accounts', param: null, requiresAuth: true },
+        { id: 0, title: '나의정보', url: '/membership/profile', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
+        { id: 1, title: '권한관리', url: '/membership/role', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
+        { id: 2, title: '회원관리', url: '/membership/account', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
+        { id: 3, title: '과목관리', url: '/membership/code-category', icon: 'manage_accounts', param: null, requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
+        { id: 4, title: '코드작성', url: '/membership/my-code', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true, sessionMenu: false },
+        { id: 5, title: '코드백업', url: '/membership/code-backup', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
+        { id: 6, title: '비밀번호 변경', url: '/membership/change-password', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
+        { id: 7, title: '필명변경', url: '/membership/change-name', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
         { id: 8, title: '회원가입', url: '/membership/sign-up', icon: 'manage_accounts', param: null, hideWhenAuth: true },
         { id: 9, title: '메일인증', url: '/membership/confirm-email', icon: 'manage_accounts', param: null, requiresAuth: true },
         { id: 10, title: '메일인증 회신', url: '/membership/confirm-email-replay', icon: 'manage_accounts', param: null, hasDivider: true, requiresAuth: true },
         { id: 11, title: '로그인', url: '/membership/sign-in', icon: 'manage_accounts', param: null, hideWhenAuth: true },
         { id: 12, title: '비밀번호 찾기', url: '/membership/find-password', icon: 'manage_accounts', param: null, hideWhenAuth: true },
         { id: 13, title: '비밀번호 변경', url: '/membership/reset-password', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 14, title: '로그아웃', url: '/membership/sign-out', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 15, title: '회원탈퇴', url: '/membership/cancel-membership', icon: 'manage_accounts', param: null, requiresAuth: true },
-        { id: 16, title: '구글로그인', url: '/membership/google', icon: 'manage_accounts', param: null },
+        { id: 14, title: '로그아웃', url: '/membership/sign-out', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: true },
+        { id: 15, title: '회원탈퇴', url: '/membership/cancel-membership', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
+        { id: 16, title: '회원정보', url: '/membership/session', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: true },
     ];
 };
 

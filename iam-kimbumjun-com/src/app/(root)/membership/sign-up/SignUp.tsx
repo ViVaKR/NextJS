@@ -35,10 +35,10 @@ export default function SignUpPage() {
     watch,
   } = useForm<SignUpFormData>({
     defaultValues: {
-      email: 'hellobuddham@gmail.com',
-      fullName: '붓다핸섬',
-      password: 'A8947*t5k21#',
-      passwordConfirm: 'A8947*t5k21#',
+      email: '',
+      fullName: '',
+      password: '',
+      passwordConfirm: '',
     },
     mode: 'onTouched'
   });

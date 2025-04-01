@@ -2,26 +2,14 @@
 import { JWT as DefaultJWT } from 'next-auth/jwt';
 import { Session as DefaultSession } from 'next-auth';
 
-declare module 'next-auth' {
+declare module "next-auth" {
     interface Session {
-        user: {
-            id: string;
-            email: string;
-            fullName: string;
-            roles: string[];
-            token: string;
-            refreshToken: string;
-        };
+        user: ExtendedUser; // 기본 { name, email, image } 대신 ExtendedUser로 확장
     }
 }
 
-declare module 'next-auth/jwt' {
-    interface JWT extends DefaultJWT {
-        id: string;
-        email: string;
-        fullName: string;
-        roles: string[];
-        accessToken: string;
-        refreshToken: string;
+declare module "next-auth/jwt" {
+    interface JWT {
+        user: ExtendedUser; // JWT에도 동일하게 확장
     }
 }

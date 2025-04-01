@@ -7,5 +7,9 @@ export const images = {
             pathname: '/images/**',
             search: '',
         },
+        {
+            protocol: 'https',
+            hostname: 'lh3.googleusercontent.com',
+        }
     ],
 };
