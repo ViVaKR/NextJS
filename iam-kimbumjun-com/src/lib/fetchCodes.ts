@@ -27,6 +27,27 @@ export async function fetchCodes(): Promise<ICode[]> {
     }
 }
 
+// Get Public IpAddress
+export async function getServerSideProps() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+
+        console.log(response, 'response');
+        const data = await response.json();
+        return {
+            props: {
+                publicIP: data.ip,
+            },
+        };
+    } catch (error) {
+        return {
+            props: {
+                publicIP: '0.0.0.0',
+            },
+        };
+    }
+}
+
 // * Post Code Data
 export async function postCodes(data: CodeData): Promise<ICodeResponse
     | null
@@ -117,6 +138,8 @@ export const deleteCode = async (id: number): Promise<ICodeResponse> => {
     const result = await response.json();
     return result as ICodeResponse;
 };
+
+
 
 export async function fetchCodeById(id: number): Promise<ICode | null> {
     const codes = await fetchCodes();

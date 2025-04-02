@@ -3,6 +3,11 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { ExtendedUser } from "@/interfaces/i-extended-user";
+import FacebookProvider from "next-auth/providers/facebook";
+import TwitterProvider from "next-auth/providers/twitter";
+import DiscordProvider from "next-auth/providers/discord";
+import AzureADProvider from "next-auth/providers/azure-ad";
+// import AppleProvider from "next-auth/providers/apple";
 
 const handler = NextAuth({
     providers: [
@@ -14,10 +19,28 @@ const handler = NextAuth({
             clientId: process.env.GITHUB_CLIENT_ID!,
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         }),
+        FacebookProvider({
+            clientId: process.env.FACEBOOK_CLIENT_ID!,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+        }),
+        TwitterProvider({
+            clientId: process.env.TWITTER_CLIENT_ID!,
+            clientSecret: process.env.TWITTER_CLIENT_SECRET!,
+            version: "2.0", // OAuth 2.0 사용
+        }),
+        DiscordProvider({
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+        }),
+        AzureADProvider({
+            clientId: process.env.MICROSOFT_CLIENT_ID!,
+            clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
+            tenantId: "common", // 모든 계정 허용
+        })
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
             // 최초 로그인 시 user 객체를 token에 매핑
             if (user) {
                 token.user = {
@@ -31,7 +54,7 @@ const handler = NextAuth({
                     token: "", // Google 토큰은 여기 안 넣음
                     refreshToken: "",
                     isSuccess: true,
-                    message: "Google Login Success",
+                    message: `${account?.provider} Login Success!`,
                     phoneNumberConformed: false,
                     accessFailedCount: 0,
                     avata: user.image || "/images/login-icon.png",

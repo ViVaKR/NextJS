@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Poppins, Noto_Sans_KR } from 'next/font/google';
+
 import './globals.css';
 import NavMenu from '@/menus/NavMenu';
 import { AuthProvider } from '@/lib/AuthContext';
@@ -36,6 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,9 +46,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" />
+
       </head>
       <body
         className={`
@@ -58,23 +63,9 @@ export default function RootLayout({
           <AuthProvider>
             <SnackbarProvider>
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-
-                <nav aria-label='Main Navigation'>
-                  <NavMenu />
-                </nav>
-
-                <main
-                  // className='min-h-[calc(100vh_-_72px_-_248px)]'
-                  className='grow-main'
-                >
-                  {children}
-                </main>
-
-                <footer
-                  className='bg-slate-200 xs:h-auto md:h-[248px]' // 모바일
-                >
-                  <VivBottomNav />
-                </footer>
+                <nav aria-label='Main Navigation'> <NavMenu /> </nav>
+                <main className='grow-main' > {children} </main>
+                <footer className='bg-slate-200 xs:h-auto md:h-[248px]'> <VivBottomNav /></footer>
               </Suspense>
             </SnackbarProvider>
           </AuthProvider>

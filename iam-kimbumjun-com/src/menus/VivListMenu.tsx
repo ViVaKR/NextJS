@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu';
 import { IMenu } from '@/interfaces/i-menu';
 import { usePathname, useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
-
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 export default function VivListMenu({
   items,
   text,
@@ -79,9 +79,10 @@ export default function VivListMenu({
             <MenuItem
               selected={index === selectedIndex}
               onClick={(event) => handleMenuItemClick(event, index)}>
-              <span className="material-symbols-outlined mr-4">
+              {/* <span className="material-symbols-outlined mr-4">
                 {item.icon}
-              </span>
+              </span> */}
+              <ManageAccountsOutlinedIcon />
               {`${item.title}`}
             </MenuItem>
           </div>

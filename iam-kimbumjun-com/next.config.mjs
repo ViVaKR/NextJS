@@ -8,17 +8,34 @@ const nextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: 'https', // 프로토콜 (http 또는 https)
-                hostname: 'api.vivabm.com', // 허용할 도메인 이름
-                port: '', // 특정 포트가 있다면 지정 (없으면 생략)
-                pathname: '/images/**', // 특정 경로 패턴만 허용하고 싶다면 지정 (예: /images/ 하위 모든 경로)
-                search: '',
+                protocol: 'https',
+                hostname: 'api.vivabm.com',
+                pathname: '/images/**',
             },
             {
-                protocol: 'https', // 프로토콜 (http 또는 https)
-                hostname: '/lh3.googleusercontent.com', // 허용할 도메인 이름
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
             },
-
+            {
+                protocol: 'https',
+                hostname: 'cdn.discordapp.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'pbs.twimg.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'platform-lookaside.fbsbx.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'graph.microsoft.com', // Microsoft Graph 프로필 사진
+            },
+            {
+                protocol: 'https',
+                hostname: 'appleid.apple.com',
+            },
         ],
     },
 };

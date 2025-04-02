@@ -22,10 +22,9 @@ import Image from 'next/image'
 
 export default function SignIn() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const { login, loading, user } = useAuth();
+  const { showSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -48,7 +47,11 @@ export default function SignIn() {
     }
   )
 
+  const email = watch('email');
+  const password = watch('password');
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseEvents = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -61,8 +64,6 @@ export default function SignIn() {
   ) => {
     event.preventDefault();
   };
-
-  const { showSnackbar } = useSnackbar();
 
   if (loading) return <div>로딩 중...</div>;
 
@@ -77,10 +78,11 @@ export default function SignIn() {
     e.preventDefault();
     const success = await login(email, password);
     if (success) {
-      const fullName = userDetail()?.fullName ?? '-';
+      const fullName = userDetail()?.fullName ?? 'Guest';
       setTimeout(() => {
         showLoginSuccess(fullName);
         router.push('/');
+        router.refresh();
       }, 100);
     } else {
       showLoginFailed();
@@ -108,9 +110,11 @@ export default function SignIn() {
               <InputLabel htmlFor="filled-adornment-password">Email</InputLabel>
               <FilledInput
                 id="filled-adornment-weight"
-                onChange={(e) => setEmail(e.target.value)}
+                {...control.register('email')}
+                // onChange={(e) => setEmail(e.target.value)}
                 aria-describedby="filled-weight-helper-text"
               />
+              {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
             </FormControl>
           </div>
           {/* Password */}
@@ -123,8 +127,8 @@ export default function SignIn() {
               </InputLabel>
               <FilledInput
                 id="filled-adornment-password"
-                // value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...control.register('password')}
+                // onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
@@ -143,6 +147,7 @@ export default function SignIn() {
                   </InputAdornment>
                 }
               />
+              {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
             </FormControl>
           </div>
 
@@ -150,40 +155,6 @@ export default function SignIn() {
             <Link href="/membership/forget-password">Forget pasword</Link>
             <Link href="/membership/sign-up">Do not have an account</Link>
 
-          </div>
-          <div className='flex justify-center text-xs items-center'>
-            <button
-              type="button"
-              className="px-8 py-2
-                        cursor-pointer
-                        hover:text-white
-                        hover:bg-red-400
-                        rounded-full flex gap-2
-                        text-slate-500 font-bold"
-              onClick={() => signIn("google")}>
-              <Image
-                width={15}
-                height={15}
-                src="/images/google-icon.svg"
-                alt="Google" /> Google Login
-
-            </button>
-            <button
-              type="button"
-              className="px-8 py-2
-                        cursor-pointer
-                        hover:text-white
-                        hover:bg-red-400
-                        rounded-full flex gap-2
-                        text-slate-500 font-bold"
-              onClick={() => signIn("github")}>
-              <Image
-                width={15}
-                height={15}
-                src="/images/github-mark.svg"
-                alt="GitHub" /> GitHub Login
-
-            </button>
           </div>
 
           <div className="w-1/2 flex justify-center items-center">
@@ -194,8 +165,150 @@ export default function SignIn() {
               Login
             </button>
           </div>
+          <span className='flex-1'></span>
+
+          {/* 라인 1 */}
+
+          <div className='flex justify-center mb-4 text-xs items-center'>
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("google", { callbackUrl: '/' })}>
+              <Image
+                width={15}
+                height={15}
+                src="/images/google-icon.svg"
+                alt="Google" />Google
+
+            </button>
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("github", { callbackUrl: '/' })}>
+              <Image
+                width={15}
+                height={15}
+                src="/images/github-mark.svg"
+                alt="GitHub" /> GitHub
+
+            </button>
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("facebook", { callbackUrl: '/' })}
+            >
+              <Image width={15} height={15} src="/images/facebook.svg" alt="Facebook Meta" />
+              Facebook
+            </button>
+
+
+          </div>
+
+          {/* Line 2 */}
+          <div className='flex justify-center mb-4 text-xs items-center'>
+
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("azure-ad", { callbackUrl: '/' })}>
+              <Image
+                width={15}
+                height={15}
+                src="/images/microsoft.svg"
+                alt="GitHub" /> Microsoft
+
+            </button>
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("discord", { callbackUrl: '/' })}
+            >
+              <Image width={15} height={15} src="/images/discord.svg" alt="Discord" />
+              Discord
+            </button>
+
+            <button
+              type="button"
+              className="px-4
+              py-2
+              cursor-pointer
+              hover:text-white
+              hover:bg-red-400
+              rounded-xl
+              flex justify-center items-center
+              gap-1
+              text-slate-500
+              font-bold"
+              onClick={() => signIn("twitter", { callbackUrl: '/' })}
+            >
+              <Image width={15} height={15} src="/images/x.svg" alt="Twitter" /> Twitter(X)
+            </button>
+          </div>
+
+
         </form>
       </div>
     </div>
   );
 }
+
+
+/*
+인기 순위 (2025년 기준 추정)
+
+Google: 사용자층 가장 넓음, 설정 쉬움.
+Facebook: 소셜 미디어 1위, 복잡함.
+Microsoft: 개인+기업 통합, 안정적.
+Twitter(X): 간단하고 트렌디.
+GitHub: 개발자 중심, 쉬움.
+Discord: 커뮤니티 특화, 쉬움.
+Apple: 프리미엄 경험, 중간 난이도.
+LinkedIn: 전문가 타겟, 중간 난이도.
+Instagram: 소셜 미디어 보조, 복잡함.
+
+*/

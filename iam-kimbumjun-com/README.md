@@ -758,3 +758,11 @@ isMounted 변수 제거: React 18부터는 isMounted 변수를 사용하여 언�
 */
 
 ```
+
+## Google font
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+```

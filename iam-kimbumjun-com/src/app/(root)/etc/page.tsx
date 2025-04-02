@@ -2,7 +2,7 @@
 import * as React from 'react';
 import VivTitle from '@/components/VivTitle';
 import { VivDialogResult } from '@/components/VivDialogResult';
-import { Stack, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import { DialogsProvider } from '@toolpad/core/useDialogs';
 
 export default function EtcPage() {

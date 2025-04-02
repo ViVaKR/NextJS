@@ -1,4 +1,5 @@
 import { IMenu } from "@/interfaces/i-menu";
+
 export const getNavMenuItems = (): IMenu[] => {
     return [
         { id: 0, title: '코드조각', url: '/code', icon: 'swipe_right', param: null },
@@ -28,7 +29,6 @@ export const getMembershipItems = (): IMenu[] => {
         { id: 13, title: '비밀번호 변경', url: '/membership/reset-password', icon: 'manage_accounts', param: null, requiresAuth: true },
         { id: 14, title: '로그아웃', url: '/membership/sign-out', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: true },
         { id: 15, title: '회원탈퇴', url: '/membership/cancel-membership', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: false },
-        { id: 16, title: '회원정보', url: '/membership/session', icon: 'manage_accounts', param: null, requiresAuth: true, sessionMenu: true },
     ];
 };
 
