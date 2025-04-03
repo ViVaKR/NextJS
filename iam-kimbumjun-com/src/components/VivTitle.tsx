@@ -1,4 +1,5 @@
 import { Cute_Font } from 'next/font/google'
+import DesktopMacOutlinedIcon from '@mui/icons-material/DesktopMacOutlined';
 const cute = Cute_Font({
   subsets: ['latin'],
   weight: ['400'],
@@ -18,9 +19,12 @@ export default function VivTitle({
     <h2
       className={`${fontColor ?? 'text-sky-800'
         } ${cute.className}
-        rounded-full
-         text-center
-         font-cute`}>
+          rounded-full
+          flex items-center
+          justify-center
+          text-center
+          font-cute`}>
+      <DesktopMacOutlinedIcon sx={{ mr: 1 }} />
       {title}
     </h2>
   );

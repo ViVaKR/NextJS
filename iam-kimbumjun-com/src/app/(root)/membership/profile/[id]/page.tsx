@@ -1,5 +1,5 @@
 'use client';
-import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { useParams, useSearchParams } from 'next/navigation';
 
 export default function UserProfile() {

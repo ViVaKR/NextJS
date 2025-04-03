@@ -27,41 +27,19 @@ export async function fetchCodes(): Promise<ICode[]> {
     }
 }
 
-// Get Public IpAddress
-export async function getServerSideProps() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-
-        console.log(response, 'response');
-        const data = await response.json();
-        return {
-            props: {
-                publicIP: data.ip,
-            },
-        };
-    } catch (error) {
-        return {
-            props: {
-                publicIP: '0.0.0.0',
-            },
-        };
-    }
-}
-
 // * Post Code Data
-export async function postCodes(data: CodeData): Promise<ICodeResponse
-    | null
-    | undefined> {
+export async function postCodes(data: CodeData):
+    Promise<ICodeResponse | null | undefined> {
+
     const token = getToken();
-    if (!token) {
-        return null;
-    }
+    if (!token) { return null; }
+
     try {
         const response = await fetch(`${apiUrl}/api/code`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // 토큰 추가 (API가 필요 시)
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(data),
         });

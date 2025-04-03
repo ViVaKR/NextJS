@@ -5,26 +5,10 @@ import 'katex/dist/katex.min.css';
 import styles from './Home.module.css';
 import React, { useEffect, useState } from 'react';
 import { Cute_Font } from 'next/font/google'
-import { Typography } from '@mui/material';
+import { IIpInfo } from '@/interfaces/i-ip-info';
+import { useRouter } from 'next/navigation';
 
 
-export async function getServerSideProps() {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return {
-      props: {
-        publicIP: data.ip,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        publicIP: '0.0.0.0',
-      },
-    };
-  }
-}
 
 const cute = Cute_Font({
   subsets: ['latin'],
@@ -32,13 +16,45 @@ const cute = Cute_Font({
   display: 'swap',
 });
 
+const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
+async function getInfo(): Promise<IIpInfo> {
+  const response = await fetch(`${api}/api/ip`);
+  const data: IIpInfo = await response.json();
+  return data;
+}
+
 export default function Home() {
-  const mathRef = React.useRef<HTMLDivElement>(null); // DOM 요소 참조
+
+  const mathRef = React.useRef<HTMLDivElement>(null);
   const message = '인간이-이해하는-코드-조각..';
   const characters = Array.from(message);
-  const [ip, setIp] = useState('0.0.0.0');
-  const expression: string =
-    'R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}';
+  const router = useRouter();
+
+  const handleGoToCodeSnippets = () => {
+    router.push('/code');
+  }
+
+  const [info, setInfo] = useState<IIpInfo | null | undefined>({
+    ip: '',
+    city: '',
+    region: '',
+    country: '',
+    location: '',
+    isp: ''
+  });
+
+  const [ipArray, setIpArray] = useState<string[] | null | undefined>([]);
+
+  const expression: string = 'R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}';
+
+  useEffect(() => {
+    const getIpInfo = async () => {
+      const result = await getInfo();
+      setInfo(result);
+    }
+    getIpInfo()
+    setIpArray(info?.ip.split('.'));
+  }, [info?.ip])
 
   useEffect(() => {
     if (mathRef.current) {
@@ -48,79 +64,63 @@ export default function Home() {
         displayMode: true,
       });
     }
-
-    const ipAddress = async () => {
-      const result = await getServerSideProps();
-      setIp(result.props.publicIP);
-    }
-    ipAddress();
-
   }, []);
 
 
   return (
     <div className="flex flex-col m-0 p-0 relative min-h-screen">
-      <div
-        className="relative
-                    h-screen
-                    sm:h-screen
-                    overflow-hidden
-                    bg-cover
-                    bg-center
-                    bg-robot
-                    bg-no-repeat
-                    pt-12
-                    text-center
-                    bg-teal-950/70">
-        <div
-          className="absolute
-                    bottom-0
-                    left-0
-                    right-0
-                    top-0
-                    h-full
-                    w-full
-                    overflow-hidden
-                  bg-teal-950/70
-                    bg-fixed">
+      <div className="relative h-screen sm:h-screen overflow-hidden
+                    bg-cover bg-center bg-robot bg-no-repeat
+                    pt-12 text-center">
+        <div className="absolute bottom-0 left-0 right-0 top-0
+                    h-full w-full overflow-hidden bg-teal-950/70 bg-fixed">
+
           <div className="flex flex-col h-full items-center justify-center">
             <div className="text-white">
-              <main
-                className={`${styles.mainText} mb-4 text-9xl
-                relative
-                flex
-                max-xl:text-7xl text-slate-300
+
+              <main className={`${styles.mainText} mb-4 text-9xl
+                relative flex max-xl:text-7xl text-slate-300
                 ${cute.className} max-md:text-5xl font-extrabold`}>
+
                 {/* 인간이 이해하는 코드 조각 */}
                 {characters.map((char, index) => (
                   <span key={index}>
                     {char === '-' ? (
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          width: '1ch',
-                        }}></span>
-                    ) : (
-                      char
-                    )}
+                      <span style={{ display: 'inline-block', width: '1ch', }}></span>
+                    ) : (char)}
                   </span>
+
                 ))}
               </main>
             </div>
+
             {/* Math Container */}
             <div
               ref={mathRef}
-              className="text-slate-400 text-xl"></div>
-
-            <button
-              type="button"
-              className="text-slate-400 text-xl math-container"></button>
-
-            <Typography sx={{ color: 'var(--color-red-100)', fontSize: '0.75em' }}>
-              {ip}
-            </Typography>
+              className="text-slate-400 text-xl">
+            </div>
           </div>
         </div>
+
+        {/* folder */}
+        <div className={`${styles.folder} `}>
+
+          {ipArray?.map((ip, index) => (
+            <div key={index} className={`${styles.file}`}>
+              <span key={index} className="font-poppins">{ip}</span>
+            </div>
+
+          ))}
+
+        </div>
+
+        {/* button */}
+        <button type="button"
+          onClick={handleGoToCodeSnippets}
+          className={`${styles.snippetsButton} left-1/2 transform hover:!text-rose-100`}>
+          Snippets
+        </button>
+
       </div>
     </div>
   );

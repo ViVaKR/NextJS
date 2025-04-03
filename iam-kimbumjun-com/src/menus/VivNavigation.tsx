@@ -19,13 +19,7 @@ export default function VivNavigation({
   const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가저오기
   const isActive = pathname === menu.url;
-  // const isActive =
-  //   menu.url === '/'
-  //     ? pathname === menu.url // 홈은 정확히 '/'일 때만
-  //     : pathname?.includes(menu.url) || pathname?.startsWith(`${menu.url}/`);
-
   const baseClasses = isActive ? 'text-pink-400' : 'text-amber-50';
-
   const combinedClasses = className
     ? `${className} ${baseClasses}`
     : baseClasses;

@@ -3,9 +3,8 @@
 
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { Box, IconButton, Stack, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
@@ -25,11 +24,13 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
     const [info, setInfo] = useState<IIpInfo>(initalIpInfo);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const handleDelete = () => {
         setIpAddress(''); // Delete 버튼 클릭 시 값 지우기
     };
 
     const handleGetIpInfo = async () => {
+
         if (ipAddress) {
             setIsLoading(true);
             try {
@@ -55,7 +56,7 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
     }
 
     const handleIpAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIpAddress(e.target.value); // 실시간 입력 자유롭게 허용
+        setIpAddress(e.target.value);
     };
 
     const infoItems = [

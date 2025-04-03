@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { getToken, userDetail } from '@/services/auth.service';
 
 export function useAuthCheck(userId: string) {
+
     const [canEdit, setCanEdit] = useState(false);
     const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const token = getToken();
         if (!token) {

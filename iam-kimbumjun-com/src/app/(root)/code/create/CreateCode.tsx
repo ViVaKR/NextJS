@@ -115,7 +115,8 @@ export default function CreateCodePage() {
             <form
                 autoComplete='off'
                 className='flex flex-col gap-5 w-full'
-                onSubmit={handleSubmit(onSubmit)}>
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <Grid container sx={{ width: '100%' }} columns={16} spacing={2} >
                     <Grid size={11}>
                         {/* 제목 */}

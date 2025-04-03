@@ -1,4 +1,4 @@
-import { IUserDetailDTO } from "@/dtos/i-userdetail-dto";
+import { IUserDetailDTO } from "@/interfaces/i-userdetail-dto";
 import { IAuthResponse } from "./i-auth-response";
 
 export interface IAuthContextProps {

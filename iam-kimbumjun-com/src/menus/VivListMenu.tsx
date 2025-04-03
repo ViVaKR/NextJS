@@ -8,6 +8,9 @@ import { IMenu } from '@/interfaces/i-menu';
 import { usePathname, useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
+
 export default function VivListMenu({
   items,
   text,
@@ -63,26 +66,47 @@ export default function VivListMenu({
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClickListItem}>
           {text && (
-            <span className="material-symbols-outlined mr-2">stacks</span>
+            <MenuOutlinedIcon sx={{ mr: 1 }} />
           )}
-          {text || <span className="material-symbols-outlined">menu</span>}
+          {text || <MenuOutlinedIcon />}
         </ListItemButton>
       </List>
       {/* 서브 항목 */}
       <Menu
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}>
+        onClose={handleClose}
+        slotProps={{
+          paper: {
+            elevation: 0,
+            sx: {
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+              mt: 1.5,
+              "& .MuiAvatar-root": { width: 32, height: 32, ml: -0.5, mr: 1 },
+              "&::before": {
+                content: '""',
+                display: "block",
+                position: "absolute",
+                top: 0,
+                right: 90,
+                width: 10,
+                height: 10,
+                bgcolor: "background.paper",
+                transform: "translateY(-50%) rotate(45deg)",
+                zIndex: 0,
+              },
+            },
+          },
+        }}
+      >
         {items.map((item, index) => (
           <div key={item.id}>
             {item.hasDivider && <Divider />}
             <MenuItem
               selected={index === selectedIndex}
               onClick={(event) => handleMenuItemClick(event, index)}>
-              {/* <span className="material-symbols-outlined mr-4">
-                {item.icon}
-              </span> */}
-              <ManageAccountsOutlinedIcon />
+              <LensBlurOutlinedIcon sx={{ mr: 1 }} />
               {`${item.title}`}
             </MenuItem>
           </div>

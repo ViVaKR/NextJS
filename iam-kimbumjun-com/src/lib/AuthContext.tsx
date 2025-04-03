@@ -5,7 +5,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { IAuthContextProps } from '@/interfaces/i-auth-context-props';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { jwtDecode } from 'jwt-decode';
-import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user'; // 인터페이스 재사용
 import { signOut, useSession } from 'next-auth/react';
 

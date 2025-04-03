@@ -1,6 +1,6 @@
 // src/menus/AccountMenu.tsx
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import { getMembershipItems } from "@/data/menu-items";
 import { useProfile } from "@/app/(root)/membership/profile/Profile";
 import { useSession } from "next-auth/react";
+import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -46,13 +47,13 @@ export default function AccountMenu() {
   const filteredMenus = getMembershipItems().filter((menu) => {
     const isAuthenticated = !!user;
     const userRoles = user?.roles || [];
+
     if (session && !menu.sessionMenu) return false;
     if (menu.requiresAuth && !isAuthenticated) return false;
     if (menu.hideWhenAuth && isAuthenticated) return false;
 
-    if (menu.requiredRoles && !menu.requiredRoles.some((role) => userRoles.includes(role))) {
+    if (menu.requiredRoles && !menu.requiredRoles.some((role) => userRoles.includes(role)))
       return false;
-    }
 
     return true;
   });
@@ -62,6 +63,7 @@ export default function AccountMenu() {
   return (
     <Box sx={{ display: "flex", alignItems: "center", marginRight: "0.5em" }}>
       <Box className="flex gap-2 text-nowrap">
+
         <IconButton
           onClick={avataHandleClick}
           size="small"
@@ -72,11 +74,17 @@ export default function AccountMenu() {
           disabled={profileLoading}
         >
           <Avatar
-            sx={{ width: 40, height: 40 }}
+            sx={{
+              width: 40, height: 40,
+              '&:hover': {
+                bgcolor: '#00ffff', // 호버 시 배경색
+              },
+            }}
             alt={user?.avata}
             src={getAvataUrl() ?? '/images/login-icon.png'}>
           </Avatar>
         </IconButton>
+
         <div className="flex flex-col gap-1 text-xs justify-center max-md:hidden">
           <span>{getFullName()}</span>
           <span>{getRoles()}</span>
@@ -85,7 +93,6 @@ export default function AccountMenu() {
 
       <Menu
         anchorEl={anchorEl}
-        id="account-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}
@@ -119,7 +126,7 @@ export default function AccountMenu() {
           <div key={idx}>
             {menu.hasDivider && <Divider />}
             <MenuItem onClick={() => handleMenuClick(menu.url)} className="gap-2">
-              <span className="material-symbols-outlined">{menu.icon}</span>
+              <LensBlurOutlinedIcon />
               {menu.title}
             </MenuItem>
           </div>

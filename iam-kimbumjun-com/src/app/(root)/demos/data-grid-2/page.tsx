@@ -1,5 +1,5 @@
 'use client';
-import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { useAuth } from '@/lib/AuthContext';
 import { GridColDef } from '@mui/x-data-grid';
 import VivDataGrid from '@/components/VivDataGrid';

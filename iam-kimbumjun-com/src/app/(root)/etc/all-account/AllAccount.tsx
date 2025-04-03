@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from '@/lib/AuthContext';
 import { useEffect, useState, useMemo } from 'react';
-import { IUserDetailDTO } from '@/dtos/i-userdetail-dto';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
