@@ -14,8 +14,14 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
     // 로그인 필요 조건
     if (menu.requiresAuth && !isAuthenticated) return false;
+
     // 로그인 시 숨김 조건
     if (menu.hideWhenAuth && isAuthenticated) return false;
+
+    const emailConfirm = user?.emailConfirmed;
+
+    if ((menu.id === 9 || menu.id === 10) && emailConfirm) return false;
+
     // 역할 기반 필터링
     if (
       menu.requiredRoles &&

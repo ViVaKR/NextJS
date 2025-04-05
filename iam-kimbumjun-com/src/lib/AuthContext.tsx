@@ -9,9 +9,6 @@ import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user'; // 인터페이스 재사용
 import { signOut, useSession } from 'next-auth/react';
 
-// 확장된 User 타입 정의
-// interface ExtendedUser extends IAuthResponse, IUserDetailDTO { }
-
 const AuthContext = createContext<IAuthContextProps>({
   user: null,
   isAdmin: () => false,
@@ -19,6 +16,7 @@ const AuthContext = createContext<IAuthContextProps>({
   logout: () => { },
   fetchUsers: () => Promise.resolve([]),
   loading: true,
+  updateUser: () => { }
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -172,15 +170,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     roles = decoded.role;
   }
 
-  const isAdmin = () => {
+  const isAdmin = (): boolean => {
+
     if (!user?.token) return false;
+
     const decoded: any = jwtDecode(user.token);
     const roles: string[] = decoded.role || [];
     return roles.includes('Admin');
   };
 
+  const updateUser = (updates: Partial<ExtendedUser>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updatedUser = { ...prev, ...updates };
+      localStorage.setItem('user', JSON.stringify(updatedUser)); // * 로컬 스토리지 동기화
+      return updatedUser;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin, fetchUsers }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin, fetchUsers, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

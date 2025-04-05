@@ -27,6 +27,8 @@ export default function AccountMenu() {
       return session.user.avata;
     }
     return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
+    // 타임스탬프 추가로 캐시 방지
+    // return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}?t=${new Date().getTime()}`;
   };
 
   const getFullName = () => user?.fullName || "";
@@ -51,10 +53,10 @@ export default function AccountMenu() {
     if (session && !menu.sessionMenu) return false;
     if (menu.requiresAuth && !isAuthenticated) return false;
     if (menu.hideWhenAuth && isAuthenticated) return false;
-
+    const emailConfirm = user?.emailConfirmed;
+    if ((menu.id === 9 || menu.id === 10) && emailConfirm) return false;
     if (menu.requiredRoles && !menu.requiredRoles.some((role) => userRoles.includes(role)))
       return false;
-
     return true;
   });
 

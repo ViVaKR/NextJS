@@ -8,8 +8,6 @@ import { Cute_Font } from 'next/font/google'
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useRouter } from 'next/navigation';
 
-
-
 const cute = Cute_Font({
   subsets: ['latin'],
   weight: ['400'],

@@ -8,6 +8,12 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { Tooltip } from '@mui/material';
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutlined';
+import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
+import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
+import { useAuth } from '@/lib/AuthContext';
+import { userDetail } from '@/services/auth.service';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -24,6 +30,17 @@ export default function ClientLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 여부 확인
   const pathname = usePathname();
+
+  const [admin, setAdmin] = useState<boolean>();
+  const [fullName, setFullName] = useState<string>();
+  const detail = userDetail();
+  const auth = useAuth();
+
+  useEffect(() => {
+
+    setFullName(detail?.fullName);
+    setAdmin(detail?.roles.some((role) => role.toLowerCase() === 'admin'));
+  }, [auth, detail]);
 
   // 클라이언트에서만 localStorage를 읽고 상태 업데이트
   useEffect(() => {
@@ -101,31 +118,40 @@ export default function ClientLayout({
           ) : (
             <Tooltip title={isCollapsed ? '카테고리 보기' : '카테고리 숨김'} arrow>
               <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
-                {isCollapsed ? 'close_fullscreen' : 'open_in_full'}
+                {isCollapsed ? (<CloseFullscreenOutlinedIcon />) : (<OpenInFullOutlinedIcon />)}
               </span>
             </Tooltip>
           )}
         </button>
 
-        {/* 데이터 목록 */}
+
         <Link
           href="/code"
           className="hover:text-red-400 text-slate-400 shrink">
           <Tooltip title="데이터 목록" arrow>
-            <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>table</span>
+            <FormatListBulletedOutlinedIcon />
           </Tooltip>
         </Link>
 
-        {/* 글쓰기 */}
-        <Link
-          href="/code/create"
-          className="hover:text-red-400 shrink text-slate-400">
-          <Tooltip title="글쓰기" arrow>
-            <span className="material-symbols-outlined" style={{
-              fontSize: '1.2rem',
-            }}>edit_document</span>
+        {admin ? (
+          <Link
+            href="/code/create"
+            className="hover:text-red-400 shrink text-slate-400">
+            <Tooltip title={`${fullName}님! 글쓰기`} arrow>
+              <EditNoteOutlinedIcon />
+            </Tooltip>
+          </Link>
+        ) : (
+          <Tooltip title='로그인 후 글쓰기' arrow>
+            <Link
+              href={'/membership/sign-in'}
+              className='text-base text-slate-400 hover:!text-red-500'>
+              로그인
+            </Link>
           </Tooltip>
-        </Link>
+        )}
+
+
       </div >
 
       {/* Left Menu with Animation */}

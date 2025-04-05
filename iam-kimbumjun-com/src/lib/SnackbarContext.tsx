@@ -36,7 +36,7 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
     severity: 'info',
     vertical: 'bottom', // 기본값
     horizontal: 'center', // 기본값
-    duration: 3_000, // 기본값 : 3초
+    duration: 6000, // 기본값 : 3초
   });
 
   const showSnackbar = useCallback(
@@ -45,7 +45,7 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
       severity: AlertColor = 'info',
       vertical: 'top' | 'bottom' = 'bottom',
       horizontal: 'left' | 'right' | 'center' = 'center',
-      duration: number = 3_000 // 기본값 6_000ms 호출시에 변경 가능
+      duration: number = 6000 // 기본값 6_000ms 호출시에 변경 가능
     ) => {
       setSnackbar({
         open: true,

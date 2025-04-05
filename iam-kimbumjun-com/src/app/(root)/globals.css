@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
+
 @theme {
   --font-poppins: 'Poppins', sans-serif;
   --font-noto: 'Noto Sans KR', sans-serif;
@@ -359,6 +360,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+  font-family: var(--font-poppins);
 }
 
 [lang='ko'] {

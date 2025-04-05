@@ -2,11 +2,12 @@
 import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { Button, FilledInput, FormControl, FormHelperText, InputLabel } from "@mui/material";
+import { Button, FilledInput, FormControl, FormHelperText, InputLabel, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 
 type ForgetPasswordFormData = {
   email: string;
+  replayUrl: string;
 }
 
 export default function ForgetPasswordPaage() {
@@ -14,6 +15,7 @@ export default function ForgetPasswordPaage() {
   const { showSnackbar } = useSnackbar()
 
   const onSubmit = async (data: ForgetPasswordFormData) => {
+    data.replayUrl = "https://viv.vivabm.com/membership";
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/forgetpwd`, { // <-- 괄호 제거
         method: 'POST',
@@ -49,6 +51,7 @@ export default function ForgetPasswordPaage() {
       showSnackbar(`오류 발생: ${err.message || err}`);
     }
   }
+
   const {
     control,
     handleSubmit,
@@ -64,10 +67,10 @@ export default function ForgetPasswordPaage() {
 
 
   return (
-    <div>
+    <div className="flex flex-col w-full items-center">
       <VivTitle title="비밀번호 분실" />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ minWidth: '50%' }}>
 
         {/* 이메일 */}
         <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
@@ -81,59 +84,22 @@ export default function ForgetPasswordPaage() {
                 {...field}
                 error={!!errors.email}
                 id="email"
-
+                sx={{ fontFamily: 'var(--font-poppins)' }}
               />
             )}
-
           />
-          <FormHelperText>
-            {errors.email?.message}
-          </FormHelperText>
-          {watch('email')}
+          {errors.email && <FormHelperText error>{errors.email.message}</FormHelperText>}
+
         </FormControl>
 
-        <Button type="submit" variant="outlined" color="primary">
-          비밀번호 변경 이메일 보내기
-        </Button>
+        <Stack direction='row' sx={{ width: '100%' }}>
+          <Button type="submit" variant="outlined" color="primary" sx={{ mx: 'auto', width: 'auto', fontFamily: 'var(--font-noto)' }}>
+            비밀번호 변경 이메일 보내기
+          </Button>
+        </Stack>
 
 
       </form>
     </div>
   );
 }
-
-
-/*
-
---> IAuthResponse
-
-   this.authService.forgetPassword(this.email).subscribe({
-      next: (res) => {
-        this.showEmailSent = true;
-        if (res.isSuccess) {
-          this.showSnackBar('비밀번호 재설정 이메일이 전송되었습니다.');
-        } else {
-          this.showEmailSent = false;
-          this.showSnackBar(res.message);
-        }
-      },
-      error: (err: HttpErrorResponse) => {
-        this.isSpinner = false;
-        var message = "=> " + err.message;
-        this.showSnackBar(message);
-      },
-      complete: () => {
-        this.isSubmitting = false;
-        this.isSpinner = false;
-      }
-    });
-
-  }
-
- //* 비밀번호 분실시 이메일 확인 메서드
-  forgetPassword(email: string): Observable<IAuthResponse> {
-    return this.http.post<IAuthResponse>(`${this.baseUrl}/api/account/forgetpwd`, { email });
-  }
-
-
-*/

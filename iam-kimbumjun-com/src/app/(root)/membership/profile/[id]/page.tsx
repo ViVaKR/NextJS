@@ -1,4 +1,5 @@
 'use client';
+import FileManager from '@/components/file-manager/FileManager';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { useParams, useSearchParams } from 'next/navigation';
 
@@ -9,7 +10,8 @@ export default function UserProfile() {
   const userQuery = searchParams?.get('user'); // 쿼리에서 user 문자열 가져오기
   const user: IUserDetailDTO | null = userQuery
     ? JSON.parse(decodeURIComponent(userQuery))
-    : null; // 디코딩 및 파싱
+    : null;
+
   return (
     <div>
       <h1>UserProfile</h1>
@@ -21,6 +23,7 @@ export default function UserProfile() {
           <p>역할: {user.roles.join(', ')}</p>
           <p>전화번호: {user.phoneNumber || '-'}</p>
           <p>아바타: {user.avata || '없음'}</p>
+
         </div>
       ) : (
         <p>사용자 데이터 없음</p>

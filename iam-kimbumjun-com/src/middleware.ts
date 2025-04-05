@@ -13,7 +13,6 @@ export function middleware(request: NextRequest) {
         '/membership/change-name',
         '/membership/my-code',
         '/membership/role',
-        '/membership/reset-password'
     ];
     const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role'];
     const pathname = request.nextUrl.pathname;

@@ -21,6 +21,7 @@ export const uploadFile = async (formData: FormData, choice: number): Promise<IF
                 Authorization: `Bearer ${token}`, // 인증 토큰 추가
             },
         });
+
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {

@@ -7,7 +7,6 @@ import Menu from '@mui/material/Menu';
 import { IMenu } from '@/interfaces/i-menu';
 import { usePathname, useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
-import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
 

@@ -12,6 +12,7 @@ import Image from 'next/image'
 import { IFileInfo } from "@/interfaces/i-file-info";
 import { CodeData } from "@/types/code-form-data";
 import { Control } from "react-hook-form";
+import { useProfile } from '@/app/(root)/membership/profile/Profile' // useProfile 가져오기
 
 // 전역 이벤트 버스 (간단한 상태 공유용)
 export const avatarUpdatedEvent = new EventTarget();
@@ -33,6 +34,7 @@ export default function FileManager({
     onLoadFinished,
     onAttachImageFinished,
 }: FileManagerProps) {
+
     const [fileName, setFileName] = useState<string>("");
     const [fileSize, setFileSize] = useState<number>(0);
     const [imagePreview, setImagePreview] = useState<string>("");
@@ -40,6 +42,7 @@ export default function FileManager({
     const [uploadError, setUploadError] = useState<boolean>(false);
     const snackbar = useSnackbar();
     const router = useRouter();
+    const { updateUser } = useProfile(); // updateUser 가져오기
 
     const onDrop = useCallback(
         async (acceptedFiles: File[]) => {
@@ -67,20 +70,20 @@ export default function FileManager({
 
             try {
                 if (choice === undefined) {
-
                     snackbar.showSnackbar('업로드 형식을 선택하세요.')
                     return;
                 }
-                const response = await uploadFile(formData, choice);
+                const response: IFileInfo = await uploadFile(formData, choice);
 
                 switch (choice) {
-                    case 0: {
+                    case 0: { // * 아바타 업로드
                         onLoadFinished?.(response);
-                        // 아바타 업로드 완료 시 이벤트 발생
-                        avatarUpdatedEvent.dispatchEvent(new Event("avatarUpdated"));
+                        const newAvata = file.name || response.dbPath; // 서버 응답에 따라 조정
+                        updateUser({ avata: newAvata }); // 상태 갱신
+                        // avatarUpdatedEvent.dispatchEvent(new Event("avatarUpdated")); // 위 로직에서는 불필요함..
                         snackbar.showSnackbar("아바타 업로드 성공!", "success");
                     } break;
-                    case 1: {
+                    case 1: { // 코드 첨부 이미지
                         onAttachImageFinished?.(response.dbPath);
                         snackbar.showSnackbar("첨부 이미지 업로드 성공!", "success");
                     } break;
@@ -96,7 +99,7 @@ export default function FileManager({
                 }
             }
         },
-        [choice, onLoadFinished, onAttachImageFinished, snackbar, router]
+        [snackbar, choice, onLoadFinished, updateUser, onAttachImageFinished, router]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -137,7 +140,11 @@ export default function FileManager({
                             src={imagePreview}
                             width={500}
                             height={500}
-                            style={{ width: "100%", borderRadius: "1rem", marginBottom: "0.5rem" }}
+                            style={{
+                                width: "100%",
+                                borderRadius: "1rem",
+                                marginBottom: "0.5rem"
+                            }}
                             alt="Picture of the author"
                         />
                     )}

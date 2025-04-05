@@ -23,7 +23,6 @@ export default function NavMenu() {
   useEffect(() => {
     const checkIp = async () => {
       const rs = await getInfo();
-      console.log(process.env.NEXT_PUBLIC_MYIP);
       setHideMembership(rs.ip === process.env.NEXT_PUBLIC_MYIP);
     }
     checkIp();

@@ -13,6 +13,7 @@ import FileManager from '@/components/file-manager/FileManager';
 import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import FileUploader from '@/components/file-manager/FileUploader';
+import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined';
 
 export default function CreateCodePage() {
 
@@ -22,7 +23,7 @@ export default function CreateCodePage() {
     const startValue = 5;
     const stepValue = 15;
     const numberOfButtons = 10;
-
+    const [fullName, setFullName] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[]>([]);
 
     useEffect(() => {
@@ -62,6 +63,8 @@ export default function CreateCodePage() {
             router.push('/membership/sign-in'); // 토큰 없으면 리다리렉션
             return;
         }
+        const detail = userDetail();
+        setFullName(detail?.fullName ?? 'Guest');
     }, [router])
 
     const {
@@ -93,7 +96,6 @@ export default function CreateCodePage() {
         mode: 'onTouched'
     });
 
-
     const onSubmit = async (data: CodeData) => {
         try {
             const response = await postCodes(data);
@@ -112,12 +114,22 @@ export default function CreateCodePage() {
     return (
 
         <Box sx={{ px: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div className='flex justify-between px-4'>
+                <Typography
+                    sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>
+                    {fullName}
+                </Typography>
+                <Typography
+                    sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>
+                    {(new Date()).toLocaleDateString()}
+                </Typography>
+            </div>
             <form
                 autoComplete='off'
                 className='flex flex-col gap-5 w-full'
                 onSubmit={handleSubmit(onSubmit)}
             >
-                <Grid container sx={{ width: '100%' }} columns={16} spacing={2} >
+                <Grid container sx={{ width: '100%' }} columns={16} spacing={2}>
                     <Grid size={11}>
                         {/* 제목 */}
                         <Controller
@@ -138,6 +150,7 @@ export default function CreateCodePage() {
                             )}
                         />
                     </Grid>
+
                     <Grid tabIndex={-1} size={5}>
                         {/* 카테고리 */}
                         <Controller
@@ -155,7 +168,7 @@ export default function CreateCodePage() {
                                     variant="filled"
                                     color="success"
                                     fullWidth
-                                    tabIndex={-1} // 최상위에 설
+                                    tabIndex={-1}
                                     slotProps={{ select: { tabIndex: -1 } }}
                                     error={!!errors.categoryId}
                                     helperText={errors.categoryId?.message}
@@ -163,9 +176,10 @@ export default function CreateCodePage() {
                                     {[...categories].map((category, index) => (
                                         <MenuItem key={index} value={category.id}>
                                             <span className="flex items-center gap-2">
-                                                <span className="material-symbols-outlined">point_scan</span>
+                                                <GpsFixedOutlinedIcon />
                                                 {category.name}
                                             </span>
+
                                         </MenuItem>
                                     ))}
                                 </TextField>
@@ -339,13 +353,6 @@ export default function CreateCodePage() {
 
                 </div>
             </form >
-
-            <small className='text-xs text-slate-400'>
-                {watch('title')}
-                {isLoading ? (<div>Loading...</div>) : (<div>Loaded..</div>)}
-                {/* // 수정 여부 알림 */}
-                {isDirty && <Typography sx={{ fontSize: '0.75em' }}>변경된 내용이 있습니다!</Typography>}
-            </small>
         </Box >
     );
 }
