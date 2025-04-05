@@ -12,7 +12,10 @@ export async function getCodes(): Promise<{ codes: ICode[]; categories: ICategor
 }
 
 
-export async function getCategories(signal?: AbortSignal): Promise<{ categories: ICategory[] }> {
+export async function getCategories(signal?: AbortSignal):
+    Promise<{
+        categories: ICategory[]
+    }> {
     const [categories] = await Promise.all([
         fetchCategories(signal),
     ]);

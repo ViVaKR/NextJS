@@ -8,7 +8,6 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
-import { fetchCodes } from '@/lib/fetchCodes';
 
 export default function VivGridControl({ data }: { data: ICode[] }) {
   const [codes, setCodes] = useState<ICode[]>(

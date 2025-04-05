@@ -1,46 +1,69 @@
 // src/app/code/read/DeleteButton.tsx
 'use client';
-import { useState, useEffect, useId } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteCode } from '@/lib/fetchCodes';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { ICodeResponse } from '@/interfaces/i-code-response';
-import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { getToken } from '@/services/auth.service';
+import { IAuthResponse } from '@/interfaces/i-auth-response';
+import { useProfile } from '../profile/Profile';
 
 interface DeleteButtonProps {
-    codeId: number;
-    userId: string;
+    userEmail?: string;
+    userPassword?: string;
 }
 
-export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
+export default function DeleteAccount({ userPassword }: DeleteButtonProps) {
+
+    const [email, setEmail] = useState('');
+    const { user } = useProfile();
+
+    useEffect(() => {
+
+        if (user?.email)
+            setEmail(user?.email);
+    }, [user?.email])
 
     const [open, setOpen] = useState(false); // 다이얼로그 상태
     const router = useRouter();
-    const snackbar = useSnackbar();
-    const [canDelete, loading] = useAuthCheck(userId);
-
+    const { showSnackbar } = useSnackbar();
     const handleOpen = () => setOpen(true); // 다이얼로그 열기
     const handleClose = () => setOpen(false); // 다이얼로그 닫기
     const handleDelete = async () => {
         try {
-            const response: ICodeResponse = await deleteCode(codeId);
-            if (response.isSuccess) {
-                snackbar.showSnackbar('코드가 삭제되었습니다.', 'success');
-                router.push('/code'); // 삭제 후 이동
-                router.refresh(); // 페이지 새로고침으로 데이터 갱신 트리거
-            } else {
-                snackbar.showSnackbar(response.message, 'warning');
+            const token = getToken();
+            const deleteData: DeleteButtonProps = {
+                userEmail: email,
+                userPassword: userPassword,
             }
+            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/account/cancel-account`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // 인증 헤더 추가
+                },
+                body: JSON.stringify(deleteData)
+            })
+
+            const result: IAuthResponse = await response.json();
+
+            if (response.ok && result.isSuccess) {
+                showSnackbar("호원탈퇴 완료! 로그아웃 하시면 완료됩니다.");
+                router.push('/membership/sign-out');
+            } else {
+                showSnackbar(result.message || "비밀번호 변경 실패");
+            }
+
         } catch (err: any) {
-            snackbar.showSnackbar(err.message || '삭제 실패', 'error');
-        } finally {
+            showSnackbar(`서버측 오류가 발생하였습니다. : ${err.message}`)
+        }
+
+        finally {
             handleClose(); // 다이얼로그 닫기
         }
     };
 
-    if (loading) <span>Loading...</span>
-    if (!canDelete) return null;
     return (
         <div>
             <button
@@ -60,7 +83,7 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
                 <DialogTitle id="delete-dialog-title">삭제 확인</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="delete-dialog-description">
-                        ID: {codeId}번 코드를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                        회원탈퇴를 진행 하시겠습니까? 이 작업은 되돌릴 수 없습니다.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

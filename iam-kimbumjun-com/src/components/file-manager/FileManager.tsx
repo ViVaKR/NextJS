@@ -42,7 +42,7 @@ export default function FileManager({
     const [uploadError, setUploadError] = useState<boolean>(false);
     const snackbar = useSnackbar();
     const router = useRouter();
-    const { updateUser } = useProfile(); // updateUser 가져오기
+    const { user, updateUser } = useProfile(); // updateUser 가져오기, user.id 추가로 가져옴
 
     const onDrop = useCallback(
         async (acceptedFiles: File[]) => {
@@ -77,9 +77,24 @@ export default function FileManager({
 
                 switch (choice) {
                     case 0: { // * 아바타 업로드
+
+                        // 부모 컴포넌트에서 전달받은 콜백함수
+                        // 서버에서 받은 response IFileInfo 를 전달해
+                        // 부모가 추가 작업을 할 수 있게 함
+                        // 현재 Page.tsx에서는 이 prop 을 전달하지 않았으므로 실제로는 실행되지 않음.
                         onLoadFinished?.(response);
-                        const newAvata = file.name || response.dbPath; // 서버 응답에 따라 조정
+                        const userIdPrefix = `${user?.id}_`
+                        const newAvata = response.dbPath.startsWith(userIdPrefix)
+                            ? response.dbPath.slice(userIdPrefix.length)
+                            : response.dbPath; // 안전장치로 userId 없으면 그대로 사용
+
+                        // 서버 응답에 따라 조정
                         updateUser({ avata: newAvata }); // 상태 갱신
+
+                        // * 전역 이벤트 버스
+                        // 이 이벤트는 다른 컵포넌트가 "아바타가 업데이트 됐다" 는 신호를 받아 추가 작업을 할 수 이께 해줌.
+                        // 현재 코드에서는 Page 나 AccountMenu 이 이벤트를 직접 (listen) 하지 않아
+                        // 실질 적인 효과는 없음.
                         // avatarUpdatedEvent.dispatchEvent(new Event("avatarUpdated")); // 위 로직에서는 불필요함..
                         snackbar.showSnackbar("아바타 업로드 성공!", "success");
                     } break;

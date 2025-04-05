@@ -10,7 +10,7 @@ import { useProfile } from './Profile';
 import { Avatar, Divider, TextField } from '@mui/material';
 import FileManager from '@/components/file-manager/FileManager';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { IUpdateUserName } from '@/interfaces/i-update-user-name';
 import { getToken } from '@/services/auth.service'
@@ -120,7 +120,7 @@ export default function Page() {
             variant="body1"
             component="div"
             className="text-orange-500">
-            {user.emailConfirmed ? '이메일 확인완료' : '미 인증'}
+            {user.emailConfirmed ? '인증메일' : '미 인증메일'}
           </Typography>
 
           <Typography
@@ -142,6 +142,16 @@ export default function Page() {
             color="success">
             필명변경
           </Button>
+
+          {!user.emailConfirmed && (
+            <Button
+              size="small"
+              onClick={() => router.push('/membership/confirm-email')}
+              color="secondary">
+              메인인증
+            </Button>
+          )}
+
           <Button
             size="small"
             onClick={() => router.push('/membership/change-password')}
@@ -154,6 +164,7 @@ export default function Page() {
             color="warning">
             회원탈퇴
           </Button>
+
           <Button
             size="small"
             onClick={() => router.push('/code/create')}

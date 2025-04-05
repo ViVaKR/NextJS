@@ -86,7 +86,6 @@ export default function SignUpPage() {
         alert(result.message || '회원가입에 실패했습니다.');
       }
     } catch (error: any) {
-      console.error('SignUp failed:', error.message);
       alert('서버 오류가 발생했습니다.');
     }
   };
@@ -134,6 +133,7 @@ export default function SignUpPage() {
               <FilledInput
                 {...field}
                 error={!!errors.email}
+                sx={{ color: 'white' }}
                 id="email" />
             )}
           />
@@ -150,6 +150,7 @@ export default function SignUpPage() {
             render={({ field }) => (
               <FilledInput {...field}
                 error={!!errors.fullName}
+                sx={{ color: 'white' }}
                 id="fullName" aria-describedby="fullName-helper-text" />
             )}
           />
@@ -168,11 +169,13 @@ export default function SignUpPage() {
                 {...field}
                 id="password"
                 error={!!errors.password}
+                sx={{ color: 'white' }}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
                       onClick={handleClickShowPassword}
+                      tabIndex={-1}
                       onMouseDown={handleMouseDownPassword}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -196,11 +199,13 @@ export default function SignUpPage() {
               <FilledInput
                 {...field}
                 id="passwordConfirm"
+                sx={{ color: 'white' }}
                 error={!!errors.passwordConfirm}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
+                      tabIndex={-1}
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                     >
@@ -229,6 +234,7 @@ export default function SignUpPage() {
             type="button"
             variant="outlined"
             color="primary"
+            onClick={() => router.push('/membership/sign-in')}
             className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
             이미회원이신가요? 로그인
           </Button>

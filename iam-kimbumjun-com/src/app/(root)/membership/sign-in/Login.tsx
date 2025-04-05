@@ -81,8 +81,10 @@ export default function SignIn() {
       const fullName = userDetail()?.fullName ?? 'Guest';
       setTimeout(() => {
         showLoginSuccess(fullName);
-        router.push('/');
-        router.refresh();
+        router.back();
+        setTimeout(() => {
+          router.refresh();
+        }, 200)
       }, 100);
     } else {
       showLoginFailed();
@@ -166,8 +168,6 @@ export default function SignIn() {
             </button>
           </div>
           <span className='flex-1'></span>
-
-          {/* 라인 1 */}
 
           <div className='flex justify-center mb-4 text-xs items-center'>
             <button

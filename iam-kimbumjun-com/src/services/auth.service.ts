@@ -51,7 +51,7 @@ export const userDetail = () => {
 }
 
 // 추가된 로직
-export const isAdmin = () => {
+export const isAdmin = (): boolean => {
   const detail = userDetail();
   return detail?.roles.includes('Admin') ?? false;
 };

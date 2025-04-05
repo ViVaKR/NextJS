@@ -25,6 +25,7 @@ export default function ResetPasswordPage() {
       try {
         const decodedEmail = decodeURIComponent(emailFromUrl);
         const decodedToken = decodeURIComponent(tokenFromUrl);
+
         const initialData: IResetPasswordRequest = {
           email: decodedEmail,
           token: decodedToken,

@@ -8,7 +8,6 @@ import {
   CssBaseline,
   IconButton,
   TextField,
-  Typography,
 } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
@@ -55,10 +54,7 @@ const CodeCategory = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-
-    // fetchCategories(signal);
     fetchCategories(signal);
-
     return () => {
       controller.abort(); // 언마운트 시 요청 취소
     };
@@ -89,18 +85,7 @@ const CodeCategory = () => {
           {params.value}
         </button>
       ),
-      /*
-            --> interface GridRenderCellParams<TRow = any, TValue = any> {
-            --> row: TRow;              // 해당 행의 전체 데이터 타입
-            --> value: TValue;           // 셀의 값 타입
-            --> id: GridRowId;          // 행의 고유 ID
-            --> field: string;          // 컬럼의 필드 이름
-            --> ETC (api, colDef 등)
 
-            --> : renderCell: (params)  // 생각가능
-}
-
-            */
     },
   ];
 
@@ -153,3 +138,14 @@ const CodeCategory = () => {
 };
 
 export default CodeCategory;
+
+
+/*
+      --> interface GridRenderCellParams<TRow = any, TValue = any> {
+      --> row: TRow;              // 해당 행의 전체 데이터 타입
+      --> value: TValue;           // 셀의 값 타입
+      --> id: GridRowId;          // 행의 고유 ID
+      --> field: string;          // 컬럼의 필드 이름
+      --> ETC (api, colDef 등)
+      --> : renderCell: (params)  // 생각가능
+*/
