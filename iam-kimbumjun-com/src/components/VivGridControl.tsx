@@ -1,6 +1,6 @@
 'use client';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { ICode } from '@/interfaces/i-code';
 import { getCategories } from '@/lib/getCodes';
 import { ICategory } from '@/interfaces/i-category';
@@ -57,8 +57,10 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
       maxWidth: 350,
       filterable: true,
       type: 'string',
-      renderCell: (params: GridRenderCellParams<any, string>) => (
-        <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+      renderCell: (params: GridRenderCellParams<ICode, string>) => (
+        <Tooltip title={params.row.subTitle} arrow placement='top'>
+          <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+        </Tooltip>
       ),
     },
     {

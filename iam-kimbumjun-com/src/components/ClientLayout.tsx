@@ -165,9 +165,8 @@ export default function ClientLayout({
               animate="open"
               exit="closed"
             >
-              <h5
-                className="h-12 w-full bg-slate-100 rounded-full shadow-cyan-500/50 shadow-xs content-center text-center"
-              >
+              <h5 className="h-12 w-full bg-slate-100 rounded-full
+                  shadow-cyan-500/50 shadow-xs content-center text-center" >
                 카테고리
               </h5>
               <span className="max-h-[80vh] overflow-y-scroll">

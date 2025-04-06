@@ -16,6 +16,8 @@ import {
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Link from "next/link";
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import AirplayOutlinedIcon from '@mui/icons-material/AirplayOutlined';
 
 export interface DrawerProps {
     open?: boolean;
@@ -76,10 +78,10 @@ export default function VivDrawer({ open = false, setOpen }: DrawerProps) {
                             href={menu.url}
                             onClick={() => setOpen(false)}
                         >
-                            <span className="material-symbols-outlined mr-2">
-                                {menu.icon}
+                            <span className="flex gap-2 items-center w-auto">
+                                <AirplayOutlinedIcon />
+                                <ListItemText primary={menu.title} />
                             </span>
-                            <ListItemText primary={menu.title} />
                         </ListItemButton>
                     </ListItem>
                 ))}

@@ -81,10 +81,11 @@ export default function SignIn() {
       const fullName = userDetail()?.fullName ?? 'Guest';
       setTimeout(() => {
         showLoginSuccess(fullName);
-        router.back();
+        router.refresh();
         setTimeout(() => {
-          router.refresh();
-        }, 200)
+          router.push('/');
+        }, 500)
+
       }, 100);
     } else {
       showLoginFailed();

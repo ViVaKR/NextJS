@@ -3,10 +3,15 @@
 import { ICategory } from '@/interfaces/i-category';
 import { ICode } from '@/interfaces/i-code';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
@@ -37,7 +42,8 @@ export default function CategoryAccordion({
       'text-sm hover:bg-slate-200 py-2 px-2\
       flex items-center\
       hover:rounded-lg hover:text-red-500\
-      transition-colors duration-200';
+      overflow:auto text-nowrap transition-colors\
+      duration-200';
 
     const finalClasses = `${className} ${baseClasses}`;
     return finalClasses;
@@ -46,6 +52,15 @@ export default function CategoryAccordion({
   const getCountCode = (id: number) => {
     return codes.filter((code) => code.categoryId === id).length;
   };
+
+  const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))({
+    [`& .${tooltipClasses.tooltip}`]: {
+      maxWidth: 'none',
+    },
+  });
+
 
   return (
     <div>
@@ -92,14 +107,27 @@ export default function CategoryAccordion({
                         const url = `/code/read/${code.id}`;
                         return (
                           <li key={code.id}>
-                            <Link
-                              href={url}
-                              className={getLinkClasses(url)}>
-                              <span className="material-symbols-outlined mx-4">
-                                touch_app
-                              </span>
-                              {code.id}. {code.title}
-                            </Link>
+
+                            <NoMaxWidthTooltip title={`${code.title}, ${code.subTitle}`} arrow placement='right'>
+                              <Link
+                                href={url}
+
+                                className={getLinkClasses(url)}>
+                                <TouchAppOutlinedIcon sx={{ mr: 1 }} />
+                                {code.id}. {code.title.length > 25 ? (code.title.substring(0, 25) + '...') : (code.title)}
+                              </Link>
+                            </NoMaxWidthTooltip>
+
+                            {/* <Tooltip title={`${code.title} (${code.subTitle})`} arrow placement='right'>
+                              <Link
+                                href={url}
+
+                                className={getLinkClasses(url)}>
+                                <TouchAppOutlinedIcon sx={{ mr: 1 }} />
+                                {code.id}. {code.title.length > 25 ? (code.title.substring(0, 25) + '...') : (code.title)}
+                              </Link>
+                            </Tooltip> */}
+
                           </li>
                         );
                       })}
@@ -108,7 +136,7 @@ export default function CategoryAccordion({
                     <Typography
                       variant="body2"
                       color="text.secondary">
-                      No codes available in this category.
+                      코드없음
                     </Typography>
                   )}
                 </AccordionDetails>

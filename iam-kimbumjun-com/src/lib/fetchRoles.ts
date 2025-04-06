@@ -1,5 +1,5 @@
 // src/lib/fetchRoles.ts
-import { IResponse, ResponseStatus } from '@/interfaces/i-response';
+import { IResponse } from '@/interfaces/i-response';
 import { IRole } from '@/interfaces/i-role';
 import { getToken } from '@/services/auth.service';
 

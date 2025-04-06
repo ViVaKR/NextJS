@@ -15,6 +15,7 @@ const cute = Cute_Font({
 });
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
+
 async function getInfo(): Promise<IIpInfo> {
   const response = await fetch(`${api}/api/ip`);
   const data: IIpInfo = await response.json();

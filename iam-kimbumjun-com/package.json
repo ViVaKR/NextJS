@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
@@ -41,8 +41,12 @@
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.55.0",
+    "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "styled-components": "^6.1.17"
   },
   "devDependencies": {

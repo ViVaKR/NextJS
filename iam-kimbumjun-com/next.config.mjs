@@ -1,4 +1,7 @@
 import createMDX from '@next/mdx'
+import remarkGfm from 'remark-gfm';           // GFM 지원
+import remarkRehype from 'remark-rehype';     // remark -> rehype 변환
+import rehypeStringify from 'rehype-stringify'; // HTML 출력
 
 /** @type {import('next').NextConfig} */
 
@@ -38,10 +41,20 @@ const nextConfig = {
             },
         ],
     },
+    allowedDevOrigins: [
+        'http://viv.vivabm.com', // 프로토콜 포함
+        'viv.vivabm.com',       // 기본
+        'http://localhost:3000', // 로컬 풀 URL
+        'localhost',            // 기본
+        '127.0.0.1',
+        '192.168.0.8',
+    ],
 };
-const withMDX = createMDX({
-    // Add markdown plugins here, as desired
-});
 
-// Merge MDX config with Next.js config
+const withMDX = createMDX({
+    options: {
+        remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
+        rehypePlugins: [rehypeStringify],
+    },
+});
 export default withMDX(nextConfig);

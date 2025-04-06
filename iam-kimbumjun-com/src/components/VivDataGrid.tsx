@@ -1,6 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import VivTitle from './VivTitle';
 
@@ -8,12 +8,15 @@ interface VivDataGridProps<T> {
   title?: string;
   columns: GridColDef[];
   initialData?: T[]; // 초기 데이터 (선택적)
+  onRowClick?: (params: GridRowParams) => void; // 행클릭 핸들러 추가
+
 }
 
 export default function VivDataGrid<T>({
   title,
   columns,
   initialData = [],
+  onRowClick, // prop 추가
 }: VivDataGridProps<T>) {
   const [data, setData] = useState<T[]>(initialData);
   const [error, setError] = useState<string | null | undefined>(undefined);
@@ -23,7 +26,7 @@ export default function VivDataGrid<T>({
     const loadUsers = async () => {
       try {
         setIsLoading(true);
-        let fetchedData: T[] = initialData;
+        let fetchedData: T[] = initialData; // 초기 데이터 사용
         setData(fetchedData);
         setError(undefined);
       } catch (err: any) {
@@ -62,6 +65,7 @@ export default function VivDataGrid<T>({
             }}
             pageSizeOptions={[5, 25, 50, 100]}
             disableRowSelectionOnClick
+            onRowClick={onRowClick} // DataGrid 에 onRowClick 연결
             sx={{
               boxShadow: 2,
               border: 2,

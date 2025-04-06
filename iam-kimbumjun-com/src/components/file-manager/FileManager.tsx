@@ -40,7 +40,7 @@ export default function FileManager({
     const [imagePreview, setImagePreview] = useState<string>("");
     const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
     const [uploadError, setUploadError] = useState<boolean>(false);
-    const snackbar = useSnackbar();
+    // const snackbar = useSnackbar();
     const router = useRouter();
     const { user, updateUser } = useProfile(); // updateUser 가져오기, user.id 추가로 가져옴
 
@@ -52,7 +52,8 @@ export default function FileManager({
             if (!file.type.startsWith("image/")) {
                 setUploadError(true);
                 setUploadSuccess(false);
-                snackbar.showSnackbar("이미지 파일만 가능합니다.", "error");
+                // snackbar.showSnackbar("이미지 파일만 가능합니다.", "error");
+                alert('이미지 파일만 가능합니다.');
                 return;
             }
 
@@ -70,7 +71,8 @@ export default function FileManager({
 
             try {
                 if (choice === undefined) {
-                    snackbar.showSnackbar('업로드 형식을 선택하세요.')
+                    // snackbar.showSnackbar('업로드 형식을 선택하세요.')
+                    alert('업로드 형식을 선택하세요.');
                     return;
                 }
                 const response: IFileInfo = await uploadFile(formData, choice);
@@ -96,11 +98,11 @@ export default function FileManager({
                         // 현재 코드에서는 Page 나 AccountMenu 이 이벤트를 직접 (listen) 하지 않아
                         // 실질 적인 효과는 없음.
                         // avatarUpdatedEvent.dispatchEvent(new Event("avatarUpdated")); // 위 로직에서는 불필요함..
-                        snackbar.showSnackbar("아바타 업로드 성공!", "success");
+                        // snackbar.showSnackbar("아바타 업로드 성공!", "success");
                     } break;
                     case 1: { // 코드 첨부 이미지
                         onAttachImageFinished?.(response.dbPath);
-                        snackbar.showSnackbar("첨부 이미지 업로드 성공!", "success");
+                        // snackbar.showSnackbar("첨부 이미지 업로드 성공!", "success");
                     } break;
                     case 2: break;
                     default: break;
@@ -108,13 +110,14 @@ export default function FileManager({
             } catch (err: any) {
                 setUploadError(true);
                 setUploadSuccess(false);
-                snackbar.showSnackbar(err.message || "파일 업로드 실패", "error");
+                console.error(err.message || "파일업로드 실패", "error")
+                // snackbar.showSnackbar(err.message || "파일 업로드 실패", "error");
                 if (err.message.includes("로그인")) {
                     router.push("/membership/sign-in");
                 }
             }
         },
-        [snackbar, choice, onLoadFinished, updateUser, onAttachImageFinished, router]
+        [choice, onLoadFinished, user?.id, updateUser, onAttachImageFinished, router]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

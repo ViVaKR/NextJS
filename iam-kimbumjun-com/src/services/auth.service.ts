@@ -12,7 +12,7 @@ export const getToken = (): string | null => {
   const user = localStorage.getItem(userToken);
   if (!user) return null;
   const userDetail: IAuthResponse = JSON.parse(user);
-  return userDetail.token;
+  return userDetail.token!;
 }
 
 export function getTokenWithCookie() {

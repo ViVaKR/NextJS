@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data: IAuthResponse = await response.json();
 
       if (data.isSuccess) {
-        const detailedUser = await fetchUserDetail(data.token);
+        const detailedUser = await fetchUserDetail(data.token!);
 
         if (!detailedUser) return false;
 
@@ -108,8 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           roles: detailedUser.roles,
           phoneNumber: detailedUser.phoneNumber,
           twoFactorEnabled: detailedUser.twoFactorEnabled,
-          token: data.token,
-          refreshToken: data.refreshToken,
+          token: data.token!,
+          refreshToken: data.refreshToken!,
           isSuccess: data.isSuccess,
           message: data.message || '',
           phoneNumberConformed: detailedUser.phoneNumberConformed || false,

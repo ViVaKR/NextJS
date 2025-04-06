@@ -56,14 +56,10 @@ export default function ForgetPasswordPaage() {
     control,
     handleSubmit,
     formState: { errors },
-    watch
-
   } = useForm<ForgetPasswordFormData>({
-    defaultValues: {
-      email: ''
-    },
+    defaultValues: { email: '' },
     mode: 'onTouched'
-  })
+  });
 
 
   return (

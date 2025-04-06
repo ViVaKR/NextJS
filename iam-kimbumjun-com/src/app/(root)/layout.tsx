@@ -57,6 +57,7 @@ export default function RootLayout({
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                 <nav aria-label='Main Navigation'> <NavMenu /> </nav>
                 <main className='grow-main' > {children} </main>
+                <div className='w-full min-h-screen'></div>
                 <footer className='bg-slate-200 xs:h-auto md:h-[248px]'> <VivBottomNav /></footer>
               </Suspense>
             </SnackbarProvider>

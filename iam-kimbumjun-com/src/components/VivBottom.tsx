@@ -1,13 +1,16 @@
-'use client'
+'use client';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import { Typography, Tooltip, Box } from '@mui/material';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import FolderIcon from '@mui/icons-material/Folder';
 import RestoreIcon from '@mui/icons-material/Restore';
-import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import GavelIcon from '@mui/icons-material/Gavel';
+import CookieIcon from '@mui/icons-material/Cookie';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tooltip, Typography } from '@mui/material';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';
 
 export default function VivBottomNav() {
     const [value, setValue] = useState('');
@@ -17,65 +20,103 @@ export default function VivBottomNav() {
         setValue(newValue);
     };
 
-    const handleClick = (url: string) => { router.push(url); }
+    const handleClick = (url: string) => {
+        router.push(url);
+    };
 
     return (
-
-        <div className='flex flex-col justify-center border-t-4 border-t-slate-400'>
-
-            <Typography sx={{ margin: '2em auto' }}
-
-                className='text-gray-500 !text-xl !font-poppins'>
-                Copyright {(new Date().getFullYear())}. BM Co. All rights reserved.
+        <Box component="footer"
+            sx={{
+                borderTop: '4px solid #e0e0e0',
+                background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
+                padding: '2em 0',
+                boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
+            }}
+        >
+            {/* 상단 저작권 및 브랜드 정보 */}
+            <Typography
+                sx={{
+                    textAlign: 'center',
+                    marginBottom: '1.5em',
+                    fontFamily: 'Poppins, sans-serif',
+                    color: '#666',
+                    fontSize: '1.1rem',
+                }}
+            >
+                © {new Date().getFullYear()} BM Co. All rights reserved. | Designed with 💖 by Vivakr
             </Typography>
 
+            {/* 네비게이션 */}
             <BottomNavigation
                 sx={{
                     width: '100%',
+                    maxWidth: '800px',
                     margin: '0 auto',
-                    padding: '1em 0'
+                    background: 'transparent',
+                    padding: '0.5em 0',
+                    '& .MuiBottomNavigationAction-root': {
+                        color: '#757575',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                            color: '#1976d2',
+                            transform: 'scale(1.1)',
+                        },
+                        '&.Mui-selected': {
+                            color: '#1976d2',
+                        },
+                    },
                 }}
+
+
+                onChange={handleChange}
                 value={value}
-                onChange={handleChange}>
+            >
+                <BottomNavigationAction
+                    label="홈"
+                    value="home"
+                    onClick={() => handleClick('/')}
+                    icon={<HomeOutlinedIcon />}
+                />
 
-                <Tooltip title="홈" arrow>
-                    <BottomNavigationAction
-                        label="Home"
-                        value="home"
-                        onClick={() => handleClick('/')}
-                        icon={<HomeOutlinedIcon />}
-                    />
-                </Tooltip>
+                <BottomNavigationAction
+                    label="코드조각"
+                    value="code"
+                    onClick={() => handleClick('/code')}
+                    icon={<CodeOutlinedIcon />}
+                />
+                <BottomNavigationAction
+                    label="개인정보 처리방침"
+                    value="privacy-policy"
+                    onClick={() => handleClick('/privacy-policy')}
+                    icon={<PrivacyTipOutlinedIcon />}
+                />
+                <BottomNavigationAction
+                    label="이용약관"
+                    value="terms-of-service"
+                    onClick={() => handleClick('/terms-of-service')}
+                    icon={<GavelIcon />}
+                />
+                <BottomNavigationAction
+                    label="쿠키정책"
+                    value="cookie-policy"
 
-                <Tooltip title="코드조각">
-                    <BottomNavigationAction
-                        label="Code"
-                        value="code"
-                        onClick={() => handleClick('/code')}
-                        icon={<CodeOutlinedIcon />}
-                    />
-
-                </Tooltip>
-
-                <Tooltip title="고객정보 보호 안내">
-                    <BottomNavigationAction
-                        label="Folder"
-                        value="고객정보 보호 안내"
-                        onClick={() => handleClick('/privacy-policy')}
-                        icon={<FolderIcon />} />
-                </Tooltip>
-
-                <Tooltip title="돌아가기" arrow>
-                    <BottomNavigationAction
-                        label="Recents"
-                        value="recents"
-                        onClick={() => router.back()}
-                        icon={<RestoreIcon />}
-                    />
-                </Tooltip>
-
+                    onClick={() => handleClick('/cookie-policy')}
+                    icon={<CookieIcon />}
+                />
             </BottomNavigation>
-            <p className='min-h-96 !bg-white'></p>
-        </div>
+
+            {/* 추가 정보 (옵션) */}
+            <Typography
+                sx={{
+                    textAlign: 'center',
+                    marginTop: '1em',
+                    fontSize: '0.9rem',
+                    color: '#999',
+                    fontFamily: 'Poppins, sans-serif',
+                }}
+            >
+                문의: <a href="mailto:iam@kimbumjun.com" style={{ color: '#1976d2', textDecoration: 'none' }}>iam@kimbumjun.com</a>
+            </Typography>
+        </Box>
     );
 }
