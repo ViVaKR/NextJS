@@ -1,0 +1,26 @@
+.codeRunnerContainer {
+  padding: 20px;
+  max-width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  color: #fff;
+  background-color: #1e1e1e;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  justify-content: space-evenly;
+  margin: 1rem auto;
+}
+
+.output {
+  margin-top: 20px;
+  padding: 1rem;
+  background-color: #2e2e2e;
+  border-radius: 1rem;
+  white-space: pre-wrap;
+  font-family: var(--font-fira);
+  border: 1px white;
+  border-style: solid;
+}
