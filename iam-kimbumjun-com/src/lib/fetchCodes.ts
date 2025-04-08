@@ -9,12 +9,11 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 // * All Code Data List
 export async function fetchCodes(): Promise<ICode[]> {
     try {
-        const url = `${apiUrl}/api/code`;
+        const url = `${apiUrl}/api/code/all`;
         const response = await fetch(url, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             cache: 'no-cache'
-            // next: { revalidate: 60 }, // 60초마다 재검증
         });
         console.log('목록 응답: ', response);
         if (!response.ok) {

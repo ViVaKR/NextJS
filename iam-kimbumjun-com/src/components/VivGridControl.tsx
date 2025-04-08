@@ -1,6 +1,6 @@
 'use client';
 import { DataGrid, GridColDef, GridPaginationModel, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
-import { Box, Tooltip } from '@mui/material';
+import { Box, styled, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
 import { ICode } from '@/interfaces/i-code';
 import { getCategories } from '@/lib/getCodes';
 import { ICategory } from '@/interfaces/i-category';
@@ -10,7 +10,12 @@ import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
 import { isAdmin, userDetail } from '@/services/auth.service';
 
-export default function VivGridControl({ data }: { data: ICode[] }) {
+type codeDataProp = {
+  data: ICode[],
+  userId?: string
+}
+
+export default function VivGridControl({ data, userId }: codeDataProp) {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [codes, setCodes] = useState<ICode[]>(
     [...data].sort((a, b) => b.id - a.id)
@@ -18,7 +23,8 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
   const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const admin: boolean = isAdmin();
-  const detail = userDetail();
+
+  const whoami = userDetail();
   const time = 1;
 
   useEffect(() => {
@@ -30,8 +36,8 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
         const sortedCodes = [...data].sort((a, b) => b.id - a.id);
         setCodes(sortedCodes);
 
-        // if (userId)
-        //   setId(userId);
+        if (userId)
+          setId(userId);
 
 
       } catch (error: any) {
@@ -42,8 +48,15 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
     };
 
     fetchCategories();
-  }, [data]);
+  }, [data, userId]);
 
+  const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} arrow placement='left' />
+  ))({
+    [`& .${tooltipClasses.tooltip}`]: {
+      maxWidth: 500,
+    },
+  });
 
   const columns: GridColDef[] = [
     {
@@ -79,12 +92,22 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
         const category = categories.find((category) => category.id === value);
         return category ? category.name : '작자미상';
       },
-      type: 'number',
+      type: 'string',
     },
     { field: 'userName', headerName: '작성자', width: 150, filterable: true },
     {
-      field: 'modified',
+      field: 'created',
       headerName: '등록일',
+      width: 150,
+      filterable: true,
+      valueGetter: (params: Date) => {
+        const d = new Intl.DateTimeFormat('ko-KR').format(new Date(params));
+        return d;
+      },
+    },
+    {
+      field: 'modified',
+      headerName: '수정일',
       width: 150,
       filterable: true,
       valueGetter: (params: Date) => {
@@ -96,7 +119,7 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
       field: 'attachFileName',
       headerName: '첨부',
       width: 80,
-      filterable: true,
+      filterable: false,
       renderCell: (params: GridRenderCellParams<ICode, string>) => {
         const attached = params.value === '';
         return attached ? (
@@ -107,6 +130,19 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
           </Tooltip>
         );
       },
+    },
+    {
+      field: 'note',
+      headerName: '노트',
+      width: 350,
+      filterable: true,
+      flex: 1,
+      type: 'string',
+      renderCell: (params: GridRenderCellParams<ICode, string>) => (
+        <CustomWidthTooltip title={params.row.note}>
+          <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+        </CustomWidthTooltip>
+      ),
     },
   ];
 
@@ -121,7 +157,7 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
             columns={columns}
             loading={isLoading}
             hideFooterSelectedRowCount={true}
-            slots={(admin) ? { toolbar: GridToolbar } : {}}
+            slots={(admin || id === userId) ? { toolbar: GridToolbar } : {}}
             pageSizeOptions={[5, 10, 15, 25, 50, 100]}
             initialState={{
               pagination: {
@@ -131,7 +167,7 @@ export default function VivGridControl({ data }: { data: ICode[] }) {
               },
               columns: {
                 columnVisibilityModel: {
-                  id: false
+                  id: true
                 }
               }
             }}

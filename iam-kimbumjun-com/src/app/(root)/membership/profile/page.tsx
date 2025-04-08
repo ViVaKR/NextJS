@@ -201,7 +201,7 @@ export default function Page() {
 
       <div className='w-full px-4 py-8'>
         {userCodes && (
-          <VivGridControl data={userCodes} />
+          <VivGridControl data={userCodes} userId={user.id} />
         )}
       </div>
 

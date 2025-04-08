@@ -2,6 +2,6 @@ import VivTitle from "@/components/VivTitle";
 
 export default function AppBarPage() {
   return (
-    <VivTitle title="Camp" />
+    <VivTitle title="Free Code" />
   );
 }

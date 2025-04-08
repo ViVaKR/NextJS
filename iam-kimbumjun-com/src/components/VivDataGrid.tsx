@@ -9,14 +9,13 @@ interface VivDataGridProps<T> {
   columns: GridColDef[];
   initialData?: T[]; // 초기 데이터 (선택적)
   onRowClick?: (params: GridRowParams) => void; // 행클릭 핸들러 추가
-
 }
 
 export default function VivDataGrid<T>({
   title,
   columns,
   initialData = [],
-  onRowClick, // prop 추가
+  onRowClick,
 }: VivDataGridProps<T>) {
   const [data, setData] = useState<T[]>(initialData);
   const [error, setError] = useState<string | null | undefined>(undefined);

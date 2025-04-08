@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { extendTheme, styled } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import { AppProvider, Navigation, Router } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -10,8 +9,6 @@ import Image from 'next/image';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import AirlineStopsOutlinedIcon from '@mui/icons-material/AirlineStopsOutlined';
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
-
-
 import WebIcon from '@mui/icons-material/Web';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import CodeIcon from '@mui/icons-material/Code';
@@ -47,15 +44,19 @@ const NAVIGATION: Navigation = [
           {
             segment: 'csharp', title: 'C#', icon: <CategoryOutlinedIcon />,
             children: [
-              { segment: 'beginner', title: '기초문법', icon: < AirlineStopsOutlinedIcon /> },
-              { segment: 'advanced', title: '고급문법', icon: < AirlineStopsOutlinedIcon /> },
+              { segment: 'beginner', title: 'Beginner', icon: < AirlineStopsOutlinedIcon /> },
+              { segment: 'intermediate', title: 'Intermediate', icon: < AirlineStopsOutlinedIcon /> },
+              { segment: 'advanced', title: 'Advanced', icon: < AirlineStopsOutlinedIcon /> },
             ]
           },
           { segment: 'aspnetcore', title: 'ASP.NET Core', icon: <CategoryOutlinedIcon /> },
           { segment: 'blazor', title: 'Blazor', icon: <CategoryOutlinedIcon /> },
-          { segment: 'maui', title: 'MAUI', icon: <CategoryOutlinedIcon /> },
+          { segment: 'maui', title: '.NET MAUI', icon: <CategoryOutlinedIcon /> },
           { segment: 'wpf', title: 'WPF', icon: <CategoryOutlinedIcon /> },
           { segment: 'winforms', title: 'Windows Forms', icon: <CategoryOutlinedIcon /> },
+          { segment: 'visualbasic-dotnet', title: 'Visual Basic .NET', icon: <CategoryOutlinedIcon /> },
+          { segment: 'visualbasic-appl', title: 'VBA', icon: <CategoryOutlinedIcon /> },
+          { segment: 'fsharp', title: 'F#', icon: <CategoryOutlinedIcon /> },
           { kind: 'divider' },
           { kind: 'header', title: 'Note' },
         ],
@@ -66,74 +67,67 @@ const NAVIGATION: Navigation = [
         icon: <AppsIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'go', title: 'GO', icon: <CategoryOutlinedIcon /> },
+          { segment: 'go', title: 'Go', icon: <CategoryOutlinedIcon /> },
           { segment: 'python', title: 'Python', icon: <CategoryOutlinedIcon /> },
           { segment: 'ruby', title: 'Ruby', icon: <CategoryOutlinedIcon /> },
           { segment: 'r', title: 'R', icon: <CategoryOutlinedIcon /> },
           { segment: 'matlab', title: 'MATLAB', icon: <CategoryOutlinedIcon /> },
-          { segment: 'java-kotlin', title: 'Java & Kotlin', icon: <CategoryOutlinedIcon /> },
+          { segment: 'java', title: 'Java', icon: <CategoryOutlinedIcon /> },
+          { segment: 'kotlin', title: 'Kotlin', icon: <CategoryOutlinedIcon /> },
           { segment: 'dart-flutter', title: 'Dart & Flutter', icon: <FlutterDashIcon /> },
-          { segment: 'swift', title: 'Python', icon: <CategoryOutlinedIcon /> },
-          { segment: 'visual-basic', title: 'Python', icon: <CategoryOutlinedIcon /> },
+          { segment: 'swift', title: 'Swift', icon: <CategoryOutlinedIcon /> },
           { segment: 'php', title: 'PHP', icon: <PhpOutlinedIcon /> },
           { segment: 'fortran', title: 'Fortran', icon: <CategoryOutlinedIcon /> },
           { segment: 'scratch', title: 'Scratch', icon: <CategoryOutlinedIcon /> },
-          { segment: 'delphi-pascal', title: 'Delphi & Pascal', icon: <CategoryOutlinedIcon /> },
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
         ],
       },
       {
         segment: 'web-presentation',
         title: 'Web Presentation',
-        icon: <PaletteIcon />, // 웹 디자인/표현 느낌
+        icon: <PaletteIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'html', title: 'HTML', icon: <HtmlIcon /> }, // 아이콘 수정
-          { segment: 'css-scss-less', title: 'CSS/SCSS/LESS', icon: <CssIcon /> }, // 아이콘 수정
-          { segment: 'svg', title: 'SVG', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'jade-ejs-handlebars', title: 'Template Engines', icon: <CodeIcon /> }, // 제목/아이콘 수정
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
+          { segment: 'html', title: 'HTML', icon: <HtmlIcon /> },
+          { segment: 'css-scss-less', title: 'CSS / SCSS / LESS', icon: <CssIcon /> },
+          { segment: 'svg', title: 'SVG', icon: <CodeIcon /> },
+          { segment: 'template-engines', title: 'Template Engines', icon: <CodeIcon /> },
         ],
       },
       {
         segment: 'javascript',
         title: 'JavaScript Ecosystem',
-        icon: <JavascriptIcon />, // JavaScript 아이콘
+        icon: <JavascriptIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
           { segment: 'javascript', title: 'JavaScript', icon: <JavascriptIcon /> },
-          { segment: 'typescript', title: 'TypeScript', icon: <CodeIcon /> }, // 제목 수정
-          { segment: 'angular', title: 'Angular', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'nextjs', title: 'Next.js', icon: <CodeIcon /> }, // 제목/아이콘 수정
-          { segment: 'react', title: 'React', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'vue', title: 'Vue', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'nodejs', title: 'Node.js', icon: <TerminalIcon /> }, // 아이콘 수정
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
+          { segment: 'typescript', title: 'TypeScript', icon: <CodeIcon /> },
+          { segment: 'angular', title: 'Angular', icon: <CodeIcon /> },
+          { segment: 'nextjs', title: 'Next.js', icon: <CodeIcon /> },
+          { segment: 'react', title: 'React', icon: <CodeIcon /> },
+          { segment: 'vue', title: 'Vue', icon: <CodeIcon /> },
+          { segment: 'nodejs', title: 'Node.js', icon: <TerminalIcon /> },
         ],
       },
       {
         segment: 'devops',
-        title: 'DevOps', // 제목 수정
-        icon: <BuildIcon />, // DevOps 느낌
+        title: 'DevOps',
+        icon: <BuildIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'git', title: 'Git', icon: <CommitIcon /> }, // 아이콘 수정
-          { segment: 'docker', title: 'Docker', icon: <WidgetsIcon /> }, // 제목/아이콘 수정
+          { segment: 'git', title: 'Git', icon: <CommitIcon /> },
+          { segment: 'docker', title: 'Docker', icon: <WidgetsIcon /> },
           { kind: 'divider' },
           { kind: 'header', title: 'Note' },
         ],
       },
       {
-        segment: 'native-languages', // Segment 일관성 (혹은 system-programming-languages)
-        title: 'Native Languages', // 또는 "System Programming Languages"
-        icon: <MemoryIcon />, // 저수준/네이티브 느낌
+        segment: 'native-languages',
+        title: 'Native Languages',
+        icon: <MemoryIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'assembly', title: 'Assembly', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'rust', title: 'Rust', icon: <CodeIcon /> }, // 아이콘 수정
+          { segment: 'assembly', title: 'Assembly', icon: <CodeIcon /> },
+          { segment: 'rust', title: 'Rust', icon: <CodeIcon /> },
           { segment: 'c', title: 'C', icon: <CodeIcon /> },
           { segment: 'cpp', title: 'C++', icon: <CodeIcon /> },
           { kind: 'divider' },
@@ -141,14 +135,14 @@ const NAVIGATION: Navigation = [
         ],
       },
       {
-        segment: 'cli-scripting', // Segment 일관성
+        segment: 'cli-scripting',
         title: 'CLI & Scripting',
-        icon: <TerminalIcon />, // 터미널/스크립트 느낌
+        icon: <TerminalIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
           { segment: 'powershell', title: 'PowerShell', icon: <TerminalIcon /> },
-          { segment: 'bash-zsh', title: 'Bash/Zsh', icon: <TerminalIcon /> }, // 제목 수정
-          { segment: 'perl', title: 'Perl', icon: <CodeIcon /> }, // 아이콘 수정
+          { segment: 'bash-zsh', title: 'Bash/Zsh', icon: <TerminalIcon /> },
+          { segment: 'perl', title: 'Perl', icon: <CodeIcon /> },
           { kind: 'divider' },
           { kind: 'header', title: 'Note' },
         ],
@@ -156,48 +150,48 @@ const NAVIGATION: Navigation = [
       {
         segment: 'database-server',
         title: 'Database Server',
-        icon: <StorageIcon />, // 데이터베이스 느낌
+        icon: <StorageIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'sqlserver', title: 'SQL Server', icon: <StorageIcon /> }, // 아이콘 수정 (SqlIcon 등이 없다면)
+          { segment: 'sqlserver', title: 'SQL Server', icon: <StorageIcon /> },
           { segment: 'postgresql', title: 'PostgreSQL', icon: <StorageIcon /> },
-          { segment: 'mysql-mariadb', title: 'MySQL/MariaDB', icon: <StorageIcon /> },
+          { segment: 'mysql-mariadb', title: 'MySQL & MariaDB', icon: <StorageIcon /> },
           { segment: 'oracle', title: 'Oracle', icon: <StorageIcon /> },
-          { segment: 'mongodb', title: 'MongoDB', icon: <DataObjectIcon /> }, // 아이콘 수정
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
+          { segment: 'mongodb', title: 'MongoDB', icon: <DataObjectIcon /> },
         ],
       },
       {
         segment: 'webserver',
         title: 'Web Server',
-        icon: <WebIcon />, // 웹/네트워크 느낌
+        icon: <WebIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'nginx', title: 'Nginx', icon: <DnsIcon /> }, // 제목/아이콘 수정
-          { segment: 'apache', title: 'Apache HTTP Server', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'iis', title: 'Microsoft IIS', icon: <CodeIcon /> }, // 아이콘 수정
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
+          { segment: 'nginx', title: 'Nginx', icon: <DnsIcon /> },
+          { segment: 'apache', title: 'Apache HTTP Server', icon: <CodeIcon /> },
+          { segment: 'iis', title: 'Microsoft IIS', icon: <CodeIcon /> },
         ],
       },
       {
         segment: 'dnsserver',
         title: 'DNS Server',
-        icon: <DnsIcon />, // DNS 아이콘
+        icon: <DnsIcon />,
         children: [
           { kind: 'header', title: 'Main items' },
-          { segment: 'bind', title: 'BIND', icon: <CodeIcon /> }, // 아이콘 수정
-          { segment: 'windows-dns', title: 'Windows Server DNS', icon: <CodeIcon /> }, // 아이콘 수정
-          { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
+          { segment: 'bind', title: 'BIND', icon: <CodeIcon /> },
+          { segment: 'windows-dns', title: 'Windows Server DNS', icon: <CodeIcon /> },
         ],
       }
     ]
-  }, {
-    segment: 'code',
+  },
+  {
+    segment: 'free-code',
     title: 'Free Code', // 이 메뉴의 성격에 맞는 아이콘 (예: <RedeemIcon /> or <CodeIcon />)
-    icon: <CodeOutlinedIcon />
+    icon: <CodeOutlinedIcon />,
+    children: [
+      { kind: 'header', title: 'Main items' },
+      { segment: 'qna', title: 'QnA', icon: <CodeIcon /> },
+      { segment: 'note', title: 'Note', icon: <CodeIcon /> },
+    ]
   }
 ];
 
