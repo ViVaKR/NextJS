@@ -27,8 +27,7 @@ import HtmlIcon from '@mui/icons-material/Html';
 import CssIcon from '@mui/icons-material/Css';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash'; // 예시 아이콘 import
 import PhpOutlinedIcon from '@mui/icons-material/PhpOutlined';
-
-
+import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
 const NAVIGATION: Navigation = [
   {
     segment: 'camp',
@@ -40,7 +39,8 @@ const NAVIGATION: Navigation = [
         title: '.NET',
         icon: <DeveloperBoardIcon />,
         children: [
-          { kind: 'header', title: 'Category' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           {
             segment: 'csharp', title: 'C#', icon: <CategoryOutlinedIcon />,
             children: [
@@ -54,31 +54,29 @@ const NAVIGATION: Navigation = [
           { segment: 'maui', title: '.NET MAUI', icon: <CategoryOutlinedIcon /> },
           { segment: 'wpf', title: 'WPF', icon: <CategoryOutlinedIcon /> },
           { segment: 'winforms', title: 'Windows Forms', icon: <CategoryOutlinedIcon /> },
-          { segment: 'visualbasic-dotnet', title: 'Visual Basic .NET', icon: <CategoryOutlinedIcon /> },
-          { segment: 'visualbasic-appl', title: 'VBA', icon: <CategoryOutlinedIcon /> },
+          { segment: 'visualbasic', title: 'Visual Basic .NET', icon: <CategoryOutlinedIcon /> },
+          { segment: 'vba', title: 'VBA', icon: <CategoryOutlinedIcon /> },
           { segment: 'fsharp', title: 'F#', icon: <CategoryOutlinedIcon /> },
           { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
         ],
       },
       {
-        segment: 'app-development',
+        segment: 'appdev',
         title: 'Application Development',
         icon: <AppsIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
-          { segment: 'go', title: 'Go', icon: <CategoryOutlinedIcon /> },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'python', title: 'Python', icon: <CategoryOutlinedIcon /> },
           { segment: 'ruby', title: 'Ruby', icon: <CategoryOutlinedIcon /> },
           { segment: 'r', title: 'R', icon: <CategoryOutlinedIcon /> },
-          { segment: 'matlab', title: 'MATLAB', icon: <CategoryOutlinedIcon /> },
+          { segment: 'go', title: 'Go', icon: <CategoryOutlinedIcon /> },
           { segment: 'java', title: 'Java', icon: <CategoryOutlinedIcon /> },
           { segment: 'kotlin', title: 'Kotlin', icon: <CategoryOutlinedIcon /> },
-          { segment: 'dart-flutter', title: 'Dart & Flutter', icon: <FlutterDashIcon /> },
+          { segment: 'dart', title: 'Dart', icon: <FlutterDashIcon /> },
           { segment: 'swift', title: 'Swift', icon: <CategoryOutlinedIcon /> },
-          { segment: 'php', title: 'PHP', icon: <PhpOutlinedIcon /> },
-          { segment: 'fortran', title: 'Fortran', icon: <CategoryOutlinedIcon /> },
-          { segment: 'scratch', title: 'Scratch', icon: <CategoryOutlinedIcon /> },
+          { kind: 'divider' },
+
         ],
       },
       {
@@ -86,26 +84,30 @@ const NAVIGATION: Navigation = [
         title: 'Web Presentation',
         icon: <PaletteIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'html', title: 'HTML', icon: <HtmlIcon /> },
           { segment: 'css-scss-less', title: 'CSS / SCSS / LESS', icon: <CssIcon /> },
           { segment: 'svg', title: 'SVG', icon: <CodeIcon /> },
-          { segment: 'template-engines', title: 'Template Engines', icon: <CodeIcon /> },
+          { kind: 'divider' },
         ],
       },
       {
-        segment: 'javascript',
+        segment: 'javascript-eco',
         title: 'JavaScript Ecosystem',
         icon: <JavascriptIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'javascript', title: 'JavaScript', icon: <JavascriptIcon /> },
           { segment: 'typescript', title: 'TypeScript', icon: <CodeIcon /> },
           { segment: 'angular', title: 'Angular', icon: <CodeIcon /> },
           { segment: 'nextjs', title: 'Next.js', icon: <CodeIcon /> },
           { segment: 'react', title: 'React', icon: <CodeIcon /> },
+          { segment: 'vite', title: 'Vite', icon: <CodeIcon /> },
           { segment: 'vue', title: 'Vue', icon: <CodeIcon /> },
           { segment: 'nodejs', title: 'Node.js', icon: <TerminalIcon /> },
+          { kind: 'divider' },
         ],
       },
       {
@@ -113,74 +115,88 @@ const NAVIGATION: Navigation = [
         title: 'DevOps',
         icon: <BuildIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'git', title: 'Git', icon: <CommitIcon /> },
           { segment: 'docker', title: 'Docker', icon: <WidgetsIcon /> },
           { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
         ],
       },
       {
-        segment: 'native-languages',
+        segment: 'native',
         title: 'Native Languages',
         icon: <MemoryIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'assembly', title: 'Assembly', icon: <CodeIcon /> },
           { segment: 'rust', title: 'Rust', icon: <CodeIcon /> },
           { segment: 'c', title: 'C', icon: <CodeIcon /> },
           { segment: 'cpp', title: 'C++', icon: <CodeIcon /> },
           { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
         ],
       },
       {
-        segment: 'cli-scripting',
-        title: 'CLI & Scripting',
+        segment: 'cli',
+        title: 'CLI Scripting',
         icon: <TerminalIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
+          { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+          { kind: 'header', title: '카테고리' },
           { segment: 'powershell', title: 'PowerShell', icon: <TerminalIcon /> },
-          { segment: 'bash-zsh', title: 'Bash/Zsh', icon: <TerminalIcon /> },
+          { segment: 'bash', title: 'Bash/Zsh', icon: <TerminalIcon /> },
           { segment: 'perl', title: 'Perl', icon: <CodeIcon /> },
           { kind: 'divider' },
-          { kind: 'header', title: 'Note' },
         ],
       },
       {
-        segment: 'database-server',
-        title: 'Database Server',
+        segment: 'server',
+        title: 'Server',
         icon: <StorageIcon />,
         children: [
-          { kind: 'header', title: 'Main items' },
-          { segment: 'sqlserver', title: 'SQL Server', icon: <StorageIcon /> },
-          { segment: 'postgresql', title: 'PostgreSQL', icon: <StorageIcon /> },
-          { segment: 'mysql-mariadb', title: 'MySQL & MariaDB', icon: <StorageIcon /> },
-          { segment: 'oracle', title: 'Oracle', icon: <StorageIcon /> },
-          { segment: 'mongodb', title: 'MongoDB', icon: <DataObjectIcon /> },
-        ],
+          //
+          {
+            segment: 'database',
+            title: 'Database Server',
+            icon: <StorageIcon />,
+            children: [
+              { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+              { kind: 'header', title: '카테고리' },
+              { segment: 'sqlserver', title: 'SQL Server', icon: <StorageIcon /> },
+              { segment: 'postgresql', title: 'PostgreSQL', icon: <StorageIcon /> },
+              { segment: 'mysql-mariadb', title: 'MySQL & MariaDB', icon: <StorageIcon /> },
+              { segment: 'oracle', title: 'Oracle', icon: <StorageIcon /> },
+              { segment: 'mongodb', title: 'MongoDB', icon: <DataObjectIcon /> },
+              { kind: 'divider' },
+            ],
+          },
+          {
+            segment: 'http-web-server',
+            title: 'Web Server',
+            icon: <WebIcon />,
+            children: [
+              { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+              { kind: 'header', title: '카테고리' },
+              { segment: 'nginx', title: 'Nginx', icon: <DnsIcon /> },
+              { segment: 'apache', title: 'Apache Server', icon: <CodeIcon /> },
+              { segment: 'iis', title: 'Microsoft IIS', icon: <CodeIcon /> },
+              { kind: 'divider' },
+            ],
+          },
+          {
+            segment: 'dns',
+            title: 'DNS Server',
+            icon: <DnsIcon />,
+            children: [
+              { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+              { kind: 'header', title: 'Main items' },
+              { segment: 'bind', title: 'BIND', icon: <CodeIcon /> },
+              { segment: 'windows-dns', title: 'Windows DNS', icon: <CodeIcon /> },
+              { kind: 'divider' },
+            ],
+          }
+        ]
       },
-      {
-        segment: 'webserver',
-        title: 'Web Server',
-        icon: <WebIcon />,
-        children: [
-          { kind: 'header', title: 'Main items' },
-          { segment: 'nginx', title: 'Nginx', icon: <DnsIcon /> },
-          { segment: 'apache', title: 'Apache HTTP Server', icon: <CodeIcon /> },
-          { segment: 'iis', title: 'Microsoft IIS', icon: <CodeIcon /> },
-        ],
-      },
-      {
-        segment: 'dnsserver',
-        title: 'DNS Server',
-        icon: <DnsIcon />,
-        children: [
-          { kind: 'header', title: 'Main items' },
-          { segment: 'bind', title: 'BIND', icon: <CodeIcon /> },
-          { segment: 'windows-dns', title: 'Windows Server DNS', icon: <CodeIcon /> },
-        ],
-      }
     ]
   },
   {
@@ -188,9 +204,11 @@ const NAVIGATION: Navigation = [
     title: 'Free Code', // 이 메뉴의 성격에 맞는 아이콘 (예: <RedeemIcon /> or <CodeIcon />)
     icon: <CodeOutlinedIcon />,
     children: [
-      { kind: 'header', title: 'Main items' },
+      { kind: 'page', title: 'Home', icon: <FestivalOutlinedIcon /> },
+      { kind: 'header', title: '카테고리' },
       { segment: 'qna', title: 'QnA', icon: <CodeIcon /> },
       { segment: 'note', title: 'Note', icon: <CodeIcon /> },
+      { kind: 'divider' },
     ]
   }
 ];

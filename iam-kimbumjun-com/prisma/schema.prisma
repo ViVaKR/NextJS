@@ -1,9 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+//--> pnpm add @prisma/client
+//--> pnpm add prisma --save-dev
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-// npx prisma migrate dev --name init
+//--> pnpx prisma generate
+
+//--> pnpx prisma migrate dev --name init
 
 datasource db {
   provider = "postgresql"
@@ -12,6 +12,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/app/generated/prisma/client"
 }
 
 model User {
@@ -79,6 +80,13 @@ model Demo {
   name String
 
   @@map("demos")
+}
+
+model Memo {
+  id    Int    @id @default(autoincrement())
+  title String
+
+  @@map("memos")
 }
 
 enum Role {
