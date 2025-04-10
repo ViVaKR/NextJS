@@ -1,9 +1,12 @@
+import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
 export default function Page() {
 
+    const title = 'WPF'
     return (
-        <>
-            <VivTitle title='WPF' />
-        </>
+        <div className='mx-2'>
+            <VivTitle title={title} />
+            <IncrementalCodes categoryId={36} categoryName={title} />
+        </div>
     );
 }

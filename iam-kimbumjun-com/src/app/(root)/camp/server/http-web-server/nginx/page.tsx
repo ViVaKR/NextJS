@@ -1,7 +1,16 @@
+import IncrementalCodes from "@/components/IncrementalCodes";
 import VivTitle from "@/components/VivTitle";
 
 export default function NginxPage() {
+
+  const title = 'NGINX';
+
   return (
-    <VivTitle title="NGINX" />
+    <div className='mx-2'>
+      <VivTitle title={title} />
+      <IncrementalCodes
+        categoryId={24}
+        categoryName={title} />
+    </div>
   );
 }

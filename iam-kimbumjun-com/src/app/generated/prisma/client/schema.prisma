@@ -1,5 +1,6 @@
 //--> pnpm add @prisma/client
 //--> pnpm add prisma --save-dev
+
 //--> pnpx prisma generate
 
 //--> pnpx prisma migrate dev --name init

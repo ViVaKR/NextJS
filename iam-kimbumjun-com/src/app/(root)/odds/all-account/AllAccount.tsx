@@ -221,7 +221,7 @@ export default function AllAccount() {
       redirect(`/membership/sign-in`); // Navigate to the new post page
     }
 
-    if (!isAdmin()) {
+    if (!isAdmin) {
       setError('관리자 권한이 필요합니다.');
       setLoading(false);
       return;

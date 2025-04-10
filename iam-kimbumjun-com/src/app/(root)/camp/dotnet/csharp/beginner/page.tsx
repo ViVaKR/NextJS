@@ -1,9 +1,15 @@
+import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
 export default function Page() {
 
+    const title = 'C# Beginner';
+
     return (
-        <>
-            <VivTitle title='C# Beginner' />
-        </>
+        <div className='mx-2'>
+            <VivTitle title={title} />
+            <IncrementalCodes
+                categoryId={34}
+                categoryName={title} />
+        </div>
     );
 }

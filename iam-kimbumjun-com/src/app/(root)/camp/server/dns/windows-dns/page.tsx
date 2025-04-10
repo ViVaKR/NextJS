@@ -1,7 +1,16 @@
+import IncrementalCodes from "@/components/IncrementalCodes";
 import VivTitle from "@/components/VivTitle";
 
 export default function WindowsDnsPage() {
+
+  const title = 'Windows Serber DNS';
+
   return (
-    <VivTitle title="Windows DNS" />
+    <div className='mx-2'>
+      <VivTitle title={title} />
+      <IncrementalCodes
+        categoryId={55}
+        categoryName={title} />
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client'
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { Button, Tooltip } from '@mui/material';
-import { title } from 'process';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import { useState } from 'react';
 
 interface CopyClipboardProps {
@@ -38,8 +38,8 @@ export default function CopyClipboard({
             onClick={() => handleCopyToClipboard(content)}
         >
             <Tooltip enterDelay={500} leaveDelay={200} title={copySuccess ? `${title} 복사완료!` : `${title} 복사하기?`} arrow>
-                <span className="material-symbols-outlined" aria-label={copySuccess ? `${title} 복사완료!` : `${title} 복사하기?`} style={{ fontSize: '1.2rem' }}>
-                    content_copy
+                <span aria-label={copySuccess ? `${title} 복사완료!` : `${title} 복사하기?`} style={{ fontSize: '1.2rem' }}>
+                    <ContentCopyOutlinedIcon />
                 </span>
             </Tooltip>
         </Button>

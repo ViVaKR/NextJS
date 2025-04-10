@@ -26,7 +26,6 @@ import WidgetsIcon from '@mui/icons-material/Widgets';
 import HtmlIcon from '@mui/icons-material/Html';
 import CssIcon from '@mui/icons-material/Css';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash'; // 예시 아이콘 import
-import PhpOutlinedIcon from '@mui/icons-material/PhpOutlined';
 import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
 const NAVIGATION: Navigation = [
   {
@@ -52,11 +51,13 @@ const NAVIGATION: Navigation = [
           { segment: 'aspnetcore', title: 'ASP.NET Core', icon: <CategoryOutlinedIcon /> },
           { segment: 'blazor', title: 'Blazor', icon: <CategoryOutlinedIcon /> },
           { segment: 'maui', title: '.NET MAUI', icon: <CategoryOutlinedIcon /> },
+          { segment: 'winui', title: 'WinUI', icon: <CategoryOutlinedIcon /> },
           { segment: 'wpf', title: 'WPF', icon: <CategoryOutlinedIcon /> },
           { segment: 'winforms', title: 'Windows Forms', icon: <CategoryOutlinedIcon /> },
           { segment: 'visualbasic', title: 'Visual Basic .NET', icon: <CategoryOutlinedIcon /> },
           { segment: 'vba', title: 'VBA', icon: <CategoryOutlinedIcon /> },
           { segment: 'fsharp', title: 'F#', icon: <CategoryOutlinedIcon /> },
+          { segment: 'unity', title: 'Unity', icon: <CategoryOutlinedIcon /> },
           { kind: 'divider' },
         ],
       },
@@ -70,10 +71,15 @@ const NAVIGATION: Navigation = [
           { segment: 'python', title: 'Python', icon: <CategoryOutlinedIcon /> },
           { segment: 'ruby', title: 'Ruby', icon: <CategoryOutlinedIcon /> },
           { segment: 'r', title: 'R', icon: <CategoryOutlinedIcon /> },
+          { segment: 'matlab', title: 'MATLAB', icon: <CategoryOutlinedIcon /> },
+          { segment: 'scratch', title: 'Scratch', icon: <CategoryOutlinedIcon /> },
           { segment: 'go', title: 'Go', icon: <CategoryOutlinedIcon /> },
           { segment: 'java', title: 'Java', icon: <CategoryOutlinedIcon /> },
           { segment: 'kotlin', title: 'Kotlin', icon: <CategoryOutlinedIcon /> },
           { segment: 'dart', title: 'Dart', icon: <FlutterDashIcon /> },
+          { segment: 'php', title: 'PHP', icon: <CategoryOutlinedIcon /> },
+          { segment: 'fortran', title: 'Fortran', icon: <CategoryOutlinedIcon /> },
+          { segment: 'cobol', title: 'COBOL', icon: <CategoryOutlinedIcon /> },
           { segment: 'swift', title: 'Swift', icon: <CategoryOutlinedIcon /> },
           { kind: 'divider' },
 
@@ -88,6 +94,7 @@ const NAVIGATION: Navigation = [
           { kind: 'header', title: '카테고리' },
           { segment: 'html', title: 'HTML', icon: <HtmlIcon /> },
           { segment: 'css-scss-less', title: 'CSS / SCSS / LESS', icon: <CssIcon /> },
+          { segment: 'tailwindcss', title: 'TailwindCSS', icon: <CssIcon /> },
           { segment: 'svg', title: 'SVG', icon: <CodeIcon /> },
           { kind: 'divider' },
         ],
@@ -208,6 +215,7 @@ const NAVIGATION: Navigation = [
       { kind: 'header', title: '카테고리' },
       { segment: 'qna', title: 'QnA', icon: <CodeIcon /> },
       { segment: 'note', title: 'Note', icon: <CodeIcon /> },
+      { segment: 'math', title: 'Math', icon: <CodeIcon /> },
       { kind: 'divider' },
     ]
   }
@@ -226,7 +234,6 @@ function useDemoRouter(): Router {
   const [currentPath, setCurrentPath] = React.useState(pathname || '/app-bar');
 
   React.useEffect(() => {
-    console.log(pathname);
     setCurrentPath(pathname || '/app-bar');
   }, [pathname]);
 
@@ -273,10 +280,9 @@ export default function VivAppBar(
   }
 
   return (
-    <div className=''>
+    <div>
       <AppProvider
         navigation={NAVIGATION}
-
         branding={{
           logo: (
             <Image
@@ -290,13 +296,12 @@ export default function VivAppBar(
           ),
           title: 'ViV',
           homeUrl: '/app-bar',
-
         }}
 
         router={router}
         theme={demoTheme}
       >
-        <DashboardLayout> {children} </DashboardLayout>
+        <DashboardLayout>{children}</DashboardLayout>
       </AppProvider >
     </div>
   );

@@ -93,7 +93,6 @@ export default function IncrementalCodes({ categoryName, categoryId }: Increment
         },
     });
 
-
     const columns: GridColDef[] = [
         {
             field: 'id',

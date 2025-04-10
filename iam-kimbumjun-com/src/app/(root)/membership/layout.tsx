@@ -55,7 +55,6 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
             <div key={idx}>
               <VivNavigation
                 menu={menu}
-                asLink={true}
                 className="
                 px-4
                 py-2

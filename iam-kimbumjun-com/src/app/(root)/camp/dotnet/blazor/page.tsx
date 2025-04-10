@@ -1,9 +1,11 @@
+import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function Page() {
-
+export default function BlazorPage() {
+    const title = 'Blazor';
     return (
-        <>
-            <VivTitle title='Blazor' />
-        </>
+        <div className='mx-2'>
+            <VivTitle title={title} />
+            <IncrementalCodes categoryId={6} categoryName={title} />
+        </div>
     );
 }

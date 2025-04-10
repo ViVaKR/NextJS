@@ -10,7 +10,8 @@ import { fetchCategories } from '@/lib/fetchCategories';
 import { Controller, useForm } from 'react-hook-form';
 import { CodeData } from '@/types/code-form-data';
 import { getToken, userDetail } from '@/services/auth.service';
-import { Box, Button, ButtonGroup, Divider, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
+import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined'
+import { Box, Button, ButtonGroup, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import FileManager from '@/components/file-manager/FileManager';
 import FileUploader from '@/components/file-manager/FileUploader';
 import Image from 'next/image';
@@ -194,7 +195,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
                   {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       <span className="flex items-center gap-2">
-                        <span className="material-symbols-outlined">point_scan</span>
+                        <GpsFixedOutlinedIcon />
+
                         {category.name}
                       </span>
                     </MenuItem>

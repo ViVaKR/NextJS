@@ -74,18 +74,18 @@ export default function SignIn() {
   const showLoginFailed = () =>
     showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'center', 3000);
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const success = await login(email, password);
+  const onFormSubmit = async (data: ISignInRequest) => {
+    const success = await login(data.email, data.password);
+
     if (success) {
       const fullName = userDetail()?.fullName ?? 'Guest';
       setTimeout(() => {
         showLoginSuccess(fullName);
-        router.refresh();
         setTimeout(() => {
           router.push('/');
         }, 500)
 
+        router.refresh();
       }, 100);
     } else {
       showLoginFailed();
@@ -98,7 +98,7 @@ export default function SignIn() {
         <span className={styles.borderLine}></span>
 
         <form
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit(onFormSubmit)}
           className="flex flex-col gap-4
           rounded-xl
           form p-4 border-4

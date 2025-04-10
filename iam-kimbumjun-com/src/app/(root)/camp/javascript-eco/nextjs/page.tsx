@@ -1,7 +1,14 @@
+import IncrementalCodes from "@/components/IncrementalCodes";
 import VivTitle from "@/components/VivTitle";
 
 export default function NextJsPage() {
+  const title = 'NEXT.JS';
   return (
-    <VivTitle title="NEXT.js" />
+    <div className='mx-2'>
+      <VivTitle title={title} />
+      <IncrementalCodes
+        categoryId={25}
+        categoryName={title} />
+    </div>
   );
 }

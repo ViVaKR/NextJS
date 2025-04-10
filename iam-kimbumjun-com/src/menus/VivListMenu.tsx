@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
+import { Opacity } from '@mui/icons-material';
 
 export default function VivListMenu({
   items,
@@ -42,6 +43,7 @@ export default function VivListMenu({
     index: number
   ) => {
     const item = items[index]; // --> 클릭된 메뉴 항목
+    if (item.disabled) return;
     setSelectedIndex(index);
     setAnchorEl(null); // --> 메뉴 닫기
     router.push(item.url);
@@ -104,7 +106,10 @@ export default function VivListMenu({
             {item.hasDivider && <Divider />}
             <MenuItem
               selected={index === selectedIndex}
-              onClick={(event) => handleMenuItemClick(event, index)}>
+              onClick={(event) => handleMenuItemClick(event, index)}
+              disabled={item.disabled}
+              sx={item.disabled ? { Opacity: 0.5 } : {}} //  비활성 스타일
+            >
               <LensBlurOutlinedIcon sx={{ mr: 1 }} />
               {`${item.title}`}
             </MenuItem>

@@ -207,7 +207,8 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../../../.env"
   },
   "relativePath": "../../../../../prisma",
   "clientVersion": "6.6.0",
@@ -216,16 +217,17 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://kimbumjun:B9037%21m8947%23@localhost:59293/kimbumjun?schema=public"
+        "value": null
       }
     }
   },
-  "inlineSchema": "//--> pnpm add @prisma/client\n//--> pnpm add prisma --save-dev\n//--> pnpx prisma generate\n\n//--> pnpx prisma migrate dev --name init\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/app/generated/prisma/client\"\n}\n\nmodel User {\n  id      Int      @id @default(autoincrement())\n  email   String   @unique\n  name    String?\n  role    Role     @default(USER)\n  posts   Post[]\n  profile Profile?\n\n  @@map(\"users\")\n}\n\nmodel Profile {\n  id     Int    @id @default(autoincrement())\n  bio    String\n  user   User   @relation(fields: [userId], references: [id])\n  userId Int    @unique\n\n  @@map(\"profiles\")\n}\n\nmodel Post {\n  id         Int        @id @default(autoincrement())\n  createdAt  DateTime   @default(now())\n  title      String\n  content    String?\n  published  Boolean    @default(false)\n  data       Json       @default(\"{\\\"Hello,\\\": \\\" World\\\"}\")\n  author     User       @relation(fields: [authorId], references: [id])\n  authorId   Int\n  categories Category[]\n  comments   Comment[]\n\n  @@unique(name: \"authorTitle\", [authorId, title])\n  @@map(\"posts\")\n}\n\nmodel Category {\n  id    Int    @id @default(autoincrement())\n  name  String\n  posts Post[]\n\n  @@map(\"categories\")\n}\n\nmodel Comment {\n  id      Int     @id @default(autoincrement())\n  title   String\n  content String?\n  post    Post?   @relation(fields: [postId], references: [id])\n  postId  Int?\n\n  @@map(\"comments\")\n}\n\nmodel Tag {\n  name String @id\n\n  @@map(\"tags\")\n}\n\nmodel Demo {\n  id   Int    @id @default(autoincrement())\n  name String\n\n  @@map(\"demos\")\n}\n\nmodel Memo {\n  id    Int    @id @default(autoincrement())\n  title String\n\n  @@map(\"memos\")\n}\n\nenum Role {\n  USER\n  ADMIN\n}\n",
-  "inlineSchemaHash": "e142c7bf0154d32902bef44f5f4717c920806daf282a068c1426e1cbf109d50e",
+  "inlineSchema": "//--> pnpm add @prisma/client\n//--> pnpm add prisma --save-dev\n\n//--> pnpx prisma generate\n\n//--> pnpx prisma migrate dev --name init\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/app/generated/prisma/client\"\n}\n\nmodel User {\n  id      Int      @id @default(autoincrement())\n  email   String   @unique\n  name    String?\n  role    Role     @default(USER)\n  posts   Post[]\n  profile Profile?\n\n  @@map(\"users\")\n}\n\nmodel Profile {\n  id     Int    @id @default(autoincrement())\n  bio    String\n  user   User   @relation(fields: [userId], references: [id])\n  userId Int    @unique\n\n  @@map(\"profiles\")\n}\n\nmodel Post {\n  id         Int        @id @default(autoincrement())\n  createdAt  DateTime   @default(now())\n  title      String\n  content    String?\n  published  Boolean    @default(false)\n  data       Json       @default(\"{\\\"Hello,\\\": \\\" World\\\"}\")\n  author     User       @relation(fields: [authorId], references: [id])\n  authorId   Int\n  categories Category[]\n  comments   Comment[]\n\n  @@unique(name: \"authorTitle\", [authorId, title])\n  @@map(\"posts\")\n}\n\nmodel Category {\n  id    Int    @id @default(autoincrement())\n  name  String\n  posts Post[]\n\n  @@map(\"categories\")\n}\n\nmodel Comment {\n  id      Int     @id @default(autoincrement())\n  title   String\n  content String?\n  post    Post?   @relation(fields: [postId], references: [id])\n  postId  Int?\n\n  @@map(\"comments\")\n}\n\nmodel Tag {\n  name String @id\n\n  @@map(\"tags\")\n}\n\nmodel Demo {\n  id   Int    @id @default(autoincrement())\n  name String\n\n  @@map(\"demos\")\n}\n\nmodel Memo {\n  id    Int    @id @default(autoincrement())\n  title String\n\n  @@map(\"memos\")\n}\n\nenum Role {\n  USER\n  ADMIN\n}\n",
+  "inlineSchemaHash": "f1551211930b092db213313293928e67923915f930ca646709e67573500f810f",
   "copyEngine": true
 }
 
@@ -234,8 +236,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "../src/app/generated/prisma/client",
     "src/app/generated/prisma/client",
+    "app/generated/prisma/client",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -265,7 +267,7 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "../src/app/generated/prisma/client/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "src/app/generated/prisma/client/libquery_engine-darwin-arm64.dylib.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "../src/app/generated/prisma/client/schema.prisma")
+path.join(process.cwd(), "src/app/generated/prisma/client/schema.prisma")

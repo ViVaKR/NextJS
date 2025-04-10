@@ -1,9 +1,15 @@
+import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
 export default function GoPage() {
 
+    const title = 'Go';
+
     return (
-        <>
-            <VivTitle title='Go' />
-        </>
+        <div className='mx-2'>
+            <VivTitle title={title} />
+            <IncrementalCodes
+                categoryId={16}
+                categoryName={title} />
+        </div>
     );
 }

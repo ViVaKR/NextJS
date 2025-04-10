@@ -15,7 +15,6 @@ export async function fetchCodes(): Promise<ICode[]> {
             headers: { 'Content-Type': 'application/json' },
             cache: 'no-cache'
         });
-        console.log('목록 응답: ', response);
         if (!response.ok) {
             throw new Error(`데이터 목록 가져오기 실패: ${response.status} ${response.statusText}`);
         }
@@ -29,7 +28,6 @@ export async function fetchCodes(): Promise<ICode[]> {
 export async function fetchUserCodes(userId: string): Promise<ICode[] | null> {
     const token = getToken();
     if (!token) { return null; }
-    console.log(token, userId);
     try {
         const url = `${apiUrl}/api/code/user/${userId}`;
         const response = await fetch(url, {
@@ -52,6 +50,23 @@ export async function fetchUserCodes(userId: string): Promise<ICode[] | null> {
     }
 }
 
+export async function fetchLimitedCodes(limit: number): Promise<ICode[]> {
+
+    try {
+        const url = `${apiUrl}/api/code/take?limit=${limit}`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            throw new Error(`데이터 청크 로드 실패: ${response.status}`)
+        }
+        return response.json();
+    } catch (error) {
+        throw error;
+    }
+
+}
 
 // * Post Code Data
 export async function postCodes(data: CodeData):
