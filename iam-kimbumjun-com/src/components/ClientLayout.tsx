@@ -14,6 +14,7 @@ import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import { useAuth } from '@/lib/AuthContext';
 import { userDetail } from '@/services/auth.service';
+import CreateIcon from '@mui/icons-material/Create';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -109,13 +110,7 @@ export default function ClientLayout({
           aria-label={isCollapsed ? '카테고리 보기' : '카테고리 숨김'}
         >
 
-          {!isMounted ? (
-            <Tooltip title='카테고리 숨김' arrow>
-              <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
-                open_in_full
-              </span>
-            </Tooltip>
-          ) : (
+          {isMounted && (
             <Tooltip title={isCollapsed ? '카테고리 보기' : '카테고리 숨김'} arrow>
               <span className="material-symbols-outlined" style={{ fontSize: "1.2rem" }}>
                 {isCollapsed ? (<CloseFullscreenOutlinedIcon />) : (<OpenInFullOutlinedIcon />)}
@@ -123,7 +118,6 @@ export default function ClientLayout({
             </Tooltip>
           )}
         </button>
-
 
         <Link
           href="/code"
@@ -146,7 +140,7 @@ export default function ClientLayout({
             <Link
               href={'/membership/sign-in'}
               className='text-base text-slate-400 hover:!text-red-500'>
-              로그인
+              <CreateIcon />
             </Link>
           </Tooltip>
         )}

@@ -14,15 +14,15 @@ import {
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import { userDetail } from '@/services/auth.service';
 import { useForm } from 'react-hook-form';
 import { ISignInRequest } from '@/interfaces/i-signin-request';
 import { signIn } from "next-auth/react";
 import Image from 'next/image'
 
 export default function SignIn() {
+
   const router = useRouter();
-  const { login, loading, user } = useAuth();
+  const { login, loading, user, updateUser } = useAuth();
   const { showSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -36,19 +36,14 @@ export default function SignIn() {
     control,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<ISignInRequest>(
     {
       defaultValues: {
         email: '',
         password: '',
-
       }
     }
   )
-
-  const email = watch('email');
-  const password = watch('password');
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseEvents = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
@@ -67,28 +62,27 @@ export default function SignIn() {
 
   if (loading) return <div>로딩 중...</div>;
 
-  const showLoginSuccess = (message: string) => {
-    showSnackbar(message + '님 환영합니다.', 'success', 'top', 'right', 3000); // 메시지와 erverity 설정
+  const showLoginSuccess = () => {
+    showSnackbar('환영합니다.', 'success', 'bottom', 'right', 2000);
   };
 
   const showLoginFailed = () =>
-    showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'center', 3000);
+    showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'right', 3000);
 
   const onFormSubmit = async (data: ISignInRequest) => {
-    const success = await login(data.email, data.password);
 
-    if (success) {
-      const fullName = userDetail()?.fullName ?? 'Guest';
-      setTimeout(() => {
-        showLoginSuccess(fullName);
-        setTimeout(() => {
-          router.push('/');
-        }, 500)
-
-        router.refresh();
-      }, 100);
-    } else {
-      showLoginFailed();
+    try {
+      const result = await login(data.email, data.password);
+      if (result) {
+        showLoginSuccess();
+        router.push('/');
+        // setTimeout(() => {
+        // }, 100);
+      } else {
+        showLoginFailed();
+      }
+    } catch (e: any) {
+      throw new Error(e.message);
     }
   };
 

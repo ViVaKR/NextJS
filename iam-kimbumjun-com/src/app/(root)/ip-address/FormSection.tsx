@@ -69,7 +69,7 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
     ];
 
     return (
-        <>
+        <div className='min-h-screen'>
             <Box
                 component="form"
                 sx={{ '& > :not(style)': { m: 1, width: '25ch' } }}
@@ -118,7 +118,7 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
                     {error && <p className="text-red-500 text-center">{error}</p>}
                 </span>
             </div>
-        </>
+        </div>
     );
 };
 

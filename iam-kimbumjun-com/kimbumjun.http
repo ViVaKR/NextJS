@@ -1,6 +1,7 @@
 @url = https://localhost:41086
 @vivabmUrl = https://api.vivabm.com
 
+
 ###
 GET {{vivabmUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
 
@@ -24,10 +25,16 @@ GET {{url}}/api/search?query=hello
 # curl http://localhost:3000/api/search --url-query query=hi -w "\nstatus=%{http_code} %{redirect_url} size=%{size_download} time=%{time_total} content-type=\"%{content_type}\"\n"
 ###
 
-POST https://example.com/comments HTTP/1.1
+
+GET {{vivabmUrl}}/api/subscribe/list HTTP/1.1
+
+###
+
+POST {{vivabmUrl}}/api/subscribe/new HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sample",
-    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+    "email": "kimburmjun@gmail.com"
 }
+
+###

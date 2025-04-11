@@ -133,7 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     initializeAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, session, fetchUserDetail]); // session 객체 자체는 변경될 수 있으므로 포함
 
   // 자체 로그인 함수
@@ -188,7 +187,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         return true;
       } else {
-        console.error("Login failed:", data.message || 'Unknown reason');
         setUser(null);
         setLoading(false);
         return false;

@@ -191,6 +191,13 @@ export default function Page() {
 
           <Button
             size="small"
+            onClick={() => router.push('/membership/send-mail')}
+            color="primary">
+            메일전송
+          </Button>
+
+          <Button
+            size="small"
             onClick={() => router.push('/code/create')}
             color="primary">
             코드작성

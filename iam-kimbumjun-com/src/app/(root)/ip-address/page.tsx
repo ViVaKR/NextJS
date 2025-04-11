@@ -16,10 +16,10 @@ const Page = async () => {
   const ipInfo = await getInfo();
 
   return (
-    <React.Fragment>
+    <>
       <VivTitle title="IP Address Info" />
       <FormSection ipInfo={ipInfo} />
-    </React.Fragment>
+    </>
   );
 };
 export default Page;
