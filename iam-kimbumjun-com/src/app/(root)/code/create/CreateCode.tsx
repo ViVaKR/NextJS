@@ -74,7 +74,6 @@ export default function CreateCodePage() {
         watch,
         reset,
         setValue,
-        register
     } = useForm<CodeData>({
         defaultValues: {
             id: 0,
@@ -342,17 +341,18 @@ export default function CreateCodePage() {
                 <div className='w-full flex justify-center'>
                     <Button
                         disabled={isSubmitting}
-                        className='px-4
-                        py-2
-                        rounded-lg cursor-pointer
-                        my-4
-                        border-slate-400
-                        border' type="submit">
+                        className='px-4 py-2
+                        cursor-pointer
+                        hover:!text-white
+                        !border
+                        !my-8 hover:!bg-red-400'
+                        type="submit">
                         {isSubmitting ? '저장 중' : '저장'}
                     </Button>
 
                 </div>
             </form >
+            <div className='min-h-screen w-full'></div>
         </Box >
     );
 }

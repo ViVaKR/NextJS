@@ -42,29 +42,31 @@ const handler = NextAuth({
     callbacks: {
         async jwt({ token, user, account }) {
             // 최초 로그인 시 user 객체를 token에 매핑
-            if (user) {
+            if (account && user) {
                 token.user = {
-                    id: user.id || "NoId", // Google은 id 제공 안 하니까 빈 값 가능
+                    id: user.id || account?.providerAccountId || "NoId",
                     fullName: user.name || "Guest",
                     email: user.email || "NoMail",
-                    emailConfirmed: true, // Google은 기본 확인된 이메일
-                    roles: ["User"], // 기본 역할 부여
-                    phoneNumber: "000-0000-0000",
+                    emailConfirmed: !!user.email,
+                    roles: ["User"],
+                    phoneNumber: "123-4567-8901",
                     twoFactorEnabled: false,
-                    token: "", // Google 토큰은 여기 안 넣음
-                    refreshToken: "",
+                    token: account?.id_token ?? "",
+                    refreshToken: account?.refresh_token ?? "",
                     isSuccess: true,
                     message: `${account?.provider} Login Success!`,
                     phoneNumberConformed: false,
                     accessFailedCount: 0,
                     avata: user.image || "/images/login-icon.png",
+                    provider: account?.provider
                 } as ExtendedUser;
             }
             return token;
         },
         async session({ session, token }) {
             // 세션에 JWT의 user 객체를 반영
-            session.user = token.user as ExtendedUser;
+            if (token.user)
+                session.user = token.user as ExtendedUser;
             return session;
         },
 
@@ -72,9 +74,10 @@ const handler = NextAuth({
             return `${baseUrl}`; // 홈으로 리다이렉트
         },
     },
+    // pages: { // 자체 로그인 페이지가 있다면 설정
+    //   signIn: '/auth/signin',
+    // }
 });
-
-
 
 export { handler as GET, handler as POST };
 

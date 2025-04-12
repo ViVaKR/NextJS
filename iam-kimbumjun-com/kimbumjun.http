@@ -26,7 +26,7 @@ GET {{url}}/api/search?query=hello
 ###
 
 
-GET {{vivabmUrl}}/api/subscribe/list HTTP/1.1
+GET {{vivabmUrl}}/api/subscribe/list?limit=2 HTTP/1.1
 
 ###
 
@@ -38,3 +38,19 @@ content-type: application/json
 }
 
 ###
+POST {{vivabmUrl}}/api/subscribe/remove-subscribe HTTP/1.1
+content-type: application/json
+
+{
+    "email": "hello.viva.bm@gmail.com"
+}
+
+###
+
+DELETE  {{vivabmUrl}}/api/subscribe/reply-remove-subscribe?email=hello.viva.bm@gmail.com HTTP/1.1
+
+###
+# /api/subscribe/replay-remove-subscribe
+# reply-remove-subscribe
+# api/subscribe/remove-subscription
+# api/subscribe/reply-remove-subscribe

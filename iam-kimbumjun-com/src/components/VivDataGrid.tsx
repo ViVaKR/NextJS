@@ -22,7 +22,7 @@ export default function VivDataGrid<T>({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadData = async () => {
       try {
         setIsLoading(true);
         let fetchedData: T[] = initialData; // 초기 데이터 사용
@@ -35,7 +35,7 @@ export default function VivDataGrid<T>({
       }
     };
 
-    loadUsers(); // 한 번만 호출
+    loadData(); // 한 번만 호출
   }, [initialData]);
 
   return (

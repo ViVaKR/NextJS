@@ -5,10 +5,14 @@ import { apiFetch } from "@/lib/api";
 import { jwtDecode } from "jwt-decode";
 
 const isClient = typeof window !== 'undefined';
+
 const userToken = 'user';
 
+// --> getToken
 export const getToken = (): string | null => {
+
   if (!isClient) return null;
+
   const user = localStorage.getItem(userToken);
   if (!user) return null;
   const userDetail: IAuthResponse = JSON.parse(user);

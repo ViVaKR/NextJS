@@ -2,7 +2,7 @@
 import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { Button, FilledInput, FormControl, FormHelperText, InputLabel, Stack } from "@mui/material";
+import { Button, CircularProgress, FilledInput, FormControl, FormHelperText, InputLabel, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 
 type ForgetPasswordFormData = {
@@ -11,10 +11,9 @@ type ForgetPasswordFormData = {
 }
 
 export default function ForgetPasswordPaage() {
-
   const { showSnackbar } = useSnackbar()
-
   const onSubmit = async (data: ForgetPasswordFormData) => {
+
     data.replayUrl = "https://viv.vivabm.com/membership";
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/forgetpwd`, { // <-- 괄호 제거
@@ -55,7 +54,7 @@ export default function ForgetPasswordPaage() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ForgetPasswordFormData>({
     defaultValues: { email: '' },
     mode: 'onTouched'
@@ -89,12 +88,16 @@ export default function ForgetPasswordPaage() {
         </FormControl>
 
         <Stack direction='row' sx={{ width: '100%' }}>
-          <Button type="submit" variant="outlined" color="primary" sx={{ mx: 'auto', width: 'auto', fontFamily: 'var(--font-noto)' }}>
-            비밀번호 변경 이메일 보내기
+          <Button
+            type="submit"
+            variant="outlined"
+            color="primary"
+            disabled={isSubmitting}
+            sx={{ mx: 'auto', width: 'auto', fontFamily: 'var(--font-noto)' }}>
+
+            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : '비밀번호 변경 메일전송'}
           </Button>
         </Stack>
-
-
       </form>
     </div>
   );

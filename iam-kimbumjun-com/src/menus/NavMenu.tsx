@@ -10,6 +10,7 @@ import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext'; // 경로는 실제 위치에 맞게 조정!
 
+
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
 
 // IP 정보 가져오는 함수 (변경 없음)
@@ -29,6 +30,7 @@ async function getInfo(): Promise<IIpInfo | undefined> {
   }
 }
 
+
 export default function NavMenu() {
   const menusData: IMenu[] = getNavMenuItems();
   const [hideMembership, setHideMembership] = useState<boolean>(false);
@@ -43,7 +45,6 @@ export default function NavMenu() {
       if (process.env.NEXT_PUBLIC_MYIP) {
         setHideMembership(rs?.ip === process.env.NEXT_PUBLIC_MYIP);
       } else {
-        console.warn("NEXT_PUBLIC_MYIP environment variable is not set.");
         setHideMembership(false); // 환경 변수가 없으면 숨기지 않음 (기본값)
       }
     };
@@ -73,12 +74,24 @@ export default function NavMenu() {
 
   // --- 메뉴 필터링 ---
   // 로그인 상태(isAuthenticated)에 따라 메뉴 항목의 disabled 속성 설정
-  const filteredMenus = menusData.map((menu) => {
-    if (menu.id === 5) { // '코드작성' 메뉴 ID가 5라고 가정
-      return { ...menu, disabled: !isAuthenticated }; // 로그인 안했으면 disabled=true
+  // const filteredMenus = menusData.map((menu) => {
+  //   if (menu.id === 1) { // '코드작성' 메뉴 ID가 5라고 가정
+  //     return { ...menu, disabled: !isAuthenticated }; // 로그인 안했으면 disabled=true
+  //   }
+  //   return menu; // 다른 메뉴는 그대로 반환
+  // });
+
+  // 로그인했고 + 자체 회원('credentials' provider)일 때만 '코드작성' 메뉴를 포함시킴
+  const filteredMenus = menusData.filter((menu) => {
+    if (menu.id === 1) { // '코드작성' 메뉴 ID가 1이라고 가정
+      // user가 존재하고, user.provider가 'credentials'일 때만 true 반환 (메뉴 포함)
+      // 만약 자체 로그인 provider 이름이 다르다면 해당 이름으로 변경해야 함
+      return isAuthenticated && user?.provider === 'credentials';
     }
-    return menu; // 다른 메뉴는 그대로 반환
+    // 다른 메뉴는 항상 포함
+    return true;
   });
+
 
   // --- 컴포넌트 렌더링 ---
   return (
@@ -114,14 +127,19 @@ export default function NavMenu() {
       <div className="flex-none flex-grow"></div>
 
       {/* 데스크탑 메뉴 */}
-      <div className="w-full bg-sky-900 text-white flex text-base max-md:hidden justify-center items-center">
+      <div className="w-full bg-sky-900
+                    text-white
+                    flex text-base
+                    max-md:hidden justify-center items-center">
         {filteredMenus.map((menu, index) => (
           // 각 메뉴 항목 렌더링
           <div key={index}>
             {/* VivNavigation은 내부적으로 menu.disabled 상태를 사용함 */}
             <VivNavigation menu={menu}
               className=" px-4 py-2 hover:border-b-2
-                rounded-xl hover:border-b-rose-500 hover:text-rose-400">
+                rounded-xl whitespace-nowrap text-nowrap
+                hover:border-b-rose-500
+                hover:text-rose-400">
               {menu.title}
             </VivNavigation>
           </div>
@@ -132,6 +150,7 @@ export default function NavMenu() {
       <div className="md:hidden mr-2">
         {/* VivListMenu에도 업데이트된 filteredMenus 전달 */}
         <VivListMenu items={filteredMenus} text="" />
+
       </div>
 
       {/* 회원 메뉴 (AccountMenu) */}

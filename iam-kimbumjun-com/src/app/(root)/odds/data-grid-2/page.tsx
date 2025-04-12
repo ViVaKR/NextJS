@@ -1,4 +1,5 @@
 'use client';
+// src/app/(root)/odds/data-grid-2/page.tsx
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { useAuth } from '@/lib/AuthContext';
 import { GridColDef } from '@mui/x-data-grid';

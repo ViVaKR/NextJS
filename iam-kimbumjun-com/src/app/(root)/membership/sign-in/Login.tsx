@@ -46,8 +46,6 @@ export default function SignIn() {
   )
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseEvents = (e: React.MouseEvent<HTMLButtonElement>) => e.preventDefault();
-
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -76,8 +74,6 @@ export default function SignIn() {
       if (result) {
         showLoginSuccess();
         router.push('/');
-        // setTimeout(() => {
-        // }, 100);
       } else {
         showLoginFailed();
       }
@@ -125,7 +121,6 @@ export default function SignIn() {
               <FilledInput
                 id="filled-adornment-password"
                 {...control.register('password')}
-                // onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">

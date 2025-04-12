@@ -14,7 +14,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (status === "unauthenticated") {
             // 로그인이 안 되어 있으면 홈으로 리디렉션
-            window.location.href = "/membership/google";
+            window.location.href = "/";
         }
     }, [status]);
 

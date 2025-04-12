@@ -31,6 +31,7 @@ const getRolesFromToken = (token: string | undefined): string[] => {
 };
 
 const AuthContext = createContext<IAuthContextProps | undefined>(undefined); // 기본값 undefined 권장
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true); // 초기 로딩 상태는 true
@@ -178,6 +179,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           phoneNumberConformed: detailedUser.phoneNumberConformed || false,
           accessFailedCount: detailedUser.accessFailedCount || 0,
           avata: detailedUser.avata || '',
+          provider: 'credentials',
+
           // isGoogle: false // 자체 로그인임을 명시 (선택적)
         };
 

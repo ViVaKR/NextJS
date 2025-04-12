@@ -1,9 +1,9 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma } from "@/app/generated/prisma/client";
 
 const prisma = new PrismaClient();
 
 const demoData: Prisma.DemoCreateInput[] = [
-    { name: 'Kim Bum Jun' },
+    { name: '김범준' },
     { name: '장길산' },
     { name: '임꺽정' },
     { name: '황초롱' },

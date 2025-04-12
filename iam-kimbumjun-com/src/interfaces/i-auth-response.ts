@@ -4,6 +4,7 @@ export interface IAuthResponse { //API: AuthResponseDTO
     isSuccess: boolean;
     message?: string;
     refreshToken?: string;
+    provider?: string;
 }
 
 // src/interfaces/i-auth-response.ts
@@ -12,6 +13,7 @@ export interface IAuthResponseDTO {
     isSuccess: boolean;
     message: string;
     refreshToken?: string; // 선택적 필드
+    provider?: string;
 
 }
 

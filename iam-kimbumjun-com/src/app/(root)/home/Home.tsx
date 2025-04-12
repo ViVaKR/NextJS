@@ -7,6 +7,8 @@ import React, { useEffect, useState } from 'react';
 import { Cute_Font } from 'next/font/google'
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import VivSession from '@/components/VivSession';
 
 const cute = Cute_Font({
   subsets: ['latin'],
@@ -28,6 +30,7 @@ export default function Home() {
   const message = '인간이-이해하는-코드-조각..';
   const characters = Array.from(message);
   const router = useRouter();
+  const session = useSession();
 
   const handleGoToCodeSnippets = () => {
     router.push('/code');
@@ -53,6 +56,7 @@ export default function Home() {
     }
     getIpInfo()
     setIpArray(info?.ip.split('.'));
+
   }, [info?.ip])
 
   useEffect(() => {
@@ -121,6 +125,9 @@ export default function Home() {
         </button>
 
       </div>
+      {/* <p>
+        {JSON.stringify(session.data?.user)}
+      </p> */}
     </div>
   );
 }

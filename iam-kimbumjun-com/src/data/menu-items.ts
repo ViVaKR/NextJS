@@ -3,11 +3,11 @@ import { IMenu } from "@/interfaces/i-menu";
 export const getNavMenuItems = (): IMenu[] => {
     return [
         { id: 0, title: '코드조각', url: '/code' },
-        { id: 1, title: '소통', url: '/chat' },
-        { id: 2, title: '정보', url: '/ip-address' },
-        { id: 3, title: '캠프', url: '/camp' },
-        { id: 4, title: '잡동사니', url: '/odds' },
-        { id: 5, title: '코드작성', url: '/code/create' },
+        { id: 1, title: '코드작성', url: '/code/create', tooltip: 'Viv Membership 만 이용가능' },
+        { id: 2, title: '소통', url: '/chat' },
+        { id: 3, title: '정보', url: '/ip-address' },
+        { id: 4, title: '캠프', url: '/camp' },
+        { id: 5, title: '잡동사니', url: '/odds' },
 
     ];
 }

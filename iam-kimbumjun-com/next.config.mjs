@@ -6,6 +6,17 @@ import createMDX from '@next/mdx'
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+    output: 'standalone',
+    experimental: {},
+    turbopack: {
+        rules: {
+            '*.svg': {
+                loaders: ['@svgr/webpack'],
+                as: '*.js'
+            }
+        },
+        resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
+    },
     reactStrictMode: true,
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     images: {
@@ -47,7 +58,7 @@ const nextConfig = {
         'http://localhost:3000', // 로컬 풀 URL
         'localhost',            // 기본
         '127.0.0.1',
-    ],
+    ]
 };
 
 const withMDX = createMDX({
@@ -57,3 +68,5 @@ const withMDX = createMDX({
     // },
 });
 export default withMDX(nextConfig);
+
+// export default nextConfig;

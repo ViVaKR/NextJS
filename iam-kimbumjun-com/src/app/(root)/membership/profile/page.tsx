@@ -21,7 +21,7 @@ import VivGridControl from '@/components/VivGridControl';
 export default function Page() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const [name, setName] = useState<string>('');
-  const { user, updateUser } = useProfile();
+  const { user, updateUser, isAdmin } = useProfile();
   const [userCodes, setUserCodes] = useState<ICode[] | null>(null);
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
@@ -31,10 +31,7 @@ export default function Page() {
   const getAvataUrl = () => {
     if (user == null || user.avata == null) return null;
     return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
-    // 타임스탬프 추가로 캐시 방지
-    // return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}?t=${new Date().getTime()}`;
   };
-
 
   const handleGetMyCodes = async () => {
     try {
@@ -175,6 +172,7 @@ export default function Page() {
             color="secondary">
             비밀번호 변경
           </Button>
+
           <Button
             size="small"
             onClick={() => router.push('/membership/cancel-membership')}
@@ -189,12 +187,15 @@ export default function Page() {
             나의코드
           </Button>
 
-          <Button
-            size="small"
-            onClick={() => router.push('/membership/send-mail')}
-            color="primary">
-            메일전송
-          </Button>
+          {isAdmin && (
+            <Button
+              size="small"
+              onClick={() => router.push('/membership/send-mail')}
+              color="primary">
+              메일전송
+            </Button>
+          )}
+
 
           <Button
             size="small"

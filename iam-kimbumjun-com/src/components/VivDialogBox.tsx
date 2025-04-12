@@ -9,15 +9,15 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Diversity3OutlinedIcon from '@mui/icons-material/Diversity3Outlined';
 import { useState } from 'react';
-import { Tooltip } from '@mui/material';
+import { CircularProgress, Tooltip } from '@mui/material';
 
 export default function VivDailogBox() {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-
-
+    const [choice, setChoice] = useState<boolean>(true);
+    const [disable, setDisable] = useState<boolean>(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -26,46 +26,77 @@ export default function VivDailogBox() {
         setEmail(''); // 이메일 초기화
     };
 
-    // 다이얼로그 닫기
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    // ? 구독요청 처리
+    //? 구독신청
     const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        // 이메일 유효성 검사 (클라이언트 측)
+        setDisable(true)
+        // 이메일 유효성 검사
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError('유효한 이메일을 입력해주세요.');
+            setDisable(false);
             return;
         }
 
-        try {
+        const url = choice ? `${process.env.NEXT_PUBLIC_API_URL}/api/subscribe/new` : `${process.env.NEXT_PUBLIC_API_URL}/api/subscribe/remove-subscribe`;
 
-            // * 직접호출
-            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscribe/new`, {
-            const requestInit: RequestInit = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email })
-            };
+        if (choice) {
+            // 구독신청
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
 
-            const response = await fetch(`/api/subscribe/new`, requestInit);
-            const data = await response.json();
-            if (!response.ok) {
-                setError(data.message || '구독에 실패했습니다.');
-                return;
+                const data = await response.json();
+                if (!response.ok) {
+                    setError(data.message || '구독에 실패했습니다.');
+                    return;
+                }
+
+                setSuccess(data.message || '구독이 완료되었습니다!');
+                setTimeout(() => handleClose(), 1500); // 1.5초 후 다이얼로그 닫기
+            } catch (err: any) {
+                setError('서버와의 연결에 문제가 발생했습니다.');
+                setError(err.message);
+            } finally {
+                setDisable(false);
             }
 
-            setSuccess(data.message || '구독이 완료되었습니다!');
-            setTimeout(() => handleClose(), 1500); // 1.5초 후 다이얼로그 닫기
-        } catch (err: any) {
-            setError('서버와의 연결에 문제가 발생했습니다.');
-            setError(err.message);
+        } else {
+            // 구독취소
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    setError('구독 취소에 실패했습니다. 운영진에게 메일을 발송하여 주세요. --> ( viv.buddha@gmail.com )');
+                    return;
+                }
+
+                setSuccess(data.message || '구독취소 완료 되었습니다!');
+                setTimeout(() => handleClose(), 1500); // 1.5초 후 다이얼로그 닫기
+            } catch (err: any) {
+                setError('서버와의 연결에 문제가 발생했습니다.');
+                setError(err.message);
+            } finally {
+                setDisable(false);
+            }
         }
+
+        setDisable(false);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
     }
 
     return (
@@ -96,23 +127,13 @@ export default function VivDailogBox() {
                     paper: {
                         component: 'form',
                         onSubmit: handleSubscribe
-                        // onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                        //     event.preventDefault();
-                        //     const formData = new FormData(event.currentTarget);
-                        //     const formJson = Object.fromEntries((formData as any).entries());
-                        //     const email = formJson.email;
-
-                        //     console.log(email)
-
-                        //     handleClose();
-                        // },
                     },
                 }}
             >
-                <DialogTitle>Subscribe</DialogTitle>
+                <DialogTitle>구독</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        이 웹사이트를 구독하려면 이메일 주소를 입력해주세요. 가끔씩 업데이트 소식을 보내드립니다.
+                        이 웹사이트를 구독하려면 이메일 주소를 입력해주세요.
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -120,7 +141,7 @@ export default function VivDailogBox() {
                         margin="dense"
                         id="email"
                         name="email"
-                        label="이메일 주소"
+                        label="구독 메일"
                         type="email"
                         fullWidth
                         variant="standard"
@@ -136,9 +157,19 @@ export default function VivDailogBox() {
                         </DialogContentText>
                     )}
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>취소</Button>
-                    <Button type="submit">구독</Button>
+                <DialogActions className='flex !justify-evenly items-center'>
+                    <Tooltip title="구독하신 이메일 주소를 넣으시고 취소버튼을 클릭하세요. 확인메일을 발송하여 드립니다." arrow placement='left'>
+                        <Button disabled={disable} onClick={() => { setChoice(false) }} type='submit' id='cancel'>
+                            {disable ? <CircularProgress size={24} color="inherit" /> : '구독취소'}
+                        </Button>
+                    </Tooltip>
+
+                    <Button onClick={handleClose} disabled={disable} >닫기</Button>
+                    <Tooltip title="구독하실 이메일 주소를 넣으시고 구독버튼을 클릭하세요" arrow placement='right'>
+                        <Button disabled={disable} onClick={() => setChoice(true)} type="submit" id='ok'>
+                            {disable ? <CircularProgress size={24} color="inherit" /> : '구독하기'}
+                        </Button>
+                    </Tooltip>
                 </DialogActions>
             </Dialog>
         </>

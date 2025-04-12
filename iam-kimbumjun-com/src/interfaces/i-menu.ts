@@ -10,4 +10,5 @@ export interface IMenu {
     requiredRoles?: string[]; // 필요한 역할
     sessionMenu?: boolean; // 세션으로 로그인 여부
     disabled?: boolean;
+    tooltip?: string;
 }

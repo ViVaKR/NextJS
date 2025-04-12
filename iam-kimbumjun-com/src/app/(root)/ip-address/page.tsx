@@ -4,6 +4,7 @@ import { IIpInfo } from '@/interfaces/i-ip-info';
 import React from 'react';
 import FormSection from './FormSection';
 
+
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
 
 async function getInfo(): Promise<IIpInfo> {
@@ -12,8 +13,12 @@ async function getInfo(): Promise<IIpInfo> {
   return data;
 }
 
+
+
 const Page = async () => {
+
   const ipInfo = await getInfo();
+
 
   return (
     <>

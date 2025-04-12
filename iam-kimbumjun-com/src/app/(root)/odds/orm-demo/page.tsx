@@ -3,14 +3,14 @@ import VivTitle from '@/components/VivTitle';
 
 export default async function DemoDataPage() {
 
-    const demos = await prisma.demo.findMany();
+    const demos: any = await prisma.demo.findMany();
 
     return (
         <div className='flex flex-col justify-baseline items-center'>
             <VivTitle title='Demo Data ORM(prisma)' />
             <div className="min-h-screen bg-gray-50">
                 <ol className="list-decimal list-inside font-noto]">
-                    {demos.map((user) => (
+                    {demos.map((user: any) => (
                         <li key={user.id} className="mb-2">
                             {user.name}
                         </li>
