@@ -13,7 +13,7 @@ import { useAuth } from '@/lib/AuthContext'; // 경로는 실제 위치에 맞�
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
 
-// IP 정보 가져오는 함수 (변경 없음)
+// IP 정보 가져오는 함수
 async function getInfo(): Promise<IIpInfo | undefined> {
   try {
     const response = await fetch(`${api}/api/ip`);
@@ -33,9 +33,10 @@ async function getInfo(): Promise<IIpInfo | undefined> {
 
 export default function NavMenu() {
   const menusData: IMenu[] = getNavMenuItems();
-  const [hideMembership, setHideMembership] = useState<boolean>(false);
   // AuthContext에서 필요한 상태 가져오기
   const { user, loading } = useAuth(); // user 객체와 loading 상태를 가져옴
+
+  const [hideMembership, setHideMembership] = useState<boolean>(false);
 
   // IP 주소 확인 로직 (마운트 시 한 번 실행)
   useEffect(() => {

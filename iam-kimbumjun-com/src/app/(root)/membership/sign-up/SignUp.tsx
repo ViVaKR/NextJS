@@ -15,6 +15,28 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { IRegisterRequest } from '@/interfaces/i-register-request';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
+import { useEffect, useState } from 'react';
+import { IIpInfo } from '@/interfaces/i-ip-info';
+
+
+const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
+
+// IP 정보 가져오는 함수 (변경 없음)
+async function getInfo(): Promise<IIpInfo | undefined> {
+  try {
+    const response = await fetch(`${api}/api/ip`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch IP: ${response.status}`);
+    }
+    const data: IIpInfo = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error getting IP info:", error);
+    // 기본값 또는 에러 상황에 맞는 객체 반환 (예: 빈 IP)
+    // return { ip: '', country: '', city: '' }; // 예시
+    return undefined;
+  }
+}
 
 type SignUpFormData = {
   email: string;
@@ -27,6 +49,23 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const router = useRouter();
+
+  const [hideMembership, setHideMembership] = useState<boolean>(false);
+
+  // IP 주소 확인 로직 (마운트 시 한 번 실행)
+  useEffect(() => {
+    const checkIp = async () => {
+      const rs = await getInfo();
+      // 환경 변수 값이 있는지 확인 (없으면 비교 불가)
+      if (process.env.NEXT_PUBLIC_MYIP) {
+        setHideMembership(rs?.ip === process.env.NEXT_PUBLIC_MYIP);
+      } else {
+        setHideMembership(false); // 환경 변수가 없으면 숨기지 않음 (기본값)
+      }
+    };
+
+    checkIp();
+  }, []); // 빈 의존성 배열: 마운트 시 1회 실행
 
   const {
     control,
@@ -99,156 +138,162 @@ export default function SignUpPage() {
                     py-24
                     justify-baseline
                     w-full`}>
-      <VivTitle
-        title="회원가입"
-        fontColor="text-lime-400"
-      />
+      {hideMembership && (
+        <VivTitle
+          title="회원가입"
+          fontColor="text-lime-400"
+        />
+      )}
+
       {/* 폼 시작 */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="xl:w-1/2
-                2xl:w-1/3
-                lg:w-3/5
-                md:2/3
-                shadow-2xl
-                border-lime-400
-                border-1
-                rounded-3xl
-                mx-8
-                max-w-sm:w-full
-                max-w-sm:mx-2
-                max-w-xs:mx-1
-                bg-transparent
-                py-5
-                px-10">
+      {hideMembership && (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="xl:w-1/2
+              2xl:w-1/3
+              lg:w-3/5
+              md:2/3
+              shadow-2xl
+              border-lime-400
+              border-1
+              rounded-3xl
+              mx-8
+              max-w-sm:w-full
+              max-w-sm:mx-2
+              max-w-xs:mx-1
+              bg-transparent
+              py-5
+              px-10">
 
-        {/* 이메일 */}
-        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-          <InputLabel htmlFor="email">아이디 / 이메일</InputLabel>
-          <Controller
-            name="email"
-            control={control}
-            rules={{ required: '이메일을 입력해주세요.' }}
-            render={({ field }) => (
-              <FilledInput
-                {...field}
-                error={!!errors.email}
-                sx={{ color: 'white' }}
-                id="email" />
-            )}
-          />
-          <FormHelperText>{errors.email?.message}</FormHelperText>
-        </FormControl>
+          {/* 이메일 */}
+          <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+            <InputLabel htmlFor="email">아이디 / 이메일</InputLabel>
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: '이메일을 입력해주세요.' }}
+              render={({ field }) => (
+                <FilledInput
+                  {...field}
+                  error={!!errors.email}
+                  sx={{ color: 'white' }}
+                  id="email" />
+              )}
+            />
+            <FormHelperText>{errors.email?.message}</FormHelperText>
+          </FormControl>
 
-        {/* 필명 */}
-        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-          <InputLabel htmlFor="fullName">필명</InputLabel>
-          <Controller
-            name="fullName"
-            control={control}
-            rules={{ required: '필명을 입력해주세요.' }}
-            render={({ field }) => (
-              <FilledInput {...field}
-                error={!!errors.fullName}
-                sx={{ color: 'white' }}
-                id="fullName" aria-describedby="fullName-helper-text" />
-            )}
-          />
-          <FormHelperText>{errors.fullName?.message}</FormHelperText>
-        </FormControl>
+          {/* 필명 */}
+          <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+            <InputLabel htmlFor="fullName">필명</InputLabel>
+            <Controller
+              name="fullName"
+              control={control}
+              rules={{ required: '필명을 입력해주세요.' }}
+              render={({ field }) => (
+                <FilledInput {...field}
+                  error={!!errors.fullName}
+                  sx={{ color: 'white' }}
+                  id="fullName" aria-describedby="fullName-helper-text" />
+              )}
+            />
+            <FormHelperText>{errors.fullName?.message}</FormHelperText>
+          </FormControl>
 
-        {/* 비밀번호 */}
-        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-          <InputLabel htmlFor="password">비밀번호</InputLabel>
-          <Controller
-            name="password"
-            control={control}
-            rules={{ required: '비밀번호를 입력해주세요.' }}
-            render={({ field }) => (
-              <FilledInput
-                {...field}
-                id="password"
-                error={!!errors.password}
-                sx={{ color: 'white' }}
-                type={showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      tabIndex={-1}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            )}
-          />
-          <FormHelperText>{errors.password?.message}</FormHelperText>
-        </FormControl>
+          {/* 비밀번호 */}
+          <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+            <InputLabel htmlFor="password">비밀번호</InputLabel>
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: '비밀번호를 입력해주세요.' }}
+              render={({ field }) => (
+                <FilledInput
+                  {...field}
+                  id="password"
+                  error={!!errors.password}
+                  sx={{ color: 'white' }}
+                  type={showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        tabIndex={-1}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              )}
+            />
+            <FormHelperText>{errors.password?.message}</FormHelperText>
+          </FormControl>
 
-        {/* 비밀번호 확인 */}
-        <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-          <InputLabel htmlFor="passwordConfirm">비밀번호 확인</InputLabel>
-          <Controller
-            name="passwordConfirm"
-            control={control}
-            rules={{ required: '비밀번호 확인을 입력해주세요.' }}
-            render={({ field }) => (
-              <FilledInput
-                {...field}
-                id="passwordConfirm"
-                sx={{ color: 'white' }}
-                error={!!errors.passwordConfirm}
-                type={showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      tabIndex={-1}
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            )}
-          />
-          <FormHelperText>{errors.passwordConfirm?.message}</FormHelperText>
-        </FormControl>
+          {/* 비밀번호 확인 */}
+          <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
+            <InputLabel htmlFor="passwordConfirm">비밀번호 확인</InputLabel>
+            <Controller
+              name="passwordConfirm"
+              control={control}
+              rules={{ required: '비밀번호 확인을 입력해주세요.' }}
+              render={({ field }) => (
+                <FilledInput
+                  {...field}
+                  id="passwordConfirm"
+                  sx={{ color: 'white' }}
+                  error={!!errors.passwordConfirm}
+                  type={showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        tabIndex={-1}
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              )}
+            />
+            <FormHelperText>{errors.passwordConfirm?.message}</FormHelperText>
+          </FormControl>
 
-        {/* 버튼그룹 */}
-        <div className="flex justify-evenly mt-6">
-          {/* 1 */}
-          <Button
-            type="button"
-            variant="outlined"
-            color="primary"
-            className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
-            취소
-          </Button>
-          {/* 2 */}
-          <Button
-            type="button"
-            variant="outlined"
-            color="primary"
-            onClick={() => router.push('/membership/sign-in')}
-            className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
-            이미회원이신가요? 로그인
-          </Button>
-          {/* 3 */}
-          <Button
-            type="submit"
-            variant="outlined"
-            color="primary"
-            className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
-            회원가입
-          </Button>
-        </div>
-        {/* 링크 */}
-      </form>
+          {/* 버튼그룹 */}
+          <div className="flex justify-evenly mt-6">
+            {/* 1 */}
+            <Button
+              type="button"
+              variant="outlined"
+              color="primary"
+              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              취소
+            </Button>
+            {/* 2 */}
+            <Button
+              type="button"
+              variant="outlined"
+              color="primary"
+              onClick={() => router.push('/membership/sign-in')}
+              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              이미회원이신가요? 로그인
+            </Button>
+            {/* 3 */}
+            <Button
+              type="submit"
+              variant="outlined"
+              color="primary"
+              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              회원가입
+            </Button>
+          </div>
+          {/* 링크 */}
+        </form>
+      )}
+
     </div>
   );
 }

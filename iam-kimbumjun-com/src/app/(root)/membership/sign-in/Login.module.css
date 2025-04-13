@@ -168,13 +168,14 @@
 .box form .links a:hover {
   color: #e84d4d;
 }
+
 .btnSubmit {
   background: #292a23;
   position: absolute;
   left: 50%;
   transform: translate(-50%, 50%);
   color: #666363;
-  border: 3px solid #0a9cd1;
+  border: 5px solid #0a9cd1;
   border-radius: 1rem;
   cursor: pointer;
   padding: 10px;
@@ -182,7 +183,7 @@
   font-size: 1.2em;
   transition: 0.5s;
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   width: 50%;
 }
 .btnSubmit:hover {

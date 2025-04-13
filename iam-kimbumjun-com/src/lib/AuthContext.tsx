@@ -180,8 +180,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           accessFailedCount: detailedUser.accessFailedCount || 0,
           avata: detailedUser.avata || '',
           provider: 'credentials',
-
-          // isGoogle: false // 자체 로그인임을 명시 (선택적)
         };
 
         localStorage.setItem('user', JSON.stringify(updatedUser)); // 로컬 스토리지에 저장
