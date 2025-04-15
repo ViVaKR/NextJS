@@ -1,9 +1,11 @@
+import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
 export default function Visualbasic() {
-
+    const title = "Visual Basic .NET"
     return (
-        <>
-            <VivTitle title='Visual Basic' />
-        </>
+        <div className='mx-2'>
+            <VivTitle title={title} />
+            <IncrementalCodes categoryId={12} categoryName={title} />
+        </div>
     );
 }

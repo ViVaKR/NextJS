@@ -9,7 +9,7 @@ export default function PythonPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={13}
+                categoryId={28}
                 categoryName={title} />
         </div>
     );

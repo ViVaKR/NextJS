@@ -9,7 +9,7 @@ export default function QnAPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={33}
+        categoryId={58}
         categoryName={title} />
     </div>
   );

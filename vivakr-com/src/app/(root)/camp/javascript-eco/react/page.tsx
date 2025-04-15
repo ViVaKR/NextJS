@@ -8,7 +8,7 @@ export default function ReactPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={38}
+        categoryId={16}
         categoryName={title} />
     </div>
   );

@@ -8,7 +8,7 @@ export default function JavaPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={29}
+                categoryId={31}
                 categoryName={title} />
         </div>
     );

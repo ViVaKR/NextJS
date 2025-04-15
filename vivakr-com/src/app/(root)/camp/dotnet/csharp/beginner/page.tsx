@@ -8,7 +8,7 @@ export default function Page() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={34}
+                categoryId={1}
                 categoryName={title} />
         </div>
     );

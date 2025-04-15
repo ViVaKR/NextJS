@@ -8,7 +8,7 @@ export default function FSharp() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={57}
+                categoryId={10}
                 categoryName={title} />
         </div>
     );

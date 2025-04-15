@@ -1,7 +1,14 @@
+import IncrementalCodes from "@/components/IncrementalCodes";
 import VivTitle from "@/components/VivTitle";
 
 export default function VitePage() {
+  const title = "Vite"
   return (
-    <VivTitle title="Vite" />
+    <div className='mx-2'>
+      <VivTitle title={title} />
+      <IncrementalCodes
+        categoryId={18}
+        categoryName={title} />
+    </div>
   );
 }

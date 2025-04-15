@@ -9,7 +9,7 @@ export default function SQLServerPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={19}
+        categoryId={49}
         categoryName={title} />
     </div>
   );

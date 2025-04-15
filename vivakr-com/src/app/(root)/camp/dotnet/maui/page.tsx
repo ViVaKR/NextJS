@@ -6,7 +6,7 @@ export default function MauiPage() {
     return (
         <div className='mx-2'>
             <VivTitle title={title} />
-            <IncrementalCodes categoryId={27} categoryName={title} />
+            <IncrementalCodes categoryId={8} categoryName={title} />
         </div>
     );
 }

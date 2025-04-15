@@ -9,7 +9,7 @@ export default function OraclePage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={50}
+        categoryId={51}
         categoryName={title} />
     </div>
   );

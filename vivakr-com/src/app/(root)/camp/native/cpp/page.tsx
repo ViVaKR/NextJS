@@ -9,7 +9,7 @@ export default function CppPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={47}
+        categoryId={24}
         categoryName={title} />
     </div>
   );

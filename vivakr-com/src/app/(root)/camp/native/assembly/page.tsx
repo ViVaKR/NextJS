@@ -7,7 +7,7 @@ export default function AssemblyPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={23}
+        categoryId={22}
         categoryName={title} />
     </div>
   );

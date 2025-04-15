@@ -8,7 +8,7 @@ export default function KotlinPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={39}
+                categoryId={35}
                 categoryName={title} />
         </div>
     );

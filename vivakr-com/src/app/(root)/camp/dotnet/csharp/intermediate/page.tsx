@@ -5,7 +5,7 @@ export default function Page() {
     return (
         <div className='mx-2'>
             <VivTitle title={title} />
-            <IncrementalCodes categoryId={1} categoryName={title} />
+            <IncrementalCodes categoryId={2} categoryName={title} />
         </div>
     );
 }

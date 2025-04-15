@@ -14,9 +14,10 @@ import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { IRegisterRequest } from '@/interfaces/i-register-request';
-import { IAuthResponse } from '@/interfaces/i-auth-response';
+import { IAuthResponse, IAuthResponseDTO } from '@/interfaces/i-auth-response';
 import { useEffect, useState } from 'react';
 import { IIpInfo } from '@/interfaces/i-ip-info';
+import { useSnackbar } from '@/lib/SnackbarContext';
 
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
@@ -49,6 +50,8 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const router = useRouter();
+
+  const { showSnackbar } = useSnackbar();
 
   const [hideMembership, setHideMembership] = useState<boolean>(false);
 
@@ -96,7 +99,7 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: SignUpFormData) => {
     if (data.password !== data.passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
+      showSnackbar('비밀번호가 일치하지 않습니다.', 'error', 'bottom', 'center')
       return;
     }
 
@@ -104,7 +107,7 @@ export default function SignUpPage() {
       email: data.email,
       fullName: data.fullName,
       password: data.password,
-      roles: ['User', 'Writer'],
+      roles: [],
     };
 
     try {
@@ -117,15 +120,15 @@ export default function SignUpPage() {
         }
       );
 
-      const result: IAuthResponse = await response.json();
+      const result: IAuthResponseDTO = await response.json();
       if (result.isSuccess) {
-        alert('회원가입 성공');
+        showSnackbar(result.message, 'success', 'top', 'right');
         router.push('/membership/sign-in');
       } else {
-        alert(result.message || '회원가입에 실패했습니다.');
+        showSnackbar(result.message, 'error', 'top', 'right');
       }
-    } catch (error: any) {
-      alert('서버 오류가 발생했습니다.');
+    } catch (err: any) {
+      showSnackbar(err.message, 'error', 'top', 'right');
     }
   };
 

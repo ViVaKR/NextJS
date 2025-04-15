@@ -9,7 +9,7 @@ export default function MongoDbPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={51}
+        categoryId={52}
         categoryName={title} />
     </div>
   );

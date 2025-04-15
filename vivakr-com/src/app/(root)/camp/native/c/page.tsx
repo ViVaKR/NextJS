@@ -9,7 +9,7 @@ export default function CPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={11}
+        categoryId={25}
         categoryName={title} />
     </div>
   );

@@ -8,7 +8,7 @@ export default function SwiftPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={14}
+                categoryId={26}
                 categoryName={title} />
         </div>
     );

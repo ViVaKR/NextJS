@@ -13,7 +13,7 @@ type confirmReplayData = {
 }
 
 export default function ConfirmEmailPage() {
-
+  const url = "https://vivakr.com/membership";
   const [email, setEmail] = useState<string | null | undefined>();
   const { showSnackbar } = useSnackbar()
   const detail = userDetail();
@@ -27,7 +27,7 @@ export default function ConfirmEmailPage() {
     try {
       const data: confirmReplayData = {
         email: detail?.email!,
-        replayUrl: 'https://viv.vivabm.com/membership'
+        replayUrl: url
       }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/confirm-send-mail`, {
         method: 'POST',

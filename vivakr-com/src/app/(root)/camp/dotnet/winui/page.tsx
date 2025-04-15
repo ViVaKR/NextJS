@@ -7,7 +7,7 @@ export default function WinUIPage() {
     return (
         <div className='mx-2'>
             <VivTitle title={title} />
-            <IncrementalCodes categoryId={59} categoryName={title} />
+            <IncrementalCodes categoryId={9} categoryName={title} />
         </div>
     );
 }

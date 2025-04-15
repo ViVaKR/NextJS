@@ -8,7 +8,7 @@ export default function RPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={12}
+                categoryId={30}
                 categoryName={title} />
         </div>
     );

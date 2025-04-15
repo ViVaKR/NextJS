@@ -3,12 +3,12 @@ import VivTitle from "@/components/VivTitle";
 
 export default function NotePage() {
 
-  const title = 'NOTE'
+  const title = 'Note'
   return (
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={32}
+        categoryId={57}
         categoryName={title} />
     </div>
   );

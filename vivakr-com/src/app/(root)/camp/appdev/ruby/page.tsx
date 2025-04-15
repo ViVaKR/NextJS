@@ -8,7 +8,7 @@ export default function RubyPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={10}
+                categoryId={29}
                 categoryName={title} />
         </div>
     );

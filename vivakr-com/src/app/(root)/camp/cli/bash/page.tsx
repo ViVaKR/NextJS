@@ -9,7 +9,7 @@ export default function BashPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={9}
+        categoryId={45}
         categoryName={title} />
     </div>
   );

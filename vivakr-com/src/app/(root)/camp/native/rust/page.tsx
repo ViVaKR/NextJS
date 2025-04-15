@@ -9,7 +9,7 @@ export default function RustPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={7}
+        categoryId={23}
         categoryName={title} />
     </div>
   );

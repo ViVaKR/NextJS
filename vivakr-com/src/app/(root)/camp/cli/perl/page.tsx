@@ -9,7 +9,7 @@ export default function PerlPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={28}
+        categoryId={47}
         categoryName={title} />
     </div>
   );

@@ -9,7 +9,7 @@ export default function JavaScriptPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={3}
+        categoryId={21}
         categoryName={title} />
     </div>
   );

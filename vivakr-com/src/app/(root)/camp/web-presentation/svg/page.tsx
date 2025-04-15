@@ -7,7 +7,7 @@ export default function SvgPage() {
         <div className='mx-2'>
             <VivTitle title={title} />
             <IncrementalCodes
-                categoryId={44}
+                categoryId={42}
                 categoryName={title} />
         </div>
     );

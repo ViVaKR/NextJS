@@ -8,7 +8,7 @@ export default function GitPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={21}
+        categoryId={43}
         categoryName={title} />
     </div>
   );

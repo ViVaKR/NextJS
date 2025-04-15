@@ -9,7 +9,7 @@ export default function PowerShellPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={20}
+        categoryId={46}
         categoryName={title} />
     </div>
   );

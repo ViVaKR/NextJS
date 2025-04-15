@@ -9,7 +9,7 @@ export default function NginxPage() {
     <div className='mx-2'>
       <VivTitle title={title} />
       <IncrementalCodes
-        categoryId={24}
+        categoryId={53}
         categoryName={title} />
     </div>
   );
