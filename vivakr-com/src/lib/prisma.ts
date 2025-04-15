@@ -2,16 +2,12 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { withAccelerate } from '@prisma/extension-accelerate'
 
-
-// PrismaClient 를 전역으로 재사용
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
-const prisma = globalForPrisma.prisma
-    || new PrismaClient().$extends(withAccelerate());
+const prisma = globalForPrisma.prisma || new PrismaClient().$extends(withAccelerate());
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export default prisma;
-
 
 /*
 --> Using

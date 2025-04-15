@@ -25,9 +25,7 @@ export async function middleware(request: NextRequest) {
         '/odds/data-grid-2'
     ];
     const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail', '/oods/data-grid-2'];
-
     const pathname = request.nextUrl.pathname;
-
     if (protectedPaths.some((path) => pathname.startsWith(path))) {
         if (!userToken) {
             const signInUrl = new URL('/membership/sign-in', request.url);

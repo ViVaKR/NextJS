@@ -9,7 +9,6 @@ import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user';
 import { signOut, useSession } from 'next-auth/react';
 
-// Helper function to decode token and extract roles safely
 const getRolesFromToken = (token: string | undefined): string[] => {
   if (!token) return [];
   try {

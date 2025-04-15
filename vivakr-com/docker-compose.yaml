@@ -1,8 +1,8 @@
 services:
   nextjs-frontend:
     # 이미지 이름 지정 (원하는 대로 변경 가능)
-    image: vivabm-com:${TAG:-latest} # 태그 기본값은 latest, 환경 변수 TAG로 지정 가능
-    container_name: vivabm-com-app
+    image: vivakr-com:${TAG:-latest} # 태그 기본값은 latest, 환경 변수 TAG로 지정 가능
+    container_name: vivabm-kr-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,8 +10,7 @@ services:
       # .env 파일의 NEXT_PUBLIC_* 변수들을 여기에 추가
       # docker compose build --build-arg NEXT_PUBLIC_API_URL=... 형태로도 전달 가능
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.vivabm.com} # 환경 변수 없으면 기본값 사용
-        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-https://api.vivabm.com}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.vivakr.com} # 환경 변수 없으면 기본값 사용
         NEXT_PUBLIC_IPINFO_URL: ${NEXT_PUBLIC_IPINFO_URL:-https://ipinfo.io}
         NEXT_PUBLIC_IPINFO_URL2: ${NEXT_PUBLIC_IPINFO_URL2:-https://ns.vivakr.com}
         NEXT_PUBLIC_CHAT_URL: ${NEXT_PUBLIC_CHAT_URL:-https://ns.kimbumjun.co.kr}
@@ -27,7 +26,7 @@ services:
     environment:
       # NextAuth 필수 환경 변수
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET} # 호스트 환경변수 또는 .env 파일에서 읽어옴
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://viv.vivabm.com} # 운영 환경 URL 또는 기본값
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://vivakr.com} # 운영 환경 URL 또는 기본값
       # Google Provider
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
@@ -56,12 +55,12 @@ services:
     # 재시작 정책
     restart: unless-stopped
     # healthcheck 추가 (선택적이지만 권장)
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000'] # 앱이 응답하는지 간단히 확인
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s # 컨테이너 시작 후 healthcheck 시작까지 대기 시간
+    # healthcheck:
+    #   test: [ 'CMD', 'curl', '-f', 'http://localhost:3000' ] # 앱이 응답하는지 간단히 확인
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s # 컨테이너 시작 후 healthcheck 시작까지 대기 시간
     # 네트워크 설정 (선택 사항, 다른 서비스와 연결 시 유용)
     # networks:
     #   default:

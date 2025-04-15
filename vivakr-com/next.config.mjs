@@ -23,7 +23,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'api.vivabm.com',
+                hostname: 'api.vivakr.com',
                 pathname: '/images/**',
             },
             {
@@ -53,8 +53,7 @@ const nextConfig = {
         ],
     },
     allowedDevOrigins: [
-        'http://viv.vivabm.com', // 프로토콜 포함
-        'viv.vivabm.com',       // 기본
+        'http://viv.vivakr.com', // 프로토콜 포함
         'http://localhost:3000', // 로컬 풀 URL
         'localhost',            // 기본
         '127.0.0.1',

@@ -1,7 +1,6 @@
 import OddsAccordion from "@/app/(root)/odds/accordion/OddsAccordion";
 import OddsCodeHtml from "@/app/(root)/odds/code-html/OddsCodeHtml";
 import OddsCodeRunner from "@/app/(root)/odds/code-runner/OddsCodeRunner";
-import OddsHome from "@/app/(root)/odds/OddsHome";
 import OddsOrmPrisma from "@/app/(root)/odds/orm-prisma/OddsOrmPrisma";
 import { IMenu } from "@/interfaces/i-menu";
 
@@ -13,10 +12,8 @@ export const getNavMenuItems = (): IMenu[] => {
         { id: 3, title: '정보', url: '/ip-address' },
         { id: 4, title: '캠프', url: '/camp' },
         { id: 5, title: '잡동사니', url: '/odds' },
-
     ];
 }
-
 
 export const getMembershipItems = (): IMenu[] => {
     return [

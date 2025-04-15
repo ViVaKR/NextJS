@@ -6,11 +6,7 @@ import { ICode } from '@/interfaces/i-code';
 
 export default function CodeData(): ICode[] {
   const [codes, setCodes] = useState<ICode[]>([]);
-  //   const [loading, setLoading] = useState<boolean>(true);
-  //   const [error, setError] = useState<string | null>(null);
-
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL; // 기본값 설정
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL; // 기본값 설정
   useEffect(() => {
     const fetchCodes = async () => {
       try {

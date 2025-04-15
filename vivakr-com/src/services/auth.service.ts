@@ -5,14 +5,9 @@ import { apiFetch } from "@/lib/api";
 import { jwtDecode } from "jwt-decode";
 
 const isClient = typeof window !== 'undefined';
-
 const userToken = 'user';
-
-// --> getToken
 export const getToken = (): string | null => {
-
   if (!isClient) return null;
-
   const user = localStorage.getItem(userToken);
   if (!user) return null;
   const userDetail: IAuthResponse = JSON.parse(user);
@@ -73,17 +68,3 @@ export const fetchUserDetail = async (tkn: string) => {
     return userDetail(); // API 실패 시 토큰 디코딩으로 fallback
   }
 };
-/*
-
-useAuth와 통합:
-AuthContext로 상태 관리하니 localStorage 직접 접근 줄이고 getToken으로 통일.
-서버 데이터 우선:
-fetchUserDetail로 API 호출 추가해 토큰 디코딩보다 신뢰성 높임.
-타입 안전성:
-roles 배열 처리로 JWT 변형 대응.
-
-  private _isAdmin = new BehaviorSubject<boolean>(false);
-  adminNext(state: boolean) {
-    this._isAdmin.next(state);
-  }
-*/

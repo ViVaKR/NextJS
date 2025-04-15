@@ -21,7 +21,7 @@ import { fetchRoles } from '@/lib/fetchRoles';
 import { IRole } from '@/interfaces/i-role';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { deleteAccount } from '@/lib/accountApi';
-import { IAuthResponseDTO, IDeleteAccountDTO } from '@/interfaces/i-auth-response';
+import { IAuthResponseDTO } from '@/interfaces/i-auth-response';
 
 export default function AccountList() {
   const title = '회원관리';
