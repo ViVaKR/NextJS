@@ -14,7 +14,8 @@ export default function ForgetPasswordPaage() {
   const { showSnackbar } = useSnackbar()
   const onSubmit = async (data: ForgetPasswordFormData) => {
 
-    data.replayUrl = "https://viv.vivabm.com/membership";
+    data.replayUrl = "https://vivakr.com/membership";
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/forgetpwd`, { // <-- 괄호 제거
         method: 'POST',

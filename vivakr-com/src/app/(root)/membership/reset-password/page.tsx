@@ -4,6 +4,7 @@ import { IResetPasswordRequest } from "@/interfaces/i-reset-password-request";
 import { useSnackbar } from "@/lib/SnackbarContext";
 import { Alert, Button, CircularProgress, TextField } from "@mui/material";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function ResetPasswordPage() {
@@ -15,6 +16,7 @@ export default function ResetPasswordPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   useEffect(() => {
 
@@ -44,6 +46,7 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     setError(null);
     setSuccessMessage(null);
+
     if (!resetRequestData) {
       setError("재설정 정보를 불러올 수 없습니다. 페이지를 새로고침 해주세요.");
       return;
@@ -73,6 +76,9 @@ export default function ResetPasswordPage() {
       if (response.ok) {
         setSuccessMessage("비밀번호가 성공적으로 변경되었습니다!");
         showSnackbar("비밀번호 변경완료!!");
+        setTimeout(() => {
+          router.push("/membership/login");
+        }, 1000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || "비밀번호 변경에 실패했습니다.");

@@ -8,7 +8,6 @@ import { Cute_Font } from 'next/font/google'
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import VivSession from '@/components/VivSession';
 
 const cute = Cute_Font({
   subsets: ['latin'],
@@ -18,10 +17,10 @@ const cute = Cute_Font({
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
 
-async function getInfo(): Promise<IIpInfo> {
+async function getInfo(): Promise<IIpInfo | null | undefined> {
   const response = await fetch(`${api}/api/ip`);
-  const data: IIpInfo = await response.json();
-  return data;
+  const data: IIpInfo | null | undefined = await response.json();
+  return data ?? null;
 }
 
 export default function Home() {
@@ -51,11 +50,25 @@ export default function Home() {
 
   useEffect(() => {
     const getIpInfo = async () => {
-      const result = await getInfo();
-      setInfo(result);
+      try {
+
+        // Fetch IP info from the API
+        const result: IIpInfo | null | undefined = await getInfo();
+
+        // Check if the result is null or undefined
+        if (!result) {
+          console.error('No IP info found');
+          setInfo(null);
+          return;
+        }
+        setInfo(result);
+      } catch (err) {
+        setInfo(null);
+      }
     }
+
     getIpInfo()
-    setIpArray(info?.ip.split('.'));
+    setIpArray(info?.ip?.split('.'));
 
   }, [info?.ip])
 

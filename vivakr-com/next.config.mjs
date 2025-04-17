@@ -53,10 +53,18 @@ const nextConfig = {
         ],
     },
     allowedDevOrigins: [
-        'http://viv.vivakr.com', // 프로토콜 포함
+        'https://vivakr.com', // 프로토콜 포함
+        'http://vivakr.com',
+        'https://vivabm.com',
+        'https://vivabm.com',
+        'http://localhost:47960',
         'http://localhost:3000', // 로컬 풀 URL
+        'http://192.168.0.8:3000',
         'localhost',            // 기본
         '127.0.0.1',
+        '::1',                 // IPv6
+        '::ffff:',
+
     ]
 };
 

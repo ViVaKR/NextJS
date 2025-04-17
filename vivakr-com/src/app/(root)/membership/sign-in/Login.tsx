@@ -123,6 +123,7 @@ export default function SignIn() {
   const showLoginFailed = () =>
     showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'right', 3000);
 
+  // --> 로그인 처리
   const onFormSubmit = async (data: ISignInRequest) => {
     try {
       const result = await login(data.email, data.password);
@@ -146,10 +147,10 @@ export default function SignIn() {
           <form
             onSubmit={handleSubmit(onFormSubmit)}
             className="flex flex-col gap-4
-    rounded-xl
-    form p-4 border-4
-    !bg-slate-200
-    border-slate-600">
+                        rounded-xl
+                        form p-4 border-4
+                        !bg-slate-200
+                        border-slate-600">
             <h1 className={styles.title}>Sign In</h1>
 
             <div className="w-full">

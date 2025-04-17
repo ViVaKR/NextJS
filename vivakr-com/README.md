@@ -36,6 +36,10 @@ openssl rand -base64 129 | tr -d '\n' | pbcopy
 # 소스 수정 후 배포
 docker compose up -d --**build**
 
+
+# repeat key
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool true
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 ```
 
 ## 소스수정 시 Docker Compose 명령어 및 이미지 관리
