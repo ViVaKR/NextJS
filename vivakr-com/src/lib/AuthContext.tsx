@@ -286,6 +286,7 @@ export const useAuth = (): IAuthContextProps => {
   }
   return context;
 };
+
 /*
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';

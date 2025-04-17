@@ -189,7 +189,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/vivakr/GitWorkspace/NextJS/vivakr-com/src/app/generated/prisma/client",
+      "value": "/Users/viv/GitWorkspace/NextJS/vivakr-com/src/app/generated/prisma/client",
       "fromEnvVar": null
     },
     "config": {
@@ -203,7 +203,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/vivakr/GitWorkspace/NextJS/vivakr-com/prisma/schema.prisma",
+    "sourceFilePath": "/Users/viv/GitWorkspace/NextJS/vivakr-com/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

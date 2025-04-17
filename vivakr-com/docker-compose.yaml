@@ -2,7 +2,7 @@ services:
   nextjs-frontend:
     # 이미지 이름 지정 (원하는 대로 변경 가능)
     image: vivakr-com:${TAG:-latest} # 태그 기본값은 latest, 환경 변수 TAG로 지정 가능
-    container_name: vivabm-kr-app
+    container_name: vivakr-kr-app
     build:
       context: .
       dockerfile: Dockerfile

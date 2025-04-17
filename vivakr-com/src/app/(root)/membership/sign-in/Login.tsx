@@ -74,7 +74,6 @@ export default function SignIn() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('가져온 데이터:', data); // 확인용
         setDomain(data.domain); // 상태 업데이트
       } catch (error) {
         console.error('도메인 가져오기 실패:', error);
@@ -131,6 +130,7 @@ export default function SignIn() {
         showLoginSuccess();
         router.push('/');
       } else {
+        console.log(result)
         showLoginFailed();
       }
     } catch (e: any) {
@@ -377,7 +377,7 @@ export default function SignIn() {
               </>
             ) : (
               <Link
-                href={`https://vivabm.com/membership/sign-in`}
+                href={`https://vivakr.com/membership/sign-in`}
                 className="text-center flex bottom-0 items-center mb-8 mx-auto rounded-2xl hover:bg-sky-500 text-white justify-center
 
         w-1/2 h-12 bg-red-400">

@@ -34,7 +34,7 @@ openssl rand -base64 129 | tr -d '\n' | pbcopy
 "dev": "next dev -p 41086 --turbopack --experimental-https",
 
 # 소스 수정 후 배포
-docker compose up -d --build
+docker compose up -d --**build**
 
 ```
 
@@ -42,7 +42,7 @@ docker compose up -d --build
 
 업데이트 명령어: 소스 코드를 수정한 후 업데이트하는 가장 일반적이고 효율적인 명령어는 --> `docker compose up -d --build`
 * --build: Dockerfile이나 소스 코드 변경 사항을 감지하여 새로운 이미지를 빌드해줌 (이전 이미지와 변경 없는 레이어는 캐시 활용).
-* up -d: 새로운 이미지를 사용하여 기존 컨테이너를 중지하고 새로운 컨테이너를 생성하여 실행해줌 다운타임이 거의 없이 업데이트가 가능 (Compose가 알아서 처리).
+* up -d: 새로운 이미지를 사용하여 기존 컨테이너를 중지하고 새로운 컨테이너를 생성하여 실행해줌 다운타임이 거의 없이 업데이트가 가능 (Compose가 알아서 처리)****.
 
 ## down은 언제 필요한가?
 
