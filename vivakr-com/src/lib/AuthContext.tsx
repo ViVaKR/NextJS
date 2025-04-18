@@ -38,9 +38,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession(); // next-auth 세션
 
   const fetchUserDetail = useCallback(async (token: string): Promise<IUserDetailDTO | null> => {
-    console.log('Fetching user detail with token:', token);
-    console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
-    console.log('Decoded token:', jwtDecode(token));
+    // console.log('Fetching user detail with token:', token);
+    // console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
+    // console.log('Decoded token:', jwtDecode(token));
     try {
       const headers = {
         Authorization: `Bearer ${token.trim()}`,
@@ -54,19 +54,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers,
         }
       );
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      // console.log('Response status:', response.status);
+      // console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        console.warn(`Status ${response.status}: ${response.statusText}`);
+        // const errorText = await response.text();
+        // console.error('Error response:', errorText);
+        // console.warn(`Status ${response.status}: ${response.statusText}`);
         return null;
       }
       const detailedUser = await response.json();
-      console.log('Fetched user detail:', detailedUser);
+      // console.log('Fetched user detail:', detailedUser);
       return detailedUser as IUserDetailDTO;
     } catch (err) {
-      console.error('Error fetching user detail:', err);
+      // console.error('Error fetching user detail:', err);
       return null;
     }
   }, []);
@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         // status === "loading" 인 경우는 아무것도 안하고 로딩 상태 유지
       } catch (error) {
-        console.error("Error during auth initialization:", error);
+        // console.error("Error during auth initialization:", error);
         setUser(null); // 오류 발생 시 로그아웃 상태로
         localStorage.removeItem('user'); // 안전하게 로컬 스토리지 클리어
       } finally {
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         // 에러 처리 개선
         const errorData = await response.text(); // 에러 메시지 확인 시도
-        console.error(`로그인 실패 (${response.status}): ${errorData}`);
+        // console.error(`로그인 실패 (${response.status}): ${errorData}`);
         if (response.status === 401) throw new Error('인증 실패 (잘못된 이메일/비밀번호)');
         if (response.status === 403) throw new Error('계정 잠김 또는 비활성화');
         throw new Error('로그인에 실패하였습니다.');
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const detailedUser = await fetchUserDetail(data.token);
         if (!detailedUser) {
           // 상세 정보 조회 실패 시 로그인 실패 처리
-          console.error("로그인 성공, 상세 정보 조회 실패");
+          // console.error("로그인 성공, 상세 정보 조회 실패");
           setUser(null); // 혹시 모르니 초기화
           setLoading(false);
           return false;
@@ -242,15 +242,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!response.ok) {
         // 에러 처리 개선
-        const errorData = await response.text(); // 에러 메시지 확인 시도
-        console.error(`Failed to fetch users (${response.status}): ${errorData}`);
+        // const errorData = await response.text(); // 에러 메시지 확인 시도
+        // console.error(`Failed to fetch users (${response.status}): ${errorData}`);
         if (response.status === 401) throw new Error('인증 실패 (토큰 만료 등)');
         if (response.status === 403) throw new Error('관리자 권한 필요');
         throw new Error('회원 목록을 가져오는데 실패하였습니다.');
       }
       return await response.json();
     } catch (error) {
-      console.error("Error fetching user list:", error);
+      // console.error("Error fetching user list:", error);
       throw error; // 호출한 쪽에서 처리하도록 다시 throw
     }
   }, [user]); // user 상태에 의존

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Poppins, Noto_Sans_KR } from 'next/font/google';
+import { Poppins, Noto_Sans_KR, Fira_Code, Cute_Font } from 'next/font/google';
 
 import './globals.css';
 import NavMenu from '@/menus/NavMenu';
@@ -21,6 +21,19 @@ const noto = Noto_Sans_KR({
   subsets: ['latin'],
   display: 'swap',
 });
+
+const fira = Fira_Code({
+  variable: '--font-fira',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const cute = Cute_Font({
+  variable: '--font-cute',
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://vivabm.com'),
@@ -48,6 +61,8 @@ export default function RootLayout({
           sticky-footer
           ${noto.variable}
           ${poppins.variable}
+          ${fira.variable}
+          ${cute.variable}
           antialiased`}>
         <ClientSessionProvider>
           <AuthProvider>

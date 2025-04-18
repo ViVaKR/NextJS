@@ -125,7 +125,26 @@ export default function VivBottomNav() {
                     </Tooltip>
                 </Link>
                 <VivDailogBox />
+                <Link href="https://github.com/ViVaKR/NextJS/tree/main/vivakr-com" target='_blank'
+                    className='px-4 py-2
+                            bg-slate-400
+                            text-slate-200
+                            transition
+                            delay-150
+                            duration-300
+                            ease-in-out
+                            hover:-translate-y-1
+                            hover:scale-150
+                            hover:bg-rose-800 hover:text-white
+                            rounded-2xl'>
+                    <Tooltip title="사이트 소스(Next.js)" arrow placement='right'>
+                        <div className='text-transparent
+                        bg-github bg-contain bg-no-repeat bg-center'>source</div>
+                    </Tooltip>
+                </Link>
+
             </Typography>
         </Box >
     );
 }
+// https://github.com/ViVaKR/NextJS/tree/main/vivakr-com

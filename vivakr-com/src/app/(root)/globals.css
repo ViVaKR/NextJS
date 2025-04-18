@@ -3,7 +3,9 @@
 
 @theme {
   --font-poppins: 'Poppins', sans-serif;
+  --font-fira: 'Fira', sans-serif;
   --font-noto: 'Noto Sans KR', sans-serif;
+  --font-cute: 'Cute', sans-serif;
 
   --color-red-50: oklch(0.971 0.013 17.38);
   --color-red-100: oklch(0.936 0.032 17.717);
@@ -270,6 +272,9 @@
 @layer utilities {
   .bg-robot {
     background-image: url('/images/robot-man.webp');
+  }
+  .bg-github {
+    background-image: url('/images/github-mark.svg');
   }
 
   .bg-avata {

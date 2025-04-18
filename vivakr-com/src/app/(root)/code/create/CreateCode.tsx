@@ -2,7 +2,7 @@
 'use client'
 import { CodeData } from '@/types/code-form-data';
 import { userDetail, getToken } from '@/services/auth.service';
-import { Box, Button, ButtonGroup, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
@@ -74,6 +74,7 @@ export default function CreateCodePage() {
         watch,
         reset,
         setValue,
+        getValues
     } = useForm<CodeData>({
         defaultValues: {
             id: 0,
@@ -109,6 +110,36 @@ export default function CreateCodePage() {
             snackbar.showSnackbar(err.message, 'error')
         }
     };
+
+
+    const theme = createTheme({
+        typography: {
+            fontFamily: 'var(--font-fira)',
+            fontSize: 18,
+            fontWeightRegular: 400,
+        }
+    });
+
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const spaces = '    ';
+            const newValue =
+                target.value?.substring(0, start) +
+                spaces +
+                target.value?.substring(end);
+            // 동적으로 name 속성을 사용해 해당 필드의 값을 업데이트
+            setValue(target.name as keyof CodeData, newValue, { shouldDirty: true });
+            setTimeout(() => {
+                target.selectionStart = target.selectionEnd = start + spaces.length;
+            }, 0);
+        }
+    };
+
 
     return (
 
@@ -220,17 +251,21 @@ export default function CreateCodePage() {
                     control={control}
                     rules={{ required: '코드를 입력해주세요.' }}
                     render={({ field }) => (
-                        <TextField
-                            {...field}
-                            name='content'
-                            variant='filled'
-                            rows={rows}
-                            label="코드"
-                            error={!!errors.content}
-                            helperText={errors.content?.message}
-                            color='success'
-                            multiline
-                        />
+
+                        <ThemeProvider theme={theme}>
+                            <TextField
+                                {...field}
+                                name='content'
+                                variant='filled'
+                                rows={rows}
+                                label="코드"
+                                error={!!errors.content}
+                                helperText={errors.content?.message}
+                                color='success'
+                                multiline
+                                onKeyDown={handleKeyDown}
+                            />
+                        </ThemeProvider>
                     )}
                 />
 
@@ -240,17 +275,20 @@ export default function CreateCodePage() {
                     control={control}
                     rules={{ required: '코드를 입력해주세요.' }}
                     render={({ field }) => (
-                        <TextField
-                            {...field}
-                            name='subContent'
-                            variant='filled'
-                            rows={rows}
-                            label="보조코드"
-                            error={!!errors.subContent}
-                            helperText={errors.subContent?.message}
-                            color='success'
-                            multiline
-                        />
+                        <ThemeProvider theme={theme}>
+                            <TextField
+                                {...field}
+                                name='subContent'
+                                variant='filled'
+                                rows={rows}
+                                label="보조코드"
+                                error={!!errors.subContent}
+                                helperText={errors.subContent?.message}
+                                color='success'
+                                multiline
+                                onKeyDown={handleKeyDown}
+                            />
+                        </ThemeProvider>
                     )}
                 />
 
@@ -260,17 +298,20 @@ export default function CreateCodePage() {
                     control={control}
                     rules={{ required: '노트를 입력해주세요.' }}
                     render={({ field }) => (
-                        <TextField
-                            {...field}
-                            name='note'
-                            variant='filled'
-                            rows={rows}
-                            label="노트"
-                            error={!!errors.note}
-                            helperText={errors.note?.message}
-                            color='success'
-                            multiline
-                        />
+                        <ThemeProvider theme={theme}>
+                            <TextField
+                                {...field}
+                                name='note'
+                                variant='filled'
+                                rows={rows}
+                                label="노트"
+                                error={!!errors.note}
+                                helperText={errors.note?.message}
+                                color='success'
+                                multiline
+
+                            />
+                        </ThemeProvider>
                     )}
                 />
 
@@ -290,6 +331,7 @@ export default function CreateCodePage() {
                             helperText={errors.subContent?.message}
                             color='success'
                             multiline
+                            onKeyDown={handleKeyDown}
                         />
                     )}
                 />

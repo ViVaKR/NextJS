@@ -1,5 +1,5 @@
 'use client';
-import { DataGrid, GridColDef, GridPaginationModel, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
 import { Box, styled, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
 import { ICode } from '@/interfaces/i-code';
 import { getCategories } from '@/lib/getCodes';
@@ -8,7 +8,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
-import { isAdmin, userDetail } from '@/services/auth.service';
+import { isAdmin } from '@/services/auth.service';
 
 type codeDataProp = {
   data: ICode[],
@@ -23,8 +23,6 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const admin: boolean = isAdmin();
-
-  const whoami = userDetail();
   const time = 1;
 
   useEffect(() => {
@@ -36,9 +34,7 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
         const sortedCodes = [...data].sort((a, b) => b.id - a.id);
         setCodes(sortedCodes);
 
-        if (userId)
-          setId(userId);
-
+        if (userId) setId(userId);
 
       } catch (error: any) {
         console.error('카테고리 데이터를 가져오는 중 오류 발생:', error);
