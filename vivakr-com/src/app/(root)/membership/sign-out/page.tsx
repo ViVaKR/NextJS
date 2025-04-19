@@ -1,5 +1,4 @@
 'use client';
-import VivTitle from '@/components/VivTitle';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -15,7 +14,7 @@ const SignOutPage = () => {
     router.push('/');
     setTimeout(() => {
       window.location.reload();
-    }, 500);
+    }, 50);
   };
 
   return (

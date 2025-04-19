@@ -1,94 +1,294 @@
 import { ILanguage } from "@/interfaces/i-language";
 
-export function languages(): ILanguage[] {
-    return [
-        { id: 1, displayName: 'Angular HTML', name: 'angular-html', alias: null },
-        { id: 2, displayName: 'Angular TypeScript', name: 'angular-ts', alias: null },
-        { id: 3, displayName: 'Apache Conf', name: 'apache', alias: null },
-        { id: 4, displayName: 'AppleScript', name: 'applescript', alias: 'osascript' },
-        { id: 5, displayName: 'AsciiDoc', name: 'asciidoc', alias: 'adoc' },
-        { id: 6, displayName: 'Assembly', name: 'asm', alias: 'assembly' },
-        { id: 7, displayName: 'Batch File', name: 'bat', alias: 'batch' },
-        { id: 8, displayName: 'C', name: 'c', alias: null },
-        { id: 9, displayName: 'CMake', name: 'cmake', alias: null },
-        { id: 10, displayName: 'COBOL', name: 'cobol', alias: null },
-        { id: 11, displayName: 'CoffeeScript', name: 'coffee', alias: 'coffeescript' },
-        { id: 12, displayName: 'C++', name: 'cpp', alias: 'c++' },
-        { id: 13, displayName: 'C#', name: 'csharp', alias: 'c#cs' },
-        { id: 14, displayName: 'CSS', name: 'css', alias: null },
-        { id: 15, displayName: 'CSV', name: 'csv', alias: null },
-        { id: 16, displayName: 'Dart', name: 'dart', alias: null },
-        { id: 17, displayName: 'Dockerfile', name: 'docker', alias: 'dockerfile' },
-        { id: 18, displayName: 'Fluent', name: 'fluent', alias: 'ftl' },
-        { id: 19, displayName: 'F#', name: 'fsharp', alias: 'f#fs' },
-        { id: 20, displayName: 'Git Commit Message', name: 'git-commit', alias: null },
-        { id: 21, displayName: 'Git Rebase Message', name: 'git-rebase', alias: null },
-        { id: 22, displayName: 'Go', name: 'go', alias: null },
-        { id: 23, displayName: 'Ruby Haml', name: 'haml', alias: null },
-        { id: 24, displayName: 'HTML', name: 'html', alias: null },
-        { id: 25, displayName: 'HTML (Derivative)', name: 'html-derivative', alias: null },
-        { id: 26, displayName: 'HTTP', name: 'http', alias: null },
-        { id: 27, displayName: 'INI', name: 'ini', alias: 'properties' },
-        { id: 28, displayName: 'Java', name: 'java', alias: null },
-        { id: 29, displayName: 'JavaScript', name: 'javascript', alias: 'js' },
-        { id: 30, displayName: 'JSON', name: 'json', alias: null },
-        { id: 31, displayName: 'JSON5', name: 'json5', alias: null },
-        { id: 32, displayName: 'JSON with Comments', name: 'jsonc', alias: null },
-        { id: 33, displayName: 'JSON Lines', name: 'jsonl', alias: null },
-        { id: 34, displayName: 'JSX', name: 'jsx', alias: null },
-        { id: 35, displayName: 'Julia', name: 'julia', alias: 'jl' },
-        { id: 36, displayName: 'Kotlin', name: 'kotlin', alias: 'ktkts' },
-        { id: 37, displayName: 'LaTeX', name: 'latex', alias: null },
-        { id: 38, displayName: 'Less', name: 'less', alias: null },
-        { id: 39, displayName: 'LLVM IR', name: 'llvm', alias: null },
-        { id: 40, displayName: 'Log file', name: 'log', alias: null },
-        { id: 41, displayName: 'Lua', name: 'lua', alias: null },
-        { id: 42, displayName: 'Luau', name: 'luau', alias: null },
-        { id: 43, displayName: 'Makefile', name: 'make', alias: 'makefile' },
-        { id: 44, displayName: 'Markdown', name: 'markdown', alias: 'md' },
-        { id: 45, displayName: 'MATLAB', name: 'matlab', alias: null },
-        { id: 46, displayName: 'MDC', name: 'mdc', alias: null },
-        { id: 47, displayName: 'MDX', name: 'mdx', alias: null },
-        { id: 48, displayName: 'Mermaid', name: 'mermaid', alias: 'mmd' },
-        { id: 49, displayName: 'MIPS Assembly', name: 'mipsasm', alias: 'mips' },
-        { id: 50, displayName: 'Nginx', name: 'nginx', alias: null },
-        { id: 51, displayName: 'Pascal', name: 'pascal', alias: null },
-        { id: 52, displayName: 'Perl', name: 'perl', alias: null },
-        { id: 53, displayName: 'PHP', name: 'php', alias: null },
-        { id: 54, displayName: 'PL/SQL', name: 'plsql', alias: null },
-        { id: 55, displayName: 'PowerQuery', name: 'powerquery', alias: null },
-        { id: 56, displayName: 'PowerShell', name: 'powershell', alias: 'psps1' },
-        { id: 57, displayName: 'Prisma', name: 'prisma', alias: null },
-        { id: 58, displayName: 'Protocol Buffer 3', name: 'proto', alias: 'protobuf' },
-        { id: 59, displayName: 'Pug', name: 'pug', alias: 'jade' },
-        { id: 60, displayName: 'Python', name: 'python', alias: 'py' },
-        { id: 61, displayName: 'R', name: 'r', alias: null },
-        { id: 62, displayName: 'ASP.NET Razor', name: 'razor', alias: null },
-        { id: 63, displayName: 'Windows Registry Script', name: 'reg', alias: null },
-        { id: 64, displayName: 'RegExp', name: 'regexp', alias: 'regex' },
-        { id: 65, displayName: 'Ruby', name: 'ruby', alias: 'rb' },
-        { id: 66, displayName: 'Rust', name: 'rust', alias: 'rs' },
-        { id: 67, displayName: 'SAS', name: 'sas', alias: null },
-        { id: 68, displayName: 'Sass', name: 'sass', alias: null },
-        { id: 69, displayName: 'Scala', name: 'scala', alias: null },
-        { id: 70, displayName: 'Scheme', name: 'scheme', alias: null },
-        { id: 71, displayName: 'SCSS', name: 'scss', alias: null },
-        { id: 72, displayName: 'Shell', name: 'shellscript', alias: 'bashshshellzsh' },
-        { id: 73, displayName: 'Shell Session', name: 'shellsession', alias: 'console' },
-        { id: 74, displayName: 'SQL', name: 'sql', alias: null },
-        { id: 75, displayName: 'SSH Config', name: 'ssh-config', alias: null },
-        { id: 76, displayName: 'Swift', name: 'swift', alias: null },
-        { id: 77, displayName: 'TOML', name: 'toml', alias: null },
-        { id: 78, displayName: 'TSV', name: 'tsv', alias: null },
-        { id: 79, displayName: 'TSX', name: 'tsx', alias: null },
-        { id: 80, displayName: 'TypeScript', name: 'typescript', alias: 'ts' },
-        { id: 81, displayName: 'Visual Basic', name: 'vb', alias: 'cmd' },
-        { id: 82, displayName: 'Vim Script', name: 'viml', alias: 'vimvimscript' },
-        { id: 83, displayName: 'Vue', name: 'vue', alias: null },
-        { id: 84, displayName: 'Vue HTML', name: 'vue-html', alias: null },
-        { id: 85, displayName: 'WebAssembly', name: 'wasm', alias: null },
-        { id: 86, displayName: 'XML', name: 'xml', alias: null },
-        { id: 87, displayName: 'YAML', name: 'yaml', alias: 'yml' },
-        { id: 88, displayName: 'Zig', name: 'zig', alias: null },
-    ];
-}
+export const categoryLang: ILanguage[] = [
+    {
+        "id": 1,
+        "displayName": "C# Beginner",
+        "name": "csharp",
+    },
+    {
+        "id": 2,
+        "displayName": "C# Intermediate",
+        "name": "csharp",
+    },
+    {
+        "id": 3,
+        "displayName": "C# Advanced",
+        "name": "csharp",
+    },
+    {
+        "id": 4,
+        "displayName": "ASP.NET Core",
+        "name": "csharp",
+    },
+    {
+        "id": 5,
+        "displayName": "Blazor",
+        "name": "csharp",
+    },
+    {
+        "id": 6,
+        "displayName": "WPF",
+        "name": "csharp",
+    },
+    {
+        "id": 7,
+        "displayName": "Windows Forms",
+        "name": "csharp",
+    },
+    {
+        "id": 8,
+        "displayName": "MAUI",
+        "name": "csharp",
+    },
+    {
+        "id": 9,
+        "displayName": "WinUI",
+        "name": "csharp",
+    },
+    {
+        "id": 10,
+        "displayName": "F#",
+        "name": "fsharp",
+    },
+    {
+        "id": 11,
+        "displayName": "Unity",
+        "name": "csharp",
+    },
+    {
+        "id": 12,
+        "displayName": "Visual Basic .NET",
+        "name": "vb",
+    },
+    {
+        "id": 13,
+        "displayName": "VBA",
+        "name": "vb",
+    },
+    {
+        "id": 14,
+        "displayName": "Angular",
+        "name": "angular-ts"
+    },
+    {
+        "id": 15,
+        "displayName": "Next.js",
+        "name": "tsx"
+    },
+    {
+        "id": 16,
+        "displayName": "React",
+        "name": "tsx"
+    },
+    {
+        "id": 17,
+        "displayName": "Node.js",
+        "name": "javascript"
+    },
+    {
+        "id": 18,
+        "displayName": "Vite",
+        "name": "javascript"
+    },
+    {
+        "id": 19,
+        "displayName": "Vue.js",
+        "name": "vue"
+    },
+    {
+        "id": 20,
+        "displayName": "TypeScript",
+        "name": "typescript"
+    },
+    {
+        "id": 21,
+        "displayName": "JavaScript",
+        "name": "javascript"
+    },
+    {
+        "id": 22,
+        "displayName": "Assembly",
+        "name": "asm"
+    },
+    {
+        "id": 23,
+        "displayName": "Rust",
+        "name": "rust"
+    },
+    {
+        "id": 24,
+        "displayName": "C++",
+        "name": "cpp"
+    },
+    {
+        "id": 25,
+        "displayName": "C",
+        "name": "c"
+    },
+    {
+        "id": 26,
+        "displayName": "Swift",
+        "name": "swift"
+    },
+    {
+        "id": 27,
+        "displayName": "Go",
+        "name": "go"
+    },
+    {
+        "id": 28,
+        "displayName": "Python",
+        "name": "python"
+    },
+    {
+        "id": 29,
+        "displayName": "Ruby",
+        "name": "ruby"
+    },
+    {
+        "id": 30,
+        "displayName": "R",
+        "name": "r"
+    },
+    {
+        "id": 31,
+        "displayName": "Java",
+        "name": "java"
+    },
+    {
+        "id": 32,
+        "displayName": "Kotlin",
+        "name": "kotlin"
+    },
+    {
+        "id": 33,
+        "displayName": "Dart",
+        "name": "dart"
+    },
+    {
+        "id": 34,
+        "displayName": "PHP",
+        "name": "php"
+    },
+    {
+        "id": 35,
+        "displayName": "MATLAB",
+        "name": "matlab"
+    },
+    {
+        "id": 36,
+        "displayName": "Scratch",
+        "name": "scratch"
+    },
+    {
+        "id": 37,
+        "displayName": "COBOL",
+        "name": "cobol"
+    },
+    {
+        "id": 38,
+        "displayName": "Fortran",
+        "name": "fortran"
+    },
+    {
+        "id": 39,
+        "displayName": "HTML",
+        "name": "html"
+    },
+    {
+        "id": 40,
+        "displayName": "CSS / SCSS / LESS",
+        "name": "css"
+    },
+    {
+        "id": 41,
+        "displayName": "Tailwind CSS",
+        "name": "css"
+    },
+    {
+        "id": 42,
+        "displayName": "SVG",
+        "name": "svg"
+    },
+    {
+        "id": 43,
+        "displayName": "Git",
+        "name": "git-commit"
+    },
+    {
+        "id": 44,
+        "displayName": "Docker",
+        "name": "shellscript"
+    },
+    {
+        "id": 45,
+        "displayName": "Bash",
+        "name": "shellscript"
+    },
+    {
+        "id": 46,
+        "displayName": "PowerShell",
+        "name": "powershell"
+    },
+    {
+        "id": 47,
+        "displayName": "Perl",
+        "name": "perl"
+    },
+    {
+        "id": 48,
+        "displayName": "PosetgreSQL",
+        "name": "sql"
+    },
+    {
+        "id": 49,
+        "displayName": "SQL Server",
+        "name": "sql"
+    },
+    {
+        "id": 50,
+        "displayName": "MySQL / MariaDB",
+        "name": "sql"
+    },
+    {
+        "id": 51,
+        "displayName": "oracle",
+        "name": "sql"
+    },
+    {
+        "id": 52,
+        "displayName": "MongoDB",
+        "name": "sql"
+    },
+    {
+        "id": 53,
+        "displayName": "NGINX",
+        "name": "nginx"
+    },
+    {
+        "id": 54,
+        "displayName": "Apache Server",
+        "name": "ini"
+    },
+    {
+        "id": 55,
+        "displayName": "IIS",
+        "name": "xml"
+    },
+    {
+        "id": 56,
+        "displayName": "Mathematics",
+        "name": "markdown"
+    },
+    {
+        "id": 57,
+        "displayName": "Note",
+        "name": "markdown"
+    },
+    {
+        "id": 58,
+        "displayName": "Markdown",
+        "name": "csharp"
+    }
+];

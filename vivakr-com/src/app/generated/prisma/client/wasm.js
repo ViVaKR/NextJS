@@ -161,6 +161,11 @@ exports.Prisma.DemoScalarFieldEnum = {
   name: 'name'
 };
 
+exports.Prisma.CodeScalarFieldEnum = {
+  id: 'id',
+  title: 'title'
+};
+
 exports.Prisma.MemoScalarFieldEnum = {
   id: 'id',
   title: 'title'
@@ -203,6 +208,7 @@ exports.Prisma.ModelName = {
   Comment: 'Comment',
   Tag: 'Tag',
   Demo: 'Demo',
+  Code: 'Code',
   Memo: 'Memo'
 };
 

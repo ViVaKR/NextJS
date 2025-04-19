@@ -7,16 +7,7 @@ import createMDX from '@next/mdx'
 
 const nextConfig = {
     output: 'standalone',
-    experimental: {},
-    turbopack: {
-        rules: {
-            '*.svg': {
-                loaders: ['@svgr/webpack'],
-                as: '*.js'
-            }
-        },
-        resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
-    },
+    turbopack: {},
     reactStrictMode: true,
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
     images: {
@@ -68,12 +59,17 @@ const nextConfig = {
     ]
 };
 
-const withMDX = createMDX({
-    // options: {
-    //     remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
-    //     rehypePlugins: [rehypeStringify],
-    // },
-});
-export default withMDX(nextConfig);
+// const withMDX = createMDX({
+//     // options: {
+//     //     remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
+//     //     rehypePlugins: [rehypeStringify],
+//     // },
+// });
 
 // export default nextConfig;
+
+const withMDX = createMDX({
+    // Add markdown plugins here, as desired
+})
+
+export default withMDX(nextConfig)

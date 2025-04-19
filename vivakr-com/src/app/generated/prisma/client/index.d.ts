@@ -49,6 +49,11 @@ export type Tag = $Result.DefaultSelection<Prisma.$TagPayload>
  */
 export type Demo = $Result.DefaultSelection<Prisma.$DemoPayload>
 /**
+ * Model Code
+ * 
+ */
+export type Code = $Result.DefaultSelection<Prisma.$CodePayload>
+/**
  * Model Memo
  * 
  */
@@ -265,6 +270,16 @@ export class PrismaClient<
     * ```
     */
   get demo(): Prisma.DemoDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.code`: Exposes CRUD operations for the **Code** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Codes
+    * const codes = await prisma.code.findMany()
+    * ```
+    */
+  get code(): Prisma.CodeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.memo`: Exposes CRUD operations for the **Memo** model.
@@ -722,6 +737,7 @@ export namespace Prisma {
     Comment: 'Comment',
     Tag: 'Tag',
     Demo: 'Demo',
+    Code: 'Code',
     Memo: 'Memo'
   };
 
@@ -741,7 +757,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "post" | "category" | "comment" | "tag" | "demo" | "memo"
+      modelProps: "user" | "profile" | "post" | "category" | "comment" | "tag" | "demo" | "code" | "memo"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1263,6 +1279,80 @@ export namespace Prisma {
           }
         }
       }
+      Code: {
+        payload: Prisma.$CodePayload<ExtArgs>
+        fields: Prisma.CodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          findFirst: {
+            args: Prisma.CodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          findMany: {
+            args: Prisma.CodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>[]
+          }
+          create: {
+            args: Prisma.CodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          createMany: {
+            args: Prisma.CodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>[]
+          }
+          delete: {
+            args: Prisma.CodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          update: {
+            args: Prisma.CodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          deleteMany: {
+            args: Prisma.CodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>[]
+          }
+          upsert: {
+            args: Prisma.CodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CodePayload>
+          }
+          aggregate: {
+            args: Prisma.CodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCode>
+          }
+          groupBy: {
+            args: Prisma.CodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CodeCountArgs<ExtArgs>
+            result: $Utils.Optional<CodeCountAggregateOutputType> | number
+          }
+        }
+      }
       Memo: {
         payload: Prisma.$MemoPayload<ExtArgs>
         fields: Prisma.MemoFieldRefs
@@ -1428,6 +1518,7 @@ export namespace Prisma {
     comment?: CommentOmit
     tag?: TagOmit
     demo?: DemoOmit
+    code?: CodeOmit
     memo?: MemoOmit
   }
 
@@ -9085,6 +9176,996 @@ export namespace Prisma {
 
 
   /**
+   * Model Code
+   */
+
+  export type AggregateCode = {
+    _count: CodeCountAggregateOutputType | null
+    _avg: CodeAvgAggregateOutputType | null
+    _sum: CodeSumAggregateOutputType | null
+    _min: CodeMinAggregateOutputType | null
+    _max: CodeMaxAggregateOutputType | null
+  }
+
+  export type CodeAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CodeSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CodeMinAggregateOutputType = {
+    id: number | null
+    title: string | null
+  }
+
+  export type CodeMaxAggregateOutputType = {
+    id: number | null
+    title: string | null
+  }
+
+  export type CodeCountAggregateOutputType = {
+    id: number
+    title: number
+    _all: number
+  }
+
+
+  export type CodeAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type CodeSumAggregateInputType = {
+    id?: true
+  }
+
+  export type CodeMinAggregateInputType = {
+    id?: true
+    title?: true
+  }
+
+  export type CodeMaxAggregateInputType = {
+    id?: true
+    title?: true
+  }
+
+  export type CodeCountAggregateInputType = {
+    id?: true
+    title?: true
+    _all?: true
+  }
+
+  export type CodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Code to aggregate.
+     */
+    where?: CodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Codes to fetch.
+     */
+    orderBy?: CodeOrderByWithRelationInput | CodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Codes
+    **/
+    _count?: true | CodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CodeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CodeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CodeMaxAggregateInputType
+  }
+
+  export type GetCodeAggregateType<T extends CodeAggregateArgs> = {
+        [P in keyof T & keyof AggregateCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCode[P]>
+      : GetScalarType<T[P], AggregateCode[P]>
+  }
+
+
+
+
+  export type CodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CodeWhereInput
+    orderBy?: CodeOrderByWithAggregationInput | CodeOrderByWithAggregationInput[]
+    by: CodeScalarFieldEnum[] | CodeScalarFieldEnum
+    having?: CodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CodeCountAggregateInputType | true
+    _avg?: CodeAvgAggregateInputType
+    _sum?: CodeSumAggregateInputType
+    _min?: CodeMinAggregateInputType
+    _max?: CodeMaxAggregateInputType
+  }
+
+  export type CodeGroupByOutputType = {
+    id: number
+    title: string
+    _count: CodeCountAggregateOutputType | null
+    _avg: CodeAvgAggregateOutputType | null
+    _sum: CodeSumAggregateOutputType | null
+    _min: CodeMinAggregateOutputType | null
+    _max: CodeMaxAggregateOutputType | null
+  }
+
+  type GetCodeGroupByPayload<T extends CodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CodeGroupByOutputType[P]>
+            : GetScalarType<T[P], CodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["code"]>
+
+  export type CodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["code"]>
+
+  export type CodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["code"]>
+
+  export type CodeSelectScalar = {
+    id?: boolean
+    title?: boolean
+  }
+
+  export type CodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title", ExtArgs["result"]["code"]>
+
+  export type $CodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Code"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      title: string
+    }, ExtArgs["result"]["code"]>
+    composites: {}
+  }
+
+  type CodeGetPayload<S extends boolean | null | undefined | CodeDefaultArgs> = $Result.GetResult<Prisma.$CodePayload, S>
+
+  type CodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CodeCountAggregateInputType | true
+    }
+
+  export interface CodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Code'], meta: { name: 'Code' } }
+    /**
+     * Find zero or one Code that matches the filter.
+     * @param {CodeFindUniqueArgs} args - Arguments to find a Code
+     * @example
+     * // Get one Code
+     * const code = await prisma.code.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CodeFindUniqueArgs>(args: SelectSubset<T, CodeFindUniqueArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Code that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CodeFindUniqueOrThrowArgs} args - Arguments to find a Code
+     * @example
+     * // Get one Code
+     * const code = await prisma.code.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CodeFindUniqueOrThrowArgs>(args: SelectSubset<T, CodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Code that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeFindFirstArgs} args - Arguments to find a Code
+     * @example
+     * // Get one Code
+     * const code = await prisma.code.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CodeFindFirstArgs>(args?: SelectSubset<T, CodeFindFirstArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Code that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeFindFirstOrThrowArgs} args - Arguments to find a Code
+     * @example
+     * // Get one Code
+     * const code = await prisma.code.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CodeFindFirstOrThrowArgs>(args?: SelectSubset<T, CodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Codes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Codes
+     * const codes = await prisma.code.findMany()
+     * 
+     * // Get first 10 Codes
+     * const codes = await prisma.code.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const codeWithIdOnly = await prisma.code.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CodeFindManyArgs>(args?: SelectSubset<T, CodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Code.
+     * @param {CodeCreateArgs} args - Arguments to create a Code.
+     * @example
+     * // Create one Code
+     * const Code = await prisma.code.create({
+     *   data: {
+     *     // ... data to create a Code
+     *   }
+     * })
+     * 
+     */
+    create<T extends CodeCreateArgs>(args: SelectSubset<T, CodeCreateArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Codes.
+     * @param {CodeCreateManyArgs} args - Arguments to create many Codes.
+     * @example
+     * // Create many Codes
+     * const code = await prisma.code.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CodeCreateManyArgs>(args?: SelectSubset<T, CodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Codes and returns the data saved in the database.
+     * @param {CodeCreateManyAndReturnArgs} args - Arguments to create many Codes.
+     * @example
+     * // Create many Codes
+     * const code = await prisma.code.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Codes and only return the `id`
+     * const codeWithIdOnly = await prisma.code.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CodeCreateManyAndReturnArgs>(args?: SelectSubset<T, CodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Code.
+     * @param {CodeDeleteArgs} args - Arguments to delete one Code.
+     * @example
+     * // Delete one Code
+     * const Code = await prisma.code.delete({
+     *   where: {
+     *     // ... filter to delete one Code
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CodeDeleteArgs>(args: SelectSubset<T, CodeDeleteArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Code.
+     * @param {CodeUpdateArgs} args - Arguments to update one Code.
+     * @example
+     * // Update one Code
+     * const code = await prisma.code.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CodeUpdateArgs>(args: SelectSubset<T, CodeUpdateArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Codes.
+     * @param {CodeDeleteManyArgs} args - Arguments to filter Codes to delete.
+     * @example
+     * // Delete a few Codes
+     * const { count } = await prisma.code.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CodeDeleteManyArgs>(args?: SelectSubset<T, CodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Codes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Codes
+     * const code = await prisma.code.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CodeUpdateManyArgs>(args: SelectSubset<T, CodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Codes and returns the data updated in the database.
+     * @param {CodeUpdateManyAndReturnArgs} args - Arguments to update many Codes.
+     * @example
+     * // Update many Codes
+     * const code = await prisma.code.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Codes and only return the `id`
+     * const codeWithIdOnly = await prisma.code.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CodeUpdateManyAndReturnArgs>(args: SelectSubset<T, CodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Code.
+     * @param {CodeUpsertArgs} args - Arguments to update or create a Code.
+     * @example
+     * // Update or create a Code
+     * const code = await prisma.code.upsert({
+     *   create: {
+     *     // ... data to create a Code
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Code we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CodeUpsertArgs>(args: SelectSubset<T, CodeUpsertArgs<ExtArgs>>): Prisma__CodeClient<$Result.GetResult<Prisma.$CodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Codes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeCountArgs} args - Arguments to filter Codes to count.
+     * @example
+     * // Count the number of Codes
+     * const count = await prisma.code.count({
+     *   where: {
+     *     // ... the filter for the Codes we want to count
+     *   }
+     * })
+    **/
+    count<T extends CodeCountArgs>(
+      args?: Subset<T, CodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Code.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CodeAggregateArgs>(args: Subset<T, CodeAggregateArgs>): Prisma.PrismaPromise<GetCodeAggregateType<T>>
+
+    /**
+     * Group by Code.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CodeGroupByArgs['orderBy'] }
+        : { orderBy?: CodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Code model
+   */
+  readonly fields: CodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Code.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Code model
+   */
+  interface CodeFieldRefs {
+    readonly id: FieldRef<"Code", 'Int'>
+    readonly title: FieldRef<"Code", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Code findUnique
+   */
+  export type CodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter, which Code to fetch.
+     */
+    where: CodeWhereUniqueInput
+  }
+
+  /**
+   * Code findUniqueOrThrow
+   */
+  export type CodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter, which Code to fetch.
+     */
+    where: CodeWhereUniqueInput
+  }
+
+  /**
+   * Code findFirst
+   */
+  export type CodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter, which Code to fetch.
+     */
+    where?: CodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Codes to fetch.
+     */
+    orderBy?: CodeOrderByWithRelationInput | CodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Codes.
+     */
+    cursor?: CodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Codes.
+     */
+    distinct?: CodeScalarFieldEnum | CodeScalarFieldEnum[]
+  }
+
+  /**
+   * Code findFirstOrThrow
+   */
+  export type CodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter, which Code to fetch.
+     */
+    where?: CodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Codes to fetch.
+     */
+    orderBy?: CodeOrderByWithRelationInput | CodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Codes.
+     */
+    cursor?: CodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Codes.
+     */
+    distinct?: CodeScalarFieldEnum | CodeScalarFieldEnum[]
+  }
+
+  /**
+   * Code findMany
+   */
+  export type CodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter, which Codes to fetch.
+     */
+    where?: CodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Codes to fetch.
+     */
+    orderBy?: CodeOrderByWithRelationInput | CodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Codes.
+     */
+    cursor?: CodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Codes.
+     */
+    skip?: number
+    distinct?: CodeScalarFieldEnum | CodeScalarFieldEnum[]
+  }
+
+  /**
+   * Code create
+   */
+  export type CodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Code.
+     */
+    data: XOR<CodeCreateInput, CodeUncheckedCreateInput>
+  }
+
+  /**
+   * Code createMany
+   */
+  export type CodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Codes.
+     */
+    data: CodeCreateManyInput | CodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Code createManyAndReturn
+   */
+  export type CodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many Codes.
+     */
+    data: CodeCreateManyInput | CodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Code update
+   */
+  export type CodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Code.
+     */
+    data: XOR<CodeUpdateInput, CodeUncheckedUpdateInput>
+    /**
+     * Choose, which Code to update.
+     */
+    where: CodeWhereUniqueInput
+  }
+
+  /**
+   * Code updateMany
+   */
+  export type CodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Codes.
+     */
+    data: XOR<CodeUpdateManyMutationInput, CodeUncheckedUpdateManyInput>
+    /**
+     * Filter which Codes to update
+     */
+    where?: CodeWhereInput
+    /**
+     * Limit how many Codes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Code updateManyAndReturn
+   */
+  export type CodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * The data used to update Codes.
+     */
+    data: XOR<CodeUpdateManyMutationInput, CodeUncheckedUpdateManyInput>
+    /**
+     * Filter which Codes to update
+     */
+    where?: CodeWhereInput
+    /**
+     * Limit how many Codes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Code upsert
+   */
+  export type CodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Code to update in case it exists.
+     */
+    where: CodeWhereUniqueInput
+    /**
+     * In case the Code found by the `where` argument doesn't exist, create a new Code with this data.
+     */
+    create: XOR<CodeCreateInput, CodeUncheckedCreateInput>
+    /**
+     * In case the Code was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CodeUpdateInput, CodeUncheckedUpdateInput>
+  }
+
+  /**
+   * Code delete
+   */
+  export type CodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+    /**
+     * Filter which Code to delete.
+     */
+    where: CodeWhereUniqueInput
+  }
+
+  /**
+   * Code deleteMany
+   */
+  export type CodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Codes to delete
+     */
+    where?: CodeWhereInput
+    /**
+     * Limit how many Codes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Code without action
+   */
+  export type CodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Code
+     */
+    select?: CodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Code
+     */
+    omit?: CodeOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model Memo
    */
 
@@ -10153,6 +11234,14 @@ export namespace Prisma {
   export type DemoScalarFieldEnum = (typeof DemoScalarFieldEnum)[keyof typeof DemoScalarFieldEnum]
 
 
+  export const CodeScalarFieldEnum: {
+    id: 'id',
+    title: 'title'
+  };
+
+  export type CodeScalarFieldEnum = (typeof CodeScalarFieldEnum)[keyof typeof CodeScalarFieldEnum]
+
+
   export const MemoScalarFieldEnum: {
     id: 'id',
     title: 'title'
@@ -10641,6 +11730,45 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Demo"> | string
   }
 
+  export type CodeWhereInput = {
+    AND?: CodeWhereInput | CodeWhereInput[]
+    OR?: CodeWhereInput[]
+    NOT?: CodeWhereInput | CodeWhereInput[]
+    id?: IntFilter<"Code"> | number
+    title?: StringFilter<"Code"> | string
+  }
+
+  export type CodeOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type CodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: CodeWhereInput | CodeWhereInput[]
+    OR?: CodeWhereInput[]
+    NOT?: CodeWhereInput | CodeWhereInput[]
+    title?: StringFilter<"Code"> | string
+  }, "id">
+
+  export type CodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    _count?: CodeCountOrderByAggregateInput
+    _avg?: CodeAvgOrderByAggregateInput
+    _max?: CodeMaxOrderByAggregateInput
+    _min?: CodeMinOrderByAggregateInput
+    _sum?: CodeSumOrderByAggregateInput
+  }
+
+  export type CodeScalarWhereWithAggregatesInput = {
+    AND?: CodeScalarWhereWithAggregatesInput | CodeScalarWhereWithAggregatesInput[]
+    OR?: CodeScalarWhereWithAggregatesInput[]
+    NOT?: CodeScalarWhereWithAggregatesInput | CodeScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Code"> | number
+    title?: StringWithAggregatesFilter<"Code"> | string
+  }
+
   export type MemoWhereInput = {
     AND?: MemoWhereInput | MemoWhereInput[]
     OR?: MemoWhereInput[]
@@ -10985,6 +12113,38 @@ export namespace Prisma {
   export type DemoUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CodeCreateInput = {
+    title: string
+  }
+
+  export type CodeUncheckedCreateInput = {
+    id?: number
+    title: string
+  }
+
+  export type CodeUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CodeUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CodeCreateManyInput = {
+    id?: number
+    title: string
+  }
+
+  export type CodeUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CodeUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
   }
 
   export type MemoCreateInput = {
@@ -11479,6 +12639,29 @@ export namespace Prisma {
   }
 
   export type DemoSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type CodeAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type CodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type CodeSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

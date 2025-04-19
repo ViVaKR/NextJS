@@ -14,7 +14,7 @@ import Button from '@mui/material/Button';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { IRegisterRequest } from '@/interfaces/i-register-request';
-import { IAuthResponse, IAuthResponseDTO } from '@/interfaces/i-auth-response';
+import { IAuthResponseDTO } from '@/interfaces/i-auth-response';
 import { useEffect, useState } from 'react';
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useSnackbar } from '@/lib/SnackbarContext';
@@ -170,7 +170,7 @@ export default function SignUpPage() {
 
           {/* 이메일 */}
           <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-            <InputLabel htmlFor="email">아이디 / 이메일</InputLabel>
+            <InputLabel htmlFor="email" className='!text-amber-200'>아이디 / 이메일</InputLabel>
             <Controller
               name="email"
               control={control}
@@ -183,12 +183,12 @@ export default function SignUpPage() {
                   id="email" />
               )}
             />
-            <FormHelperText>{errors.email?.message}</FormHelperText>
+            <FormHelperText className='!text-red-400'>{errors.email?.message}</FormHelperText>
           </FormControl>
 
           {/* 필명 */}
           <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-            <InputLabel htmlFor="fullName">필명</InputLabel>
+            <InputLabel htmlFor="fullName" className='!text-amber-200'>필명</InputLabel>
             <Controller
               name="fullName"
               control={control}
@@ -200,12 +200,12 @@ export default function SignUpPage() {
                   id="fullName" aria-describedby="fullName-helper-text" />
               )}
             />
-            <FormHelperText>{errors.fullName?.message}</FormHelperText>
+            <FormHelperText className='!text-red-400'>{errors.fullName?.message}</FormHelperText>
           </FormControl>
 
           {/* 비밀번호 */}
           <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-            <InputLabel htmlFor="password">비밀번호</InputLabel>
+            <InputLabel htmlFor="password" className='!text-amber-200'>비밀번호</InputLabel>
             <Controller
               name="password"
               control={control}
@@ -231,12 +231,12 @@ export default function SignUpPage() {
                 />
               )}
             />
-            <FormHelperText>{errors.password?.message}</FormHelperText>
+            <FormHelperText className='!text-red-400'>{errors.password?.message}</FormHelperText>
           </FormControl>
 
           {/* 비밀번호 확인 */}
           <FormControl sx={{ m: 1, width: '100%' }} variant="filled">
-            <InputLabel htmlFor="passwordConfirm">비밀번호 확인</InputLabel>
+            <InputLabel htmlFor="passwordConfirm" className='!text-amber-200'>비밀번호 확인</InputLabel>
             <Controller
               name="passwordConfirm"
               control={control}
@@ -262,7 +262,7 @@ export default function SignUpPage() {
                 />
               )}
             />
-            <FormHelperText>{errors.passwordConfirm?.message}</FormHelperText>
+            <FormHelperText className='!text-red-400'>{errors.passwordConfirm?.message}</FormHelperText>
           </FormControl>
 
           {/* 버튼그룹 */}
@@ -272,7 +272,7 @@ export default function SignUpPage() {
               type="button"
               variant="outlined"
               color="primary"
-              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              className="!text-lime-300 !border-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
               취소
             </Button>
             {/* 2 */}
@@ -281,15 +281,15 @@ export default function SignUpPage() {
               variant="outlined"
               color="primary"
               onClick={() => router.push('/membership/sign-in')}
-              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
-              이미회원이신가요? 로그인
+              className="!text-lime-300 !border-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              이미회원이신가요?
             </Button>
             {/* 3 */}
             <Button
               type="submit"
               variant="outlined"
               color="primary"
-              className="!text-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
+              className="!text-lime-300 !border-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
               회원가입
             </Button>
           </div>

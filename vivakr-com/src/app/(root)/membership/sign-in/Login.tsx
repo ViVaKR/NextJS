@@ -11,6 +11,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Tooltip,
 } from '@mui/material';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { useRouter } from 'next/navigation';
@@ -140,7 +141,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className={styles.signinForm}>
+    <div className={`${styles.signinForm} bg-gradient-to-b from-sky-100 to-sky-500`}>
       <div className={styles.box}>
         <span className={styles.borderLine}></span>
         {hideMembership && (
@@ -219,6 +220,7 @@ export default function SignIn() {
               <Link href="/membership/forget-password">Forget pasword</Link>
               <Link href="/membership/sign-up">Do not have an account</Link>
             </div>
+            <p className='text-xs text-slate-500 text-center'>코드 쓰기는 본 사이트 회원만 가능합니다.</p>
 
             <div className="w-1/2 flex justify-center items-center">
               <button
@@ -229,6 +231,7 @@ export default function SignIn() {
               </button>
             </div>
             <span className="flex-1 clear-both"></span>
+
 
             {domain == 'vivakr.com' ? (
               <>
@@ -300,6 +303,7 @@ export default function SignIn() {
                     Microsoft
                   </button>
                 </div>
+
 
                 <div
                   hidden
@@ -377,13 +381,22 @@ export default function SignIn() {
                 </div>
               </>
             ) : (
-              <Link
-                href={`https://vivakr.com/membership/sign-in`}
-                className="text-center flex bottom-0 items-center mb-8 mx-auto rounded-2xl hover:bg-sky-500 text-white justify-center
-
-        w-1/2 h-12 bg-red-400">
-                Social
-              </Link>
+              <Tooltip title="소셜 로그인을 위하여 vivakr.com 으로 이동합니다." arrow>
+                <Link
+                  href={`https://vivakr.com/membership/sign-in`}
+                  className="text-center flex bottom-0
+                          items-center mb-8 mt-8
+                          mx-auto
+                          rounded-lg
+                          hover:bg-sky-500
+                          hover:text-white
+                          text-slate-400
+                          justify-center
+                          px-4 py-2
+                          w-auto h-auto">
+                  Social Login
+                </Link>
+              </Tooltip>
             )}
           </form>
         )}
@@ -392,17 +405,3 @@ export default function SignIn() {
   );
 }
 
-/*
-인기 순위 (2025년 기준 추정)
-
-Google: 사용자층 가장 넓음, 설정 쉬움.
-Facebook: 소셜 미디어 1위, 복잡함.
-Microsoft: 개인+기업 통합, 안정적.
-Twitter(X): 간단하고 트렌디.
-GitHub: 개발자 중심, 쉬움.
-Discord: 커뮤니티 특화, 쉬움.
-Apple: 프리미엄 경험, 중간 난이도.
-LinkedIn: 전문가 타겟, 중간 난이도.
-Instagram: 소셜 미디어 보조, 복잡함.
-
-*/

@@ -4,7 +4,7 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
   display: flex;
-  background-color: var(--color-sky-400);
+  /* background-color: var(--color-sky-400); */
   justify-content: center;
   align-items: center;
   min-height: 100vh;
