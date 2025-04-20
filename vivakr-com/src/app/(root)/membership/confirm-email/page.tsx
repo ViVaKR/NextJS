@@ -3,8 +3,9 @@
 import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { userDetail } from "@/services/auth.service";
+import { getToken, userDetail } from "@/services/auth.service";
 import { Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type confirmReplayData = {
@@ -16,17 +17,33 @@ export default function ConfirmEmailPage() {
   const url = "https://vivakr.com/membership";
   const [email, setEmail] = useState<string | null | undefined>();
   const { showSnackbar } = useSnackbar()
-  const detail = userDetail();
+  const router = useRouter();
+  const [fullName, setFullName] = useState<string>('')
 
+  // 페이지 로드시 토큰 체크
   useEffect(() => {
-    const data = detail?.email ?? null;
-    setEmail(data);
-  }, [detail?.email])
+    const token = getToken();
+    if (!token) {
+      router.push('/membership/sign-in'); // 토큰 없으면 리다리렉션
+      return;
+    }
+
+    const getUserDetail = async () => {
+      const user = await userDetail();
+      if (!user) {
+        router.push('/membership/sign-in'); // 유저 정보 없으면 리다리렉션
+        return;
+      }
+      setEmail(user.email);
+      setFullName(user.fullName);
+    }
+    getUserDetail();
+  }, [router])
 
   const handleSendMail = async () => {
     try {
       const data: confirmReplayData = {
-        email: detail?.email!,
+        email: email || '',
         replayUrl: url
       }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/confirm-send-mail`, {
@@ -62,6 +79,16 @@ export default function ConfirmEmailPage() {
   return (
     <div className="w-full px-48 py-8 flex flex-col justify-center items-center gap-4">
       <VivTitle title="메일 인증" />
+      <Typography sx={{
+        textAlign: 'center',
+        border: '4px solid lightblue',
+        padding: '0.5em 2em',
+        borderRadius: '1em',
+        fontSize: '2em', color: 'lightblue',
+        fontFamily: 'var(--font-poppins)'
+      }}>
+        {fullName}님
+      </Typography>
       <Typography sx={{
         textAlign: 'center',
         border: '4px solid lightblue',

@@ -6,7 +6,7 @@ import { ICategory } from '@/interfaces/i-category';
 import CategoryAccordion from '@/components/CategoryAccordion';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Tooltip } from '@mui/material';
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
 import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutlined';
@@ -23,25 +23,39 @@ interface ClientLayoutProps {
 }
 
 export default function ClientLayout({
-  codes,
-  categories,
+  codes: initialCodes,
+  categories: initialCategories,
   children,
 }: ClientLayoutProps) {
-
+  const [codes, setCodes] = useState<ICode[]>(initialCodes);
+  const [categories, setCategories] = useState<ICategory[]>(initialCategories);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 여부 확인
   const pathname = usePathname();
 
   const [admin, setAdmin] = useState<boolean>();
-  const [fullName, setFullName] = useState<string>();
-  const detail = userDetail();
+  const router = useRouter();
+  const [id, setId] = useState<string>('');
+  const [fullName, setFullName] = useState<string>('');
   const auth = useAuth();
 
   useEffect(() => {
 
-    setFullName(detail?.fullName);
-    setAdmin(detail?.roles.some((role) => role.toLowerCase() === 'admin'));
-  }, [auth, detail]);
+    if (!auth) return; // auth가 없으면 리턴
+
+    const getUserDetail = async () => {
+      const user = await userDetail();
+      if (!user) {
+        router.push('/membership/sign-in'); // 유저 정보 없으면 리다리렉션
+        return;
+      }
+      setId(user.id);
+      setFullName(user.fullName);
+      setAdmin(user?.roles.some((role) => role.toLowerCase() === 'admin'));
+    }
+    getUserDetail();
+
+  }, [auth, router]);
 
   // 클라이언트에서만 localStorage를 읽고 상태 업데이트
   useEffect(() => {
@@ -64,6 +78,12 @@ export default function ClientLayout({
       localStorage.setItem('menuCollapsed', JSON.stringify(isCollapsed));
     }
   }, [isCollapsed, isMounted]);
+
+  // 새로운 코드 추가 시 클라이언트 상태 갱신 (옵션)
+  useEffect(() => {
+    setCodes(initialCodes); // 서버에서 받은 최신 코드로 갱신
+    setCategories(initialCategories);
+  }, [initialCodes, initialCategories]);
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev); // 토글

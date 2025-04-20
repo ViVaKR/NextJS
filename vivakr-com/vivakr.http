@@ -1,5 +1,5 @@
 @url = https://localhost:41086
-@vivabmUrl = https://api.vivabm.com
+@vivakrUrl = https://api.vivakr.com
 
 
 ###
@@ -26,11 +26,11 @@ GET {{url}}/api/search?query=hello
 ###
 
 
-GET {{vivabmUrl}}/api/subscribe/list?limit=2 HTTP/1.1
+GET {{vivakrUrl}}/api/subscribe/list?limit=2 HTTP/1.1
 
 ###
 
-POST {{vivabmUrl}}/api/subscribe/new HTTP/1.1
+POST {{vivakrUrl}}/api/subscribe/new HTTP/1.1
 content-type: application/json
 
 {
@@ -38,7 +38,7 @@ content-type: application/json
 }
 
 ###
-POST {{vivabmUrl}}/api/subscribe/remove-subscribe HTTP/1.1
+POST {{vivakrUrl}}/api/subscribe/remove-subscribe HTTP/1.1
 content-type: application/json
 
 {
@@ -47,10 +47,22 @@ content-type: application/json
 
 ###
 
-DELETE  {{vivabmUrl}}/api/subscribe/reply-remove-subscribe?email=hello.viva.bm@gmail.com HTTP/1.1
+DELETE  {{vivakrUrl}}/api/subscribe/reply-remove-subscribe?email=hello.viva.bm@gmail.com HTTP/1.1
 
 ###
 # /api/subscribe/replay-remove-subscribe
 # reply-remove-subscribe
 # api/subscribe/remove-subscription
 # api/subscribe/reply-remove-subscribe
+
+
+###
+
+POST {{vivakrUrl}}/api/account/refresh-token HTTP/1.1
+content-type: application/json
+
+{
+    "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJtQGxpdmUuY28ua3IiLCJuYW1lIjoi67mE7JegIiwibmFtZWlkIjpbIjI2YTFjMDZlLTVhNmEtNDRiNS1hMDM3LWE5ZGNkY2NlNjg0OSIsIjI2YTFjMDZlLTVhNmEtNDRiNS1hMDM3LWE5ZGNkY2NlNjg0OSJdLCJhdWQiOiJodHRwczovL3ZpdmFrci5jb20iLCJpc3MiOiJodHRwczovL3ZpdmFrci5jb20iLCJyb2xlIjoiQWRtaW4iLCJlbWFpbF9jb25maXJtZWQiOiJUcnVlIiwic2Vzc2lvbl9pZCI6ImRmZDM2NWMyLTVkYjQtNGQzMi1hZDZkLTdhNThjYjgwMjU4ZSIsInBlcm1pc3Npb25zIjoicmVhZDpjb2Rlcyx3cml0ZTpjb2RlcyIsIm5iZiI6MTc0NTEwMjE0NiwiZXhwIjoxNzQ1MTAzMDQ2LCJpYXQiOjE3NDUxMDIxNDZ9.pw2UxFd6zqOczQwmxfrBFZyIKXhydMjd31rIqoY5TCI",
+    "refreshToken": "Bpps5HRH/Gvm3akBmoH3olvd4Rwkm/AK4pJEvvmCKTk=",
+    "email": "bm@live.co.kr"
+}

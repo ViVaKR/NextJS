@@ -25,9 +25,12 @@ export async function fetchCodes(): Promise<ICode[]> {
     }
 }
 
+// Delete
 export async function fetchUserCodes(userId: string): Promise<ICode[] | null> {
-    const token = getToken();
-    if (!token) { return null; }
+
+    const token = await getToken();
+    if (!token) return null;
+
     try {
         const url = `${apiUrl}/api/code/user/${userId}`;
         const response = await fetch(url, {
@@ -69,11 +72,12 @@ export async function fetchLimitedCodes(limit: number): Promise<ICode[]> {
 }
 
 // * Post Code Data
-export async function postCodes(data: CodeData):
-    Promise<ICodeResponse | null | undefined> {
+export const postCodes = async (data: CodeData): Promise<ICodeResponse | null | undefined> => {
 
-    const token = getToken();
-    if (!token) { return null; }
+    const token = await getToken();
+    if (!token) {
+        throw new Error('로그인이 필요합니다.');
+    }
 
     try {
         const response = await fetch(`${apiUrl}/api/code`, {
@@ -84,60 +88,28 @@ export async function postCodes(data: CodeData):
             },
             body: JSON.stringify(data),
         });
-        const result: ICodeResponse = await response.json();
-        if (response.ok) {
-            return result;
-        } else {
-            const notOk: ICodeResponse = {
-                isSuccess: false,
-                message: `Response Not OK: ${result.message}`,
-                data: null
-            }
-            return notOk;
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || '코드 작성에 실패했습니다.');
         }
+
+        const result: ICodeResponse = await response.json();
+        return result as ICodeResponse;
     } catch (err) {
         console.error('Submit failed:', err);
+        return {
+            isSuccess: false,
+            message: `Submission failed: ${err}`,
+            data: null
+        }
     }
 }
 
-
-// * PUT Code Data
-export async function updateCode(id: number, data: CodeData): Promise<ICodeResponse
-    | null
-    | undefined> {
-    const token = getToken();
-    if (!token) {
-        return null;
-    }
-    try {
-        const response = await fetch(`${apiUrl}/api/code/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // 토큰 추가 (API가 필요 시)
-            },
-            body: JSON.stringify(data),
-        });
-        const result: ICodeResponse = await response.json();
-
-        if (response.ok) {
-            return result;
-        } else {
-            const notOk: ICodeResponse = {
-                isSuccess: false,
-                message: `코드 업데이트에 실패: ${result.message}`,
-                data: null
-            }
-            return notOk;
-        }
-    } catch (err) {
-        console.error('Submit failed:', err);
-    }
-}
 
 // Delete
 export const deleteCode = async (id: number): Promise<ICodeResponse> => {
-    const token = getToken();
+    const token = await getToken();
     if (!token) {
         throw new Error('로그인이 필요합니다.');
     }
@@ -151,7 +123,7 @@ export const deleteCode = async (id: number): Promise<ICodeResponse> => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || '삭제에 실패했습니다.');
+        throw new Error(errorData.message || '코드 삭제에 실패했습니다.');
     }
 
     const result = await response.json();

@@ -1,11 +1,19 @@
 'use client'
 import { useAuthCheck } from '@/hooks/useAuthCheck';
-import { getToken } from '@/services/auth.service';
+import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { CircularProgress } from '@mui/material';
+
 export default function UpdateButton({ codeId, userId }: { codeId: number, userId: string }) {
     const [canDelete, loading] = useAuthCheck(userId);
-    if (loading) <span>Loading...</span>
+
+    if (!loading) {
+        return (
+            <Box sx={{ p: 2 }}>
+                <Typography>수정 권한 확인 중...</Typography>
+            </Box>
+        );
+    }
     if (!canDelete) return null;
     return (
         <div>

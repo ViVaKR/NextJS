@@ -21,10 +21,9 @@ export async function middleware(request: NextRequest) {
         '/membership/my-code',
         '/membership/role',
         '/membership/code-backup',
-        '/membership/confir-email',
-        '/odds/data-grid-2'
+        '/membership/confirm-email',
     ];
-    const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail', '/oods/data-grid-2'];
+    const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
     const pathname = request.nextUrl.pathname;
     if (protectedPaths.some((path) => pathname.startsWith(path))) {
         if (!userToken) {
@@ -32,10 +31,6 @@ export async function middleware(request: NextRequest) {
             signInUrl.searchParams.set('redirect', pathname);
             return NextResponse.redirect(signInUrl);
         }
-        // if (!token) {
-        //     // 로그인 페이지 리다리렉트
-        //     return NextResponse.redirect(signInUrl);
-        // }
 
         let decoded: any;
         try {
@@ -50,26 +45,11 @@ export async function middleware(request: NextRequest) {
             if (!roles.includes('Admin')) {
                 return NextResponse.redirect(new URL('/membership/unauthorized', request.url));
             }
-
-            // 타입 가드 추가
-            // const userRoles = (token?.user as ExtendedUser | undefined)?.roles || [];
-            // if (!userRoles.includes('Admin')) {
-            //     return NextResponse.redirect(new URL('/membership/unauthorized', request.url));
-            // }
         }
     }
-
     return NextResponse.next();
 }
 
 export const config = {
     matcher: ['/membership/((?!sign-in).*)'],
-    // matcher: ['/membership/((?!sign-in).*)', '/dashboard/:path*'],
 };
-
-
-
-/*
-이제 전체적인 인증 흐름(로그인 폼 -> AuthContext -> 쿠키/로컬스토리지 저장 -> 미들웨어 검증 -> 페이지 접근)이 더 명확해졌기를 바라! 정말 잘하고 있어!
-
-*/

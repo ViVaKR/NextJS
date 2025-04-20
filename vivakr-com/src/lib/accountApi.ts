@@ -4,7 +4,7 @@ import { getToken, isAdmin } from '@/services/auth.service';
 
 export async function deleteAccount(email: string): Promise<IAuthResponseDTO> {
 
-    const token = getToken();
+    const token = await getToken();
     if (!token || !isAdmin()) throw new Error('권한이 없습니다.');
 
     const deleteAccountDto: IDeleteAccountDTO = {

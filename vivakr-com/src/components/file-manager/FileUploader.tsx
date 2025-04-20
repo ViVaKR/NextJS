@@ -18,7 +18,7 @@ export default function FileUploader({ onUploadComplete, title = '파일 업로�
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const token = getToken();
+        const token = await getToken();
         if (!token) {
             setStatus('로그인 후 다시 시도해주세요.');
             return;
@@ -74,7 +74,7 @@ export default function FileUploader({ onUploadComplete, title = '파일 업로�
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
-                accept=".zip,.rar,.7z,.tar" // 압축 파일만 허용
+                accept=".zip,.rar,.7z,.tar"
             />
             <Button
                 variant="contained"

@@ -6,10 +6,15 @@ import { Box, Button, CircularProgress, Typography, Alert, Link as MuiLink, Tool
 import { ICode } from '@/interfaces/i-code';
 import { ICategory } from '@/interfaces/i-category';
 import { IIncrementalResult } from '@/interfaces/i-incremental-result';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
+import {
+    DataGrid, GridColDef,
+    GridRenderCellParams,
+    GridToolbarExportContainer
+} from '@mui/x-data-grid';
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import Link from 'next/link';
-import { isAdmin } from '@/services/auth.service';
+import { isAdmin, userDetail } from '@/services/auth.service';
+import { useRouter } from 'next/navigation';
 
 const CHUNK_SIZE = 20;
 interface IncrementalCodeLoaderProps {
@@ -24,12 +29,14 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isComplete, setIsComplete] = useState<boolean>(false);
+    const initialLoadInitiated = useRef(false);
+    const [admin, setAdmin] = useState<boolean>(false);
+    const router = useRouter();
 
-    const admin: boolean = isAdmin();
+    // const admin: boolean = isAdmin();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    // 초기 로드가 이미 시작되었는지 추적하기 위한 ref
-    const initialLoadInitiated = useRef(false);
+
 
     const loadMoreCodes = useCallback(async (isInitialLoad = false) => { // 초기 로드인지 구분하는 플래그 추가 (선택 사항)
         if (isLoading || isComplete || !apiUrl) {
@@ -37,8 +44,6 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
         }
         setIsLoading(true); // 로딩 상태를 먼저 true로 설정
         setError(null);
-
-
 
         try {
             const url = `${apiUrl}/api/code/all-incremental?offset=${currentOffset}&limit=${CHUNK_SIZE}&categoryId=${categoryId}`;
@@ -77,10 +82,17 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [apiUrl, currentOffset]); // isComplete, isLoading 제거 실험
 
+    // 페이지 로드시 토큰 체크
+    useEffect(() => {
+        const check = async () => {
+            const adminCheck = await isAdmin();
+            setAdmin(adminCheck);
+        }
+        check();
+    }, [router, setAdmin])
+
     // 컴포넌트 마운트 시 첫 데이터 청크 로드 (useRef 사용)
     useEffect(() => {
-        // ref를 사용하여 이 effect 로직이 정말 딱 한 번만 실행되도록 보장
-        // (React StrictMode 개발 환경에서의 이중 실행 방지)
         if (!initialLoadInitiated.current) {
             if (currentOffset === 0 && !isComplete) {
                 loadMoreCodes(true); // 초기 로드임을 명시 (디버깅용)
@@ -89,7 +101,6 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // 빈 배열: 마운트 시 한 번만 실행하도록 강제 (lint 경고 무시)
-
 
     const columns: GridColDef[] = [
         {
@@ -169,7 +180,7 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
                     loading={isLoading && allLoadedCodes.length === 0}
                     getRowId={(row) => row.id}
                     hideFooterSelectedRowCount={true}
-                    slots={(admin) ? { toolbar: GridToolbar } : {}}
+                    slots={(admin) ? { toolbar: GridToolbarExportContainer } : {}} // GridToolbar
                     pageSizeOptions={[5, 10, 15, 25, 50, 100]}
                     initialState={{
                         pagination: {

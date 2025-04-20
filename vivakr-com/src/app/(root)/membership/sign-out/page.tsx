@@ -12,9 +12,7 @@ const SignOutPage = () => {
   const handleSignOut = () => {
     logout();
     router.push('/');
-    setTimeout(() => {
-      window.location.reload();
-    }, 50);
+    router.refresh();
   };
 
   return (

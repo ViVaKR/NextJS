@@ -23,12 +23,23 @@ export default function IncrementalCodes({ categoryName, categoryId }: Increment
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isComplete, setIsComplete] = useState<boolean>(false);
+    const [admin, setAdmin] = useState<boolean>(false);
 
-    const admin: boolean = isAdmin();
+    // const admin: boolean = isAdmin();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // 초기 로드가 이미 시작되었는지 추적하기 위한 ref
     const initialLoadInitiated = useRef(false);
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            const user = await isAdmin();
+            if (user) {
+                setAdmin(user);
+            }
+        };
+        checkAdmin();
+    });
 
     const loadMoreCodes = useCallback(async (isInitialLoad = false) => { // 초기 로드인지 구분하는 플래그 추가 (선택 사항)
         if (isLoading || isComplete || !apiUrl) {

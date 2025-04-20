@@ -28,7 +28,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
 
     const noteHtml = code.note ? await markdownToHtml(code.note) : '';
     const markdownHtml = code.markdown ? await markdownToHtml(code.markdown) : '';
-    const codeTheme = 'everforest-dark'; // theme 수정
+    const codeTheme = 'everforest-dark';
 
     const proseStyles = [
         'prose',
@@ -148,7 +148,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
 
                 <div className="flex justify-evenly my-4 items-center">
                     <span className="text-sky-700 hover:text-red-800">
-                        <VivCopyClipboard content={JSON.stringify(code)} title="전체 데이터" />
+                        <VivCopyClipboard content={JSON.stringify(code)} title="전체 데이터 복사" />
                     </span>
                 </div>
 

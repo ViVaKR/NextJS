@@ -3,4 +3,6 @@ interface IUserDetail {
     fullName: string;
     email: string;
     roles: string[];
+    emailConfirmed?: boolean;
+    permissions?: string[];
 }

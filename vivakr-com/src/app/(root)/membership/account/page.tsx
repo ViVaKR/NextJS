@@ -122,7 +122,6 @@ export default function AccountList() {
     { field: 'email', headerName: '아이디', width: 250, filterable: true, type: 'string', headerAlign: 'center', },
     { field: 'fullName', headerName: '이름', width: 120, filterable: true, type: 'string', },
     { field: 'emailConfirmed', headerName: '인증', width: 100, filterable: true, type: 'boolean', },
-    // { field: 'phoneNember', headerName: '전화번호', width: 200, filterable: true, type: 'string', valueGetter: (params: string) => params ?? '없음', },
     { field: 'roles', headerName: '권한', width: 300, filterable: true, type: 'string', valueGetter: (params: string[]) => Array.isArray(params) ? params.join(', ') : '', },
     {
       field: 'actions',
@@ -141,7 +140,6 @@ export default function AccountList() {
       ),
     },
   ];
-
 
   if (loading) {
     return (

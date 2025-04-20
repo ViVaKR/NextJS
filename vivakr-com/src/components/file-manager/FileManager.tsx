@@ -40,7 +40,7 @@ export default function FileManager({
     const [imagePreview, setImagePreview] = useState<string>("");
     const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
     const [uploadError, setUploadError] = useState<boolean>(false);
-    // const snackbar = useSnackbar();
+    const snackbar = useSnackbar();
     const router = useRouter();
     const { user, updateUser } = useProfile(); // updateUser 가져오기, user.id 추가로 가져옴
 
@@ -52,8 +52,7 @@ export default function FileManager({
             if (!file.type.startsWith("image/")) {
                 setUploadError(true);
                 setUploadSuccess(false);
-                // snackbar.showSnackbar("이미지 파일만 가능합니다.", "error");
-                alert('이미지 파일만 가능합니다.');
+                snackbar.showSnackbar("이미지 파일만 가능합니다.", "error");
                 return;
             }
 
@@ -117,6 +116,8 @@ export default function FileManager({
                 }
             }
         },
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [choice, onLoadFinished, user?.id, updateUser, onAttachImageFinished, router]
     );
 

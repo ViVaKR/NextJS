@@ -5,8 +5,7 @@ import { userDetail, getToken } from '@/services/auth.service';
 import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react';
-import { postCodes } from '@/lib/fetchCodes';
+import { useEffect, useState, useTransition } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import FileManager from '@/components/file-manager/FileManager';
@@ -14,17 +13,22 @@ import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import FileUploader from '@/components/file-manager/FileUploader';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined';
+import { ICodeResponse } from '@/interfaces/i-code-response';
+import { postCodes } from '@/lib/server-action';
 
 export default function CreateCodePage() {
 
     const [rows, setRows] = useState(5);
-    const router = useRouter();
     const snackbar = useSnackbar();
     const startValue = 5;
     const stepValue = 15;
     const numberOfButtons = 10;
+    const router = useRouter();
+    const [id, setId] = useState<string>('');
     const [fullName, setFullName] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[]>([]);
+    const [isPending, startTransition] = useTransition();
+    const [isLoadingUser, setIsLoadingUser] = useState(true); // 로딩 상태 추가
 
     useEffect(() => {
         const fetchAndSortCategories = async () => {
@@ -56,25 +60,14 @@ export default function CreateCodePage() {
         )
     });
 
-    // 페이지 로드시 토큰 체크
-    useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            router.push('/membership/sign-in'); // 토큰 없으면 리다리렉션
-            return;
-        }
-        const detail = userDetail();
-        setFullName(detail?.fullName ?? 'Guest');
-    }, [router])
 
     const {
         control,
         handleSubmit,
-        formState: { errors, isDirty, isLoading, isSubmitting },
+        formState: { errors, isDirty, isSubmitting },
         watch,
         reset,
         setValue,
-        getValues
     } = useForm<CodeData>({
         defaultValues: {
             id: 0,
@@ -87,8 +80,8 @@ export default function CreateCodePage() {
             modified: new Date(),
             note: '',
             categoryId: undefined,
-            userId: userDetail()?.id,
-            userName: userDetail()?.fullName,
+            userId: id,
+            userName: fullName,
             myIp: '0.0.0.0',
             attachImageName: '',
             attachFileName: '',
@@ -96,21 +89,56 @@ export default function CreateCodePage() {
         mode: 'onTouched'
     });
 
-    const onSubmit = async (data: CodeData) => {
-        try {
-            const response = await postCodes(data);
-            if (response) {
-                snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
-                if (response.isSuccess) {
-                    reset();
-                    router.push('/code'); // 목록 페이지로 이동
+    useEffect(() => {
+        const getUserDetail = async () => {
+            setIsLoadingUser(true);
+            try {
+                const token = await getToken();
+                if (!token) {
+                    router.push('/membership/sign-in');
+                    return;
                 }
-            }
-        } catch (err: any) {
-            snackbar.showSnackbar(err.message, 'error')
-        }
-    };
 
+                const user = await userDetail();
+                if (!user) {
+                    snackbar.showSnackbar('사용자 정보를 가져오지 못했습니다.', 'error');
+                    router.push('/membership/sign-in');
+                    return;
+                }
+
+                setId(user.id);
+                setFullName(user.fullName);
+                setValue('userId', user.id, { shouldDirty: true });
+                setValue('userName', user.fullName, { shouldDirty: true });
+            } catch (err) {
+                snackbar.showSnackbar('사용자 인증 오류가 발생했습니다.', 'error');
+                router.push('/membership/sign-in');
+                return;
+            } finally {
+                setIsLoadingUser(false);
+            }
+        };
+        getUserDetail();
+    }, [router, snackbar, setValue]);
+
+    // 추가
+    const onSubmit = async (data: CodeData) => {
+
+        startTransition(async () => {
+            try {
+                const response: ICodeResponse | null = await postCodes(data);
+                if (response?.isSuccess) {
+                    snackbar.showSnackbar(response.message, 'success');
+                    reset();
+                    router.push('/code');
+                } else {
+                    snackbar.showSnackbar(response?.message || 'Failed to submit', 'warning');
+                }
+            } catch (err: any) {
+                snackbar.showSnackbar(err.message, 'error');
+            }
+        });
+    };
 
     const theme = createTheme({
         typography: {
@@ -140,6 +168,9 @@ export default function CreateCodePage() {
         }
     };
 
+    if (isLoadingUser) {
+        return <Box>Loading...</Box>
+    }
 
     return (
 
@@ -350,7 +381,7 @@ export default function CreateCodePage() {
                 {/* 이미지 드레그앤드롭 */}
                 <FileManager
                     title='코드관련 이미지 (drag & drop)'
-                    choice={1} // 첨부 이미지 모드
+                    choice={1}
                     onAttachImageFinished={(dbPath: string) => {
                         setValue('attachImageName', dbPath, { shouldDirty: true });
                     }}

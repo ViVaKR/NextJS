@@ -1,20 +1,22 @@
 // src/app/code/page.tsx
 'use client';
-import { ICode } from '@/interfaces/i-code';
-import { fetchCodeById, postCodes, updateCode } from '@/lib/fetchCodes';
-import { useEffect, useState } from 'react';
+import { fetchCodeById } from '@/lib/fetchCodes';
+import { startTransition, useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import { Controller, useForm } from 'react-hook-form';
 import { CodeData } from '@/types/code-form-data';
-import { getToken, userDetail } from '@/services/auth.service';
+import { getToken } from '@/services/auth.service';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined'
-import { Box, Button, ButtonGroup, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, createTheme, Grid, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import FileManager from '@/components/file-manager/FileManager';
 import FileUploader from '@/components/file-manager/FileUploader';
 import Image from 'next/image';
+import { ICodeResponse } from '@/interfaces/i-code-response';
+import { updateCode } from '@/lib/server-action';
+import { CircularProgress } from '@mui/material';
 
 export default function CodePage({ params }: { params: Promise<{ id: number }> }) {
   const [rows, setRows] = useState(5);
@@ -45,14 +47,15 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
       modified: new Date(),
       note: '',
       categoryId: undefined,
-      userId: userDetail()?.id,
-      userName: userDetail()?.fullName,
+      userId: '',
+      userName: '',
       myIp: '0.0.0.0',
       attachImageName: '',
       attachFileName: '',
     },
     mode: 'all',
   });
+
 
   // 토큰 체크
   useEffect(() => {
@@ -129,27 +132,37 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
     );
   });
 
+  // 수정
   const onSubmit = async (data: CodeData) => {
-    try {
-      const response = await updateCode(data.id, data); // 수정 API가 있다면 updateCodes로 변경
-      if (response) {
-        snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
-        if (response.isSuccess) {
-          // reset();
-          router.refresh();
-          router.push('/code');
-        } else {
-          snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
+
+    startTransition(async () => {
+      try {
+        const response: ICodeResponse | null = await updateCode(data.id, data); // 수정 API가 있다면 updateCodes로 변경
+        if (response) {
+          snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
+          if (response.isSuccess) {
+            reset();
+            router.push(`/code`);
+          } else {
+            snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
+          }
         }
+      } catch (err: any) {
+        snackbar.showSnackbar(err.message, 'error');
+      } finally {
+        setLoaded(true);
+
       }
-    } catch (err: any) {
-      snackbar.showSnackbar(err.message, 'error');
-    }
+    });
   };
 
-  if (!loaded) {
-    return <Typography>로딩 중...</Typography>;
-  }
+  const theme = createTheme({
+    typography: {
+      fontFamily: 'var(--font-fira)',
+      fontSize: 18,
+      fontWeightRegular: 400,
+    }
+  });
 
   return (
     <Box sx={{ px: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -196,7 +209,6 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
                     <MenuItem key={category.id} value={category.id}>
                       <span className="flex items-center gap-2">
                         <GpsFixedOutlinedIcon />
-
                         {category.name}
                       </span>
                     </MenuItem>
@@ -235,16 +247,18 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           control={control}
           rules={{ required: '코드를 입력해주세요.' }}
           render={({ field }) => (
-            <TextField
-              {...field}
-              variant="filled"
-              rows={rows}
-              label="코드"
-              error={!!errors.content}
-              helperText={errors.content?.message}
-              color="success"
-              multiline
-            />
+            <ThemeProvider theme={theme}>
+              <TextField
+                {...field}
+                variant="filled"
+                rows={rows}
+                label="코드"
+                error={!!errors.content}
+                helperText={errors.content?.message}
+                color="success"
+                multiline
+              />
+            </ThemeProvider>
           )}
         />
 
@@ -252,16 +266,19 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           name="subContent"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              variant="filled"
-              rows={rows}
-              label="보조코드"
-              error={!!errors.subContent}
-              helperText={errors.subContent?.message}
-              color="success"
-              multiline
-            />
+
+            <ThemeProvider theme={theme}>
+              <TextField
+                {...field}
+                variant="filled"
+                rows={rows}
+                label="보조코드"
+                error={!!errors.subContent}
+                helperText={errors.subContent?.message}
+                color="success"
+                multiline
+              />
+            </ThemeProvider>
           )}
         />
 
@@ -299,41 +316,6 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           )}
         />
 
-        {/* {watch('attachImageName') && (
-          <div
-            className='mt-4 border border-dashed border-slate-400 p-8 flex flex-col gap-4 items-center rounded-lg'
-          >
-            <FileManager
-              title="사진변경 (drag & drop)"
-              choice={1}
-              onAttachImageFinished={(dbPath: string) => {
-                setValue('attachImageName', dbPath, { shouldDirty: true, shouldValidate: true });
-              }}
-            />
-
-            <Typography variant="caption" display="block"
-              sx={{ mt: 4, color: 'gray' }} gutterBottom>
-              현재 이미지 (25%)
-            </Typography>
-
-            <Image
-              width={768}
-              height={500}
-              // sizes="(max-width: 1024px) 100vw, 50vw" // 반응형 크기 조정
-              sizes="100%" // 반응형 크기 조정
-              style={{ objectFit: 'contain', borderRadius: '1.5em', width: '25%' }}
-
-              src={`${process.env.NEXT_PUBLIC_API_URL}/images/Attach/${watch('attachImageName')}`}
-              alt={watch('attachImageName')!}
-              quality={100}
-              key={watch('attachImageName')}
-            />
-
-          </div>
-        )} */}
-
-
-        {/*  */}
         <div
           className='mt-4 border border-dashed border-slate-400 p-8 flex flex-col gap-4 items-center rounded-lg'
         >
@@ -369,8 +351,6 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
 
         </div>
 
-        {/*  */}
-
         {watch('attachFileName') && (
           <div style={{ marginTop: '10px', border: '1px dashed lightgrey', padding: '1rem', borderRadius: '1rem' }}>
             <Typography variant="body2" textAlign='center' color='warning'>
@@ -397,7 +377,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
             cursor-pointer  my-4 border-slate-400 border"
             type="submit"
           >
-            {isSubmitting ? '저장 중' : '저장'}
+            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : '수정'}
           </button>
         </div>
       </form>

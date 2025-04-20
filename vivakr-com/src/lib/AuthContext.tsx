@@ -1,5 +1,4 @@
 // src/lib/AuthContext.tsx
-// src/lib/AuthContext.tsx
 'use client';
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { IAuthContextProps } from '@/interfaces/i-auth-context-props';
@@ -13,13 +12,10 @@ const getRolesFromToken = (token: string | undefined): string[] => {
   if (!token) return [];
   try {
     const decoded: any = jwtDecode(token);
-    // 'role' 클레임이 배열일 수도 있고 단일 문자열일 수도 있음을 고려
-    const roles = decoded.role || decoded.roles; // 일반적인 클레임 이름 사용
+    const roles = decoded.role || decoded.roles;
     if (Array.isArray(roles)) {
       return roles;
     } else if (typeof roles === 'string') {
-      // 쉼표로 구분된 문자열 등 특정 형식이라면 파싱 필요
-      // 예: return roles.split(',').map(r => r.trim());
       return [roles]; // 단일 역할 문자열인 경우 배열로 변환
     }
     return [];
@@ -38,15 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession(); // next-auth 세션
 
   const fetchUserDetail = useCallback(async (token: string): Promise<IUserDetailDTO | null> => {
-    // console.log('Fetching user detail with token:', token);
-    // console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
-    // console.log('Decoded token:', jwtDecode(token));
     try {
       const headers = {
         Authorization: `Bearer ${token.trim()}`,
         'Content-Type': 'application/json',
       };
-      // console.log('Request headers:', headers); // 헤더 로그 추가
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/account/detail`,
         {
@@ -54,44 +46,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers,
         }
       );
-      // console.log('Response status:', response.status);
-      // console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      if (!response.ok) {
-        // const errorText = await response.text();
-        // console.error('Error response:', errorText);
-        // console.warn(`Status ${response.status}: ${response.statusText}`);
-        return null;
-      }
+      if (!response.ok) return null;
+
       const detailedUser = await response.json();
-      // console.log('Fetched user detail:', detailedUser);
       return detailedUser as IUserDetailDTO;
     } catch (err) {
-      // console.error('Error fetching user detail:', err);
       return null;
     }
   }, []);
 
   // 초기 인증 상태 확인 로직
   useEffect(() => {
+
     const initializeAuth = async () => {
       setLoading(true); // 명시적으로 로딩 시작
       try {
         if (status === "authenticated" && session?.user) {
           // --- NextAuth 세션이 있는 경우 ---
           const sessionUser = session.user as ExtendedUser; // 타입 단언 주의
-          // NextAuth 세션에 역할 정보가 포함되어 있는지 확인 필요
-          // 만약 session.user에 roles가 없다면, 별도 API 호출 또는 토큰 필요 시 처리
-          // 여기서는 session.user가 필요한 정보를 다 가졌다고 가정
-          // 필요하다면 session에서 access token을 가져와 decode할 수도 있음
-          // const roles = getRolesFromToken(session.accessToken); // 예시 (accessToken 이름은 다를 수 있음)
-          setUser({
-            ...sessionUser,
-            // roles: roles, // 역할 정보 추가 (필요시)
-            // token: session.accessToken // 커스텀 토큰 저장 필요 시
-          });
-          // localStorage.setItem('user', JSON.stringify(sessionUser)); // NextAuth가 관리하므로 중복 저장 제거 권장
+          setUser({ ...sessionUser, });
         } else if (status === "unauthenticated") {
-          // --- NextAuth 세션이 없고, 자체 로그인을 확인하는 경우 ---
           const storedUserString = localStorage.getItem('user');
           if (storedUserString) {
             let parsedUser: ExtendedUser | null = null;
@@ -115,25 +89,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.removeItem('user');
               }
             } else {
-              // 저장된 정보는 있으나 토큰이 없는 경우 (비정상)
               setUser(null);
               localStorage.removeItem('user');
             }
           } else {
-            // 저장된 사용자 정보 없음
             setUser(null);
           }
         }
-        // status === "loading" 인 경우는 아무것도 안하고 로딩 상태 유지
       } catch (error) {
-        // console.error("Error during auth initialization:", error);
         setUser(null); // 오류 발생 시 로그아웃 상태로
         localStorage.removeItem('user'); // 안전하게 로컬 스토리지 클리어
       } finally {
-        // authenticated, unauthenticated 처리 완료 시 또는 loading이 아닐 때 로딩 종료
-        if (status !== "loading") {
-          setLoading(false);
-        }
+        if (status !== "loading") setLoading(false);
       }
     };
 
@@ -154,9 +121,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       );
       if (!response.ok) {
-        // 에러 처리 개선
-        const errorData = await response.text(); // 에러 메시지 확인 시도
-        // console.error(`로그인 실패 (${response.status}): ${errorData}`);
         if (response.status === 401) throw new Error('인증 실패 (잘못된 이메일/비밀번호)');
         if (response.status === 403) throw new Error('계정 잠김 또는 비활성화');
         throw new Error('로그인에 실패하였습니다.');
@@ -166,15 +130,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.isSuccess && data.token) {
         const detailedUser = await fetchUserDetail(data.token);
         if (!detailedUser) {
-          // 상세 정보 조회 실패 시 로그인 실패 처리
-          // console.error("로그인 성공, 상세 정보 조회 실패");
           setUser(null); // 혹시 모르니 초기화
           setLoading(false);
           return false;
         }
-
         const roles = getRolesFromToken(data.token); // 로그인 성공 시 토큰에서 역할 추출
-
         const updatedUser: ExtendedUser = {
           // 상세 정보 우선 사용, 필요한 경우 data의 정보 추가
           id: detailedUser.id,
@@ -223,11 +183,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 사용자 목록 가져오기 (관리자용)
   const fetchUsers = useCallback(async () => {
-    // isAdmin() 대신 user 상태의 roles 직접 확인
-    if (!user?.token || !user.roles?.includes('Admin')) {
-      // console.warn("Fetch users denied. User not admin or no token.");
-      return []; // 또는 에러 throw new Error('Unauthorized');
-    }
+    if (!user?.token || !user.roles?.includes('Admin')) return [];
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/account/list`,
@@ -241,38 +198,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (!response.ok) {
-        // 에러 처리 개선
-        // const errorData = await response.text(); // 에러 메시지 확인 시도
-        // console.error(`Failed to fetch users (${response.status}): ${errorData}`);
         if (response.status === 401) throw new Error('인증 실패 (토큰 만료 등)');
         if (response.status === 403) throw new Error('관리자 권한 필요');
         throw new Error('회원 목록을 가져오는데 실패하였습니다.');
       }
       return await response.json();
     } catch (error) {
-      // console.error("Error fetching user list:", error);
-      throw error; // 호출한 쪽에서 처리하도록 다시 throw
+      throw error;
     }
   }, [user]); // user 상태에 의존
 
-  // 관리자 여부 확인 (상태 기반으로 변경)
   const isAdmin = useMemo((): boolean => {
-    return !!user?.roles?.includes('Admin'); // user 상태의 roles 확인
-  }, [user]); // user 상태가 변경될 때만 재계산
+    return !!user?.roles?.includes('Admin');
+  }, [user]);
 
   // 사용자 정보 업데이트 함수
   const updateUser = useCallback((updates: Partial<ExtendedUser>) => {
     setUser((prev) => {
       if (!prev) return null;
       const updatedUser = { ...prev, ...updates };
-      // 업데이트 시 역할 정보가 변경될 수 있다면 여기서 roles 재설정 필요
-      // 예: if (updates.roles) updatedUser.roles = updates.roles;
       localStorage.setItem('user', JSON.stringify(updatedUser)); // 로컬 스토리지 동기화
       return updatedUser;
     });
   }, []); // 의존성 없음
 
-  // Context 값 구성 (useMemo로 감싸서 불필요한 리렌더링 방지)
   const contextValue = useMemo(() => ({
     user,
     login,
@@ -284,18 +233,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }), [user, login, logout, loading, isAdmin, fetchUsers, updateUser]);
 
   return (
-
     <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// 커스텀 훅 (useContext 사용)
 export const useAuth = (): IAuthContextProps => {
   const context = useContext(AuthContext);
-  if (context === undefined) { // 기본값을 undefined로 했으므로 undefined 체크
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (context === undefined)
+    throw new Error('컨텍스트를 찾을 수 없습니다. AuthProvider로 감싸주세요.');
+
   return context;
 };

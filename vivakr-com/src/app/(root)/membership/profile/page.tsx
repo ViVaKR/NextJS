@@ -39,9 +39,7 @@ export default function Page() {
       if (response != null) {
         console.log('응답데이터: ', response);
         setUserCodes(response);
-
       }
-
     } catch (e: any) {
       console.log(e.message);
     }
@@ -61,7 +59,7 @@ export default function Page() {
       email: user.email,
       newUserName: name
     }
-    const token = getToken();
+    const token = await getToken();
 
     try {
       const response = await fetch(url, {

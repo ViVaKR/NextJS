@@ -117,17 +117,6 @@ export default function CategoryAccordion({
                                 {code.id}. {code.title.length > 25 ? (code.title.substring(0, 25) + '...') : (code.title)}
                               </Link>
                             </NoMaxWidthTooltip>
-
-                            {/* <Tooltip title={`${code.title} (${code.subTitle})`} arrow placement='right'>
-                              <Link
-                                href={url}
-
-                                className={getLinkClasses(url)}>
-                                <TouchAppOutlinedIcon sx={{ mr: 1 }} />
-                                {code.id}. {code.title.length > 25 ? (code.title.substring(0, 25) + '...') : (code.title)}
-                              </Link>
-                            </Tooltip> */}
-
                           </li>
                         );
                       })}

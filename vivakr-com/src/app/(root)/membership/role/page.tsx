@@ -31,7 +31,6 @@ export default function RolePage() {
     }
   });
 
-  // 역할 목록 가져오기 함수
   const loadRoles = async () => {
     const controller = new AbortController();
     try {
@@ -46,7 +45,7 @@ export default function RolePage() {
     }
     return () => controller.abort();
   };
-  // 초기로드
+
   useEffect(() => {
     loadRoles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,7 +79,7 @@ export default function RolePage() {
     }
 
     try {
-      const token = getToken();
+      const token = await getToken();
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/role/create`;
       const response = await fetch(url, {
         method: 'POST',

@@ -22,8 +22,19 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   );
   const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  const admin: boolean = isAdmin();
+  // const admin: boolean = isAdmin();
+  const [admin, setAdmin] = useState<boolean>(false);
   const time = 1;
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const user = await isAdmin();
+      if (user) {
+        setAdmin(user);
+      }
+    };
+    checkAdmin();
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -153,7 +164,8 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
             columns={columns}
             loading={isLoading}
             hideFooterSelectedRowCount={true}
-            slots={(admin || id === userId) ? { toolbar: GridToolbar } : {}}
+            slots={{ toolbar: GridToolbar }}
+            // slots={(admin || id === userId) ? { toolbar: GridToolbar } : {}}
             pageSizeOptions={[5, 10, 15, 25, 50, 100]}
             initialState={{
               pagination: {

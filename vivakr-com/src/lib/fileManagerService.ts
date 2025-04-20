@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const uploadFile = async (formData: FormData, choice: number): Promise<IFileInfo> => {
 
-    const token = getToken();
+    const token = await getToken();
     if (!token) {
         throw new Error("로그인이 필요합니다.")
     }
@@ -31,33 +31,22 @@ export const uploadFile = async (formData: FormData, choice: number): Promise<IF
     }
 };
 
-/**
- * 서버에서 파일을 다운로드하고 브라우저에서 다운로드를 시작합니다.
- * @param fileUrl fileUrl 다운로드할 파일의 경로 (쿼리 파라미터 값)
- *
- */
 export const downloadFile = async (
     fileUrl: string, defaultFileName: string = 'dowonloaded-file'
 ): Promise<void> => {
-    const token = getToken();
+    const token = await getToken();
     if (!token) {
         console.error("Authentication token is missing.");
         throw new Error("로그인이 필요합니다.") // 또는 로그인 페이지로 리다이렉션
-
     }
 
-    // fileUrl 은 쿼리스트링 파라미터 값이므로 인코딩 해줌.
     const encodedFileUrl = encodeURIComponent(fileUrl);
-
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/FileManager/DownloadCodeFile?fileUrl=${encodedFileUrl}`;
-
     try {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                // 'Content-Type' 은 GET 요청시 보통 명시하지 않음. 서버사 응답에 지정해줌.
-                // 'Content-type': "application/octet-stream";
             }
         })
 

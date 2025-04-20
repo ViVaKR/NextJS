@@ -4,7 +4,7 @@ import { IResponseDTO } from '@/interfaces/i-response';
 
 // 역할 추가
 export async function assignRole(userId: string, roleId: string): Promise<IResponseDTO> {
-    const token = getToken();
+    const token = await getToken();
     if (!token || !isAdmin()) throw new Error('권한이 없습니다.');
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/role/assign`;
     const response = await fetch(url, {
@@ -22,7 +22,7 @@ export async function assignRole(userId: string, roleId: string): Promise<IRespo
 
 // 역할 삭제
 export async function removeRole(userId: string, roleId: string): Promise<IResponseDTO> {
-    const token = getToken();
+    const token = await getToken();
     if (!token || !isAdmin()) throw new Error('권한이 없습니다.');
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/role/remove`;
     const response = await fetch(url, {

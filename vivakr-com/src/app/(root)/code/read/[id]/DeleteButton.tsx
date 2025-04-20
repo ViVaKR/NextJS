@@ -1,12 +1,12 @@
 // src/app/code/read/DeleteButton.tsx
 'use client';
-import { useState, useEffect, useId } from 'react';
+import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteCode } from '@/lib/fetchCodes';
 import { useSnackbar } from '@/lib/SnackbarContext';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { ICodeResponse } from '@/interfaces/i-code-response';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { deleteCode } from '@/lib/server-action';
 
 interface DeleteButtonProps {
     codeId: number;
@@ -19,37 +19,54 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
     const router = useRouter();
     const snackbar = useSnackbar();
     const [canDelete, loading] = useAuthCheck(userId);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleOpen = () => setOpen(true); // 다이얼로그 열기
     const handleClose = () => setOpen(false); // 다이얼로그 닫기
+
     const handleDelete = async () => {
-        try {
-            const response: ICodeResponse = await deleteCode(codeId);
-            if (response.isSuccess) {
-                snackbar.showSnackbar('코드가 삭제되었습니다.', 'success');
-                router.push('/code'); // 삭제 후 이동
-                router.refresh(); // 페이지 새로고침으로 데이터 갱신 트리거
-            } else {
-                snackbar.showSnackbar(response.message, 'warning');
+        setIsDeleting(true);
+        startTransition(async () => {
+            try {
+                const response: ICodeResponse | null = await deleteCode(codeId);
+                if (response) {
+                    snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
+                    if (response.isSuccess) {
+                        router.refresh(); // 페이지 새로고침
+                        snackbar.showSnackbar('코드 삭제 성공', 'success');
+                        handleClose(); // 다이얼로그 닫기
+                    } else {
+                        snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
+                    }
+                }
+            } catch (err: any) {
+                snackbar.showSnackbar(err.message, 'error');
             }
-        } catch (err: any) {
-            snackbar.showSnackbar(err.message || '삭제 실패', 'error');
-        } finally {
-            handleClose(); // 다이얼로그 닫기
-        }
+            finally {
+                setIsDeleting(false); // 삭제 상태 초기화
+                handleClose(); // 성공/실패 여부 관계없이 다이얼로그 닫기
+            }
+        });
     };
 
-    if (loading) <span>Loading...</span>
+    if (!loading) {
+        return (
+            <Box sx={{ p: 2 }}>
+                <Typography>권한 확인 중...</Typography>
+            </Box>
+        );
+    }
     if (!canDelete) return null;
     return (
         <div>
             <button
-                onClick={handleOpen} // 클릭 시 다이얼로그 열기
+                onClick={handleOpen}
                 className="px-8 py-2
+                cursor-pointer
                 bg-red-500 text-white
                 rounded-full hover:bg-red-600"
             >
-                삭제
+                {isDeleting ? '삭제 중...' : '삭제'}
             </button>
             <Dialog
                 open={open}

@@ -1,10 +1,10 @@
+// src/app/membership/reset-password/page.tsx
 'use client';
 import VivTitle from "@/components/VivTitle";
 import { IResetPasswordRequest } from "@/interfaces/i-reset-password-request";
 import { useSnackbar } from "@/lib/SnackbarContext";
 import { Alert, Button, CircularProgress, TextField } from "@mui/material";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ResetPasswordPage() {
