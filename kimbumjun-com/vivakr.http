@@ -1,0 +1,60 @@
+@kimbumjuncomUrl = https://api.vivakr.com
+
+
+###
+GET {{kimbumjuncomUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
+
+###
+
+GET {{kimbumjuncomUrl}}/api/category/list HTTP/1.1
+
+###
+GET {{kimbumjuncomUrl}}/api/posts HTTP/1.1
+
+###
+
+POST {{kimbumjuncomUrl}}/api/demo HTTP/1/1
+
+
+###
+
+GET {{kimbumjuncomUrl}}/api/search?query=hello
+# curl http://localhost:3000/api/search --url-query query=hi -w "\n"
+# echo '-w "\n"' >> ~/.curlrc
+# curl http://localhost:3000/api/search --url-query query=hi -w "\nstatus=%{http_code} %{redirect_url} size=%{size_download} time=%{time_total} content-type=\"%{content_type}\"\n"
+###
+
+
+GET {{kimbumjuncomUrl}}/api/subscribe/list?limit=2 HTTP/1.1
+
+###
+
+POST {{kimbumjuncomUrl}}/api/subscribe/new HTTP/1.1
+content-type: application/json
+
+{
+    "email": "kimburmjun@gmail.com"
+}
+
+###
+POST {{kimbumjuncomUrl}}/api/subscribe/remove-subscribe HTTP/1.1
+content-type: application/json
+
+{
+    "email": "hello.viva.bm@gmail.com"
+}
+
+###
+
+DELETE  {{kimbumjuncomUrl}}/api/subscribe/reply-remove-subscribe?email=hello.viva.bm@gmail.com HTTP/1.1
+
+###
+
+POST {{kimbumjuncomUrl}}/api/account/refresh-token HTTP/1.1
+content-type: application/json
+
+{
+    "token" : "....",
+    "refreshToken": "...",
+    "email": "..."
+}
