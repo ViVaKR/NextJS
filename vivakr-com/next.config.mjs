@@ -1,7 +1,7 @@
 import createMDX from '@next/mdx'
-// import remarkGfm from 'remark-gfm';           // GFM 지원
-// import remarkRehype from 'remark-rehype';     // remark -> rehype 변환
-// import rehypeStringify from 'rehype-stringify'; // HTML 출력
+import remarkGfm from 'remark-gfm';           // GFM 지원
+import remarkRehype from 'remark-rehype';     // remark -> rehype 변환
+import rehypeStringify from 'rehype-stringify'; // HTML 출력
 
 /** @type {import('next').NextConfig} */
 
@@ -46,7 +46,7 @@ const nextConfig = {
     allowedDevOrigins: [
         'https://vivakr.com', // 프로토콜 포함
         'http://vivakr.com',
-        'https://vivabm.com',
+        'https://kimbumjun.com',
         'https://vivabm.com',
         'http://localhost:47960',
         'http://localhost:3000', // 로컬 풀 URL
@@ -59,17 +59,17 @@ const nextConfig = {
     ]
 };
 
-// const withMDX = createMDX({
-//     // options: {
-//     //     remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
-//     //     rehypePlugins: [rehypeStringify],
-//     // },
-// });
+const withMDX = createMDX({
+    options: {
+        remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
+        rehypePlugins: [rehypeStringify],
+    },
+});
 
 // export default nextConfig;
 
-const withMDX = createMDX({
-    // Add markdown plugins here, as desired
-})
+// const withMDX = createMDX({
+//     // Add markdown plugins here, as desired
+// })
 
 export default withMDX(nextConfig)

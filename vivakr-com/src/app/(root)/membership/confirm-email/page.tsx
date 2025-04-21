@@ -14,7 +14,7 @@ type confirmReplayData = {
 }
 
 export default function ConfirmEmailPage() {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/membership`;;
+  const url = `https://vivakr.com/membership`;
   const [email, setEmail] = useState<string | null | undefined>();
   const { showSnackbar } = useSnackbar()
   const router = useRouter();

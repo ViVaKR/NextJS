@@ -3,11 +3,11 @@
 
 
 ###
-GET {{vivabmUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
+GET {{vivakrUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
 
 ###
 
-GET {{vivabmUrl}}/api/category/list HTTP/1.1
+GET {{vivakrUrl}}/api/category/list HTTP/1.1
 
 ###
 GET {{url}}/api/posts HTTP/1.1

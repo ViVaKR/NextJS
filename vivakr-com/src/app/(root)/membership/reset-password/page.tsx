@@ -77,16 +77,16 @@ export default function ResetPasswordPage() {
         setSuccessMessage("비밀번호가 성공적으로 변경되었습니다!");
         showSnackbar("비밀번호 변경완료!!");
         setTimeout(() => {
-          router.push("/membership/login");
+          router.push("/membership/sign-in");
         }, 1000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || "비밀번호 변경에 실패했습니다.");
         showSnackbar("비밀번호 변경에 실패했습니다.");
       }
-    } catch (error) {
-      setError("서버와의 연결에 문제가 발생했습니다.");
-      showSnackbar("서버 오류가 발생했습니다.");
+    } catch (err: any) {
+      setError(`서버 오류가 발생했습니다. ${err}`);
+      showSnackbar(`서버 오류가 발생했습니다. ${err}`);
     } finally {
       setIsLoading(false);
     }
