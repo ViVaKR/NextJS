@@ -8,13 +8,14 @@ import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import { Controller, useForm } from 'react-hook-form';
 import { CodeData } from '@/types/code-form-data';
-import { getTokenAsync } from '@/services/auth.service';
+import { fetchUserDetailAsync, getTokenAsync, userDetailAsync } from '@/services/auth.service';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined'
 import { Box, Button, ButtonGroup, createTheme, Grid, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import FileManager from '@/components/file-manager/FileManager';
 import FileUploader from '@/components/file-manager/FileUploader';
 import Image from 'next/image';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 
 export default function CodePage({ params }: { params: Promise<{ id: number }> }) {
   const [rows, setRows] = useState(5);
@@ -60,9 +61,23 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
       if (!token) {
         router.push('/membership/sign-in');
       }
+      const user: IUserDetailDTO | null = await fetchUserDetailAsync(token!);
+      if (!user) {
+        snackbar.showSnackbar('사용자 정보를 가져오지 못했습니다.', 'error');
+        router.push('/membership/sign-in');
+        return;
+      }
+
+      if (!user.emailConfirmed) {
+        snackbar.showSnackbar("이메일 인증 후 사용하실 수 있습니다. 감사합니다.");
+        router.push('/membership/confirm-email')
+        return;
+      }
     }
     getUserToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
+
   // 코드 데이터 가져오기
   useEffect(() => {
     setLoaded(false);

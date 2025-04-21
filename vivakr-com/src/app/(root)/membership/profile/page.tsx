@@ -37,11 +37,10 @@ export default function Page() {
     try {
       const response: ICode[] | null = await fetchUserCodesAsync(user.id);
       if (response != null) {
-        console.log('응답데이터: ', response);
         setUserCodes(response);
       }
     } catch (e: any) {
-      console.log(e.message);
+      throw e;
     }
   }
 

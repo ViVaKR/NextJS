@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
+import { userDetailAsync } from './services/auth.service';
+
+
 
 export async function middleware(request: NextRequest) {
-
     const userToken = request.cookies.get('user')?.value;
-    // const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-    // token 객체에는 jwt 콜백에서 설정한 user 정보가 들어있음
-    // 예: token?.user?.roles
-
     const protectedPaths = [
         '/membership/profile',
         '/membership/all-account',
@@ -22,9 +20,12 @@ export async function middleware(request: NextRequest) {
         '/membership/role',
         '/membership/confirm-email',
     ];
+
     const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
     const pathname = request.nextUrl.pathname;
     if (protectedPaths.some((path) => pathname.startsWith(path))) {
+
+
         if (!userToken) {
             const signInUrl = new URL('/membership/sign-in', request.url);
             signInUrl.searchParams.set('redirect', pathname);

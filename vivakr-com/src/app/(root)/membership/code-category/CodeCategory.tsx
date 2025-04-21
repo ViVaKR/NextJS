@@ -93,7 +93,6 @@ const CodeCategory = () => {
 
       // payload에 id 포함
       const payload = { id: newId, name: data.name };
-      console.log('Sending payload:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -105,8 +104,6 @@ const CodeCategory = () => {
       });
 
       const result = await response.json();
-      console.log('Response:', result);
-
       if (!response.ok) {
         throw new Error(result.message || '카테고리 추가 실패');
       }

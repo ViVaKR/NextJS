@@ -104,7 +104,7 @@ export function VivButton({
   };
 
   const clicked = (e: React.MouseEvent) => {
-    console.log('Null Clicked', e.clientX);
+    //
   };
 
   return (

@@ -9,20 +9,16 @@ const demoData: Prisma.CodeCreateInput[] = [
 
 async function main() {
     try {
-        console.log('Starting seed...');
         for (const demo of demoData) {
             const result = await prisma.code.create({
                 data: demo
             });
-            console.log(`Created Code with id: ${result.id}, title: ${result.title}`);
         }
-        console.log('Seed completed successfully.');
     } catch (error) {
         console.error('Error seeding database:', error);
         process.exit(1);
     } finally {
         await prisma.$disconnect();
-        console.log('Prisma client disconnected.');
     }
 }
 

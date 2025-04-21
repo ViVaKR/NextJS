@@ -41,7 +41,7 @@ export default function Page() {
                 }
                 setData(result);
             } catch (err: any) {
-                console.log(err.message);
+                throw err;
             }
         }
         getSubscriber();

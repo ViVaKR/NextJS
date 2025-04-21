@@ -10,29 +10,36 @@ import { signOut, useSession } from 'next-auth/react';
 import { fetchUserDetailAsync, getTokenAsync } from '@/services/auth.service';
 
 const getRolesFromToken = (token: string | undefined): string[] => {
+
   if (!token) return [];
+
   try {
+
     const decoded: any = jwtDecode(token);
+
     const roles = decoded.role || decoded.roles;
+
     if (Array.isArray(roles)) {
       return roles;
     } else if (typeof roles === 'string') {
       return [roles];
     }
     return [];
-  } catch (error) {
-    console.error("Failed to decode token:", error);
+  } catch (err: any) {
+    console.error("역할을 가져오는데 실패하였습니다.:", err);
     return [];
   }
 };
 
-const AuthContext = createContext<IAuthContextProps | undefined>(undefined); // 기본값 undefined 권장
+const AuthContext = createContext<IAuthContextProps | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [user, setUser] = useState<ExtendedUser | null>(null);
-  const [loading, setLoading] = useState(true); // 초기 로딩 상태는 true
-  const { data: session, status } = useSession(); // next-auth 세션
+
+  const [loading, setLoading] = useState(true);
+
+  const { data: session, status } = useSession();
 
   const fetchUserDetail = useCallback(async (token: string): Promise<IUserDetailDTO | null> => {
     try {
@@ -47,25 +54,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers,
         }
       );
+
       if (!response.ok) return null;
 
       const detailedUser = await response.json();
       return detailedUser as IUserDetailDTO;
-    } catch (err) {
+
+    } catch (err: any) {
       return null;
     }
   }, []);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('AuthContext: Initializing auth');
       setLoading(true);
       try {
         const token = await getTokenAsync();
-        console.log('AuthContext: Token from getTokenAsync:', token);
         if (token) {
           const detailedUser = await fetchUserDetailAsync(token);
-          console.log('AuthContext: Fetched user detail:', detailedUser);
           if (detailedUser) {
             const userData = localStorage.getItem('user');
             if (userData) {
@@ -80,11 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 twoFactorEnabled: detailedUser.twoFactorEnabled,
                 avata: detailedUser.avata,
               });
-              console.log('AuthContext: User restored from localStorage:', parsedUser);
             }
           } else {
-            console.log('AuthContext: Failed to fetch user detail, keeping localStorage');
-            // logout() 제거, localStorage 유지
             setUser(null); // UI상 로그아웃 상태지만 localStorage는 유지
           }
         } else {
@@ -103,8 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
               parsedUser = JSON.parse(storedUserString);
             } catch (err: any) {
-              //
-              console.log('parsedUser Error:', err);
+              throw err;
             }
 
             if (parsedUser?.token) {
@@ -115,7 +117,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const roles = getRolesFromToken(parsedUser.token); // 토큰에서 역할 추출
                 setUser({ ...parsedUser, ...detailedUser, roles }); // user 상태 업데이트
               } else {
-                // 실패: 토큰 만료/무효 -> 로그아웃 처리
                 // setUser(null);
                 // localStorage.removeItem('user');
               }
@@ -253,7 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return !!user?.roles?.includes('Admin');
   }, [user]);
 
-  // 사용자 정보 업데이트 함수
+  // * 사용자 정보 업데이트 함수
   const updateUser = useCallback((updates: Partial<ExtendedUser>) => {
     setUser((prev) => {
       if (!prev) return null;
@@ -261,20 +262,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       return updatedUser;
     });
-  }, []); // 의존성 없음
+  }, []);
 
-
-  // 주기적 토큰 체크 추가
+  // * 주기적 토큰 체크 (25분마다)
   useEffect(() => {
     const interval = setInterval(async () => {
       const token = await getTokenAsync();
       if (!token) {
         window.location.href = '/membership/sign-in';
       }
-    }, 4 * 60 * 1000); // 4분
+    }, 25 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
-
 
   const contextValue = useMemo(() => ({
     user,
@@ -297,6 +296,5 @@ export const useAuth = (): IAuthContextProps => {
   const context = useContext(AuthContext);
   if (context === undefined)
     throw new Error('컨텍스트를 찾을 수 없습니다. AuthProvider로 감싸주세요.');
-
   return context;
 };

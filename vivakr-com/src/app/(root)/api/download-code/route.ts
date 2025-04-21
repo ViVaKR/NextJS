@@ -15,16 +15,9 @@ export async function GET(request: Request) {
     }
 
     try {
-        console.log(process.env.USERPROFILE, "USERPROFILE");
-        console.log(process.env.HOME, "HOME");
-        console.log(process.env.FILE_STORAGE_PATH, "FILE_STORAGE_PATH");
-        console.log(process.env.TEMP, "TEMP");
         // 환경 변수에서 기본 경로를 가져오거나, fallback으로 사용자 홈 디렉토리 사용
         const basePath = process.env.FILE_STORAGE_PATH || path.join(process.env.HOME || process.env.USERPROFILE || "", "Temp");
         const filePath = path.join(basePath, "FileData", "Files", "Code", fileUrl);
-        console.log("filePath", filePath);
-
-        // 파일 존재 여부 확인
         try {
             await fs.access(filePath);
         } catch {

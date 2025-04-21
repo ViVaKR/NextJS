@@ -27,7 +27,6 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
     try {
       const userData = localStorage.getItem(userToken);
       const oldToken = userData ? JSON.parse(userData).token : '';
-      console.log('RefreshToken request:', { token: oldToken, refreshToken: refreshTokenValue, email });
 
       const response = await fetch(`${apiUrl}/api/account/refresh-token`, {
         method: 'POST',
@@ -132,14 +131,12 @@ export const isAdminAsync = async (): Promise<boolean> => {
 export const fetchUserDetailAsync = async (tkn: string): Promise<IUserDetailDTO | null> => {
   const token = await getTokenAsync();
   if (!token) {
-    console.log('fetchUserDetailAsync: No valid token');
     return null;
   }
   const maxRetries = 2;
   let retries = maxRetries;
   while (retries > 0) {
     try {
-      console.log('fetchUserDetailAsync: Fetching user detail, retry:', maxRetries - retries + 1);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/detail`, {
         method: 'GET',
         headers: {
@@ -148,21 +145,17 @@ export const fetchUserDetailAsync = async (tkn: string): Promise<IUserDetailDTO 
         },
       });
       if (!response.ok) {
-        console.log('fetchUserDetailAsync: Response not OK:', response.status);
         throw new Error(`HTTP error: ${response.status}`);
       }
       const result = await response.json();
       const isIUser = (data: any): data is IUserDetailDTO => 'id' in data && 'fullName' in data;
       if (isIUser(result)) {
-        console.log('fetchUserDetailAsync: User detail fetched:', result);
         return result;
       }
       throw new Error('Invalid user data');
     } catch (err: any) {
-      console.error(`fetchUserDetailAsync: Error (retry ${maxRetries - retries + 1}):`, err.message);
       retries--;
       if (retries === 0) {
-        console.log('fetchUserDetailAsync: Max retries reached, returning null');
         return null;
       }
       // 1초 대기 후 재시도
@@ -171,23 +164,3 @@ export const fetchUserDetailAsync = async (tkn: string): Promise<IUserDetailDTO 
   }
   return null;
 };
-
-
-/*
-export const fetchUserDetail = async (token?: string): Promise<IUserDetail | null> => {
-  const authToken = token || await getTokenAsync();
-  if (!authToken) return null;
-
-  try {
-    const result = await apiFetch('/api/account/detail', {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
-    const isIUser = (data: any): data is IUser => 'id' in data && 'fullName' in data;
-    return isIUser(result) ? result : null;
-  } catch (error) {
-    return userDetailAsync();
-  }
-};
- */

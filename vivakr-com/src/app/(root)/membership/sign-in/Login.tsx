@@ -132,7 +132,6 @@ export default function SignIn() {
         showLoginSuccess();
         router.push('/');
       } else {
-        console.log(result)
         showLoginFailed();
       }
     } catch (e: any) {

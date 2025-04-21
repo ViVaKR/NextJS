@@ -15,7 +15,6 @@ export default function CodeData(): ICode[] {
           headers: {
             'Content-Type': 'application/json',
           },
-          // Angular의 SkipLoading 대응: 로딩 상태를 별도로 관리하니까 추가 설정 불필요
         });
 
         if (!response.ok) {
@@ -25,16 +24,12 @@ export default function CodeData(): ICode[] {
         const data: ICode[] = await response.json();
         setCodes(data);
       } catch (err) {
-        console.log(err);
-        // setError(err instanceof Error ? err.message : 'Unknown error');
+        throw err;
       }
     };
 
     fetchCodes();
   }, [baseUrl]); // baseUrl이 바뀔 때마다 호출 (필요 시 의존성 제거 가능)
-
-  //   if (loading) return <div>Loading...</div>;
-  //   if (error) return <div>Error: {error}</div>;
 
   return codes;
 }

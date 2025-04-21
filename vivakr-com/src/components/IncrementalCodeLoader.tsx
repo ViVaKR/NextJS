@@ -33,10 +33,7 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
     const [admin, setAdmin] = useState<boolean>(false);
     const router = useRouter();
 
-    // const admin: boolean = isAdmin();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-
 
     const loadMoreCodes = useCallback(async (isInitialLoad = false) => { // 초기 로드인지 구분하는 플래그 추가 (선택 사항)
         if (isLoading || isComplete || !apiUrl) {
@@ -47,7 +44,6 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
 
         try {
             const url = `${apiUrl}/api/code/all-incremental?offset=${currentOffset}&limit=${CHUNK_SIZE}&categoryId=${categoryId}`;
-            console.log(url);
             const response = await fetch(url);
             if (!response.ok) {
                 const errorBody = await response.text();

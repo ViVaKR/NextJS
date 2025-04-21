@@ -25,7 +25,7 @@ export default function ConfirmEmailReplayPage() {
         }
         setData(data);
       } catch (e: any) {
-        console.log(`오류발생: ${e.message}`);
+        throw e;
       }
     }
   }, [searchParams])
@@ -38,32 +38,26 @@ export default function ConfirmEmailReplayPage() {
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        // 서버에서 에러 메시지를 JSON으로 보낼 경우 처리 시도
         let errorMsg = `HTTP error! status: ${response.status}`;
         try {
           const errorResult = await response.json();
-          // 서버 응답에 message 필드가 있다면 사용, 없다면 전체 응답을 문자열로 변환
           errorMsg = errorResult.message || JSON.stringify(errorResult);
         } catch (e) {
-          // JSON 파싱 실패 시 상태 텍스트 사용
           errorMsg = `${errorMsg} - ${response.statusText}`;
         }
-        throw new Error(errorMsg); // 에러를 발생시켜 catch 블록에서 처리
+        throw new Error(errorMsg);
       }
 
       const result: IAuthResponse = await response.json();
       if (result.isSuccess) {
-        showSnackbar(`Success: ${result.message || '요청이 성공적으로 처리되었습니다.'}`); // 메시지 없을 경우 기본값 추가
+        showSnackbar(`Success: ${result.message || '요청이 성공적으로 처리되었습니다.'}`);
       } else {
-        showSnackbar(`Failed: ${result.message || '알 수 없는 오류가 발생했습니다.'}`); // 메시지 없을 경우 기본값 추가
+        showSnackbar(`Failed: ${result.message || '알 수 없는 오류가 발생했습니다.'}`);
       }
-
-
     } catch (err: any) {
       showSnackbar(err.message);
     }
   }
-
 
   return (
     <div className="flex flex-col items-center">

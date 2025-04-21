@@ -1,11 +1,11 @@
 // src/app/(root)/code/create/CreateCode.tsx
 'use client'
 import { CodeData } from '@/types/code-form-data';
-import { userDetailAsync, getTokenAsync } from '@/services/auth.service';
+import { userDetailAsync, getTokenAsync, fetchUserDetailAsync } from '@/services/auth.service';
 import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import FileManager from '@/components/file-manager/FileManager';
@@ -15,6 +15,7 @@ import FileUploader from '@/components/file-manager/FileUploader';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined';
 import { postCodesAsync } from '@/lib/fetchCodes';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 
 export default function CreateCodePage() {
 
@@ -90,18 +91,27 @@ export default function CreateCodePage() {
         const getUserDetail = async () => {
             setIsLoadingUser(true);
             try {
+
+
                 const token = await getTokenAsync();
                 if (!token) {
                     router.push('/membership/sign-in');
                     return;
                 }
 
-                const user = await userDetailAsync();
+                const user: IUserDetailDTO | null = await fetchUserDetailAsync(token);
                 if (!user) {
                     snackbar.showSnackbar('사용자 정보를 가져오지 못했습니다.', 'error');
                     router.push('/membership/sign-in');
                     return;
                 }
+
+                if (!user.emailConfirmed) {
+                    snackbar.showSnackbar("이메일 인증 후 사용하실 수 있습니다. 감사합니다.");
+                    router.push('/membership/confirm-email')
+                    return;
+                }
+
                 const ipInfo = await getIpInfomations();
                 setValue('myIp', ipInfo.ip)
                 setValue('userId', user.id, { shouldDirty: true });
