@@ -7,7 +7,7 @@ import { IMenu } from "@/interfaces/i-menu";
 export const getNavMenuItems = (): IMenu[] => {
     return [
         { id: 0, title: '코드조각', url: '/code' },
-        { id: 1, title: '코드작성', url: '/code/create', tooltip: 'Viv Membership 만 이용가능' },
+        { id: 1, title: '코드작성', url: '/code/create' },
         { id: 2, title: '소통', url: '/chat' },
         { id: 3, title: '정보', url: '/ip-address' },
         { id: 4, title: '캠프', url: '/camp' },
@@ -21,11 +21,9 @@ export const getMembershipItems = (): IMenu[] => {
         { id: 1, title: '권한관리', url: '/membership/role', hasDivider: true, requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
         { id: 2, title: '회원관리', url: '/membership/account', requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
         { id: 3, title: '과목관리', url: '/membership/code-category', requiresAuth: true, requiredRoles: ['Admin'], sessionMenu: false },
-        { id: 4, title: '코드작성', url: '/code/create', hasDivider: true, requiresAuth: true, sessionMenu: false },
-        { id: 5, title: '코드백업', url: '/membership/code-backup', requiresAuth: true, sessionMenu: false },
-        { id: 6, title: '회원가입', url: '/membership/sign-up', hideWhenAuth: true, sessionMenu: false },
-        { id: 7, title: '로그인', url: '/membership/sign-in', hideWhenAuth: true, sessionMenu: false },
-        { id: 8, title: '로그아웃', url: '/membership/sign-out', requiresAuth: true, sessionMenu: true },
+        { id: 4, title: '회원가입', url: '/membership/sign-up', hideWhenAuth: true, sessionMenu: false },
+        { id: 5, title: '로그인', url: '/membership/sign-in', hideWhenAuth: true, sessionMenu: false },
+        { id: 6, title: '로그아웃', url: '/membership/sign-out', requiresAuth: true, sessionMenu: true },
     ];
 };
 

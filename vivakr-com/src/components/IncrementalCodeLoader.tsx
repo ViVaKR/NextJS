@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import Link from 'next/link';
-import { isAdmin, userDetail } from '@/services/auth.service';
+import { isAdminAsync, userDetailAsync } from '@/services/auth.service';
 import { useRouter } from 'next/navigation';
 
 const CHUNK_SIZE = 20;
@@ -85,7 +85,7 @@ export default function IncrementalCodeLoader({ categories, categoryId }: Increm
     // 페이지 로드시 토큰 체크
     useEffect(() => {
         const check = async () => {
-            const adminCheck = await isAdmin();
+            const adminCheck = await isAdminAsync();
             setAdmin(adminCheck);
         }
         check();

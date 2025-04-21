@@ -1,10 +1,10 @@
 // src/lib/fetchRoles.ts
 import { IResponse } from '@/interfaces/i-response';
 import { IRole } from '@/interfaces/i-role';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 
 export async function fetchRoles(signal?: AbortSignal): Promise<IRole[]> {
-    const token = await getToken();
+    const token = await getTokenAsync();
     if (!token) {
         throw new Error('인증 토큰이 없습니다. 로그인 상태를 확인해주세요.');
     }
@@ -31,7 +31,7 @@ export async function fetchRoles(signal?: AbortSignal): Promise<IRole[]> {
 
 
 export async function createRole(roleName: string): Promise<void> {
-    const token = await getToken();
+    const token = await getTokenAsync();
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/role/create`;
     const response = await fetch(url, {
         method: 'POST',
@@ -48,7 +48,7 @@ export async function createRole(roleName: string): Promise<void> {
 }
 
 export async function deleteRole(roleId: string) {
-    const token = await getToken();
+    const token = await getTokenAsync();
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/role/delete/${roleId}`, {
         method: 'DELETE',
         headers: {

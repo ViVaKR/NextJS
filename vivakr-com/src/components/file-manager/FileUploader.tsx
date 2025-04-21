@@ -2,7 +2,7 @@
 'use client';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useState, useRef } from 'react';
-import { getToken } from '@/services/auth.service'; // 기존 토큰 가져오기 함수
+import { getTokenAsync } from '@/services/auth.service'; // 기존 토큰 가져오기 함수
 
 interface FileUploaderProps {
     onUploadComplete: (filePath: string) => void;
@@ -18,7 +18,7 @@ export default function FileUploader({ onUploadComplete, title = '파일 업로�
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const token = await getToken();
+        const token = await getTokenAsync();
         if (!token) {
             setStatus('로그인 후 다시 시도해주세요.');
             return;

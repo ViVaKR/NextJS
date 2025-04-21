@@ -2,7 +2,7 @@
 import VivTitle from '@/components/VivTitle';
 import VivGridControl from '@/components/VivGridControl';
 import { ICode } from '@/interfaces/i-code';
-import { fetchCodes } from '@/lib/fetchCodes';
+import { fetchCodesAsync } from '@/lib/fetchCodes';
 import { Suspense } from 'react';
 
 export default async function CodePage({
@@ -11,7 +11,7 @@ export default async function CodePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = (await params) ?? undefined;
-  const codes: ICode[] = await fetchCodes();
+  const codes: ICode[] = await fetchCodesAsync();
   const filteredCodes = codes.filter((code) => code.categoryId === Number(id));
   return (
     <>

@@ -1,11 +1,11 @@
 import { ICategory } from "@/interfaces/i-category";
 import { fetchCategories } from "./fetchCategories";
-import { fetchCodes } from "./fetchCodes";
+import { fetchCodesAsync } from "./fetchCodes";
 import { ICode } from "@/interfaces/i-code";
 
 export async function getCodes(): Promise<{ codes: ICode[]; categories: ICategory[] }> {
     const [codes, categories] = await Promise.all([
-        fetchCodes(),
+        fetchCodesAsync(),
         fetchCategories(),
     ]);
     return { codes, categories };

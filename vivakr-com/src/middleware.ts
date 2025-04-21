@@ -20,7 +20,6 @@ export async function middleware(request: NextRequest) {
         '/membership/change-name',
         '/membership/my-code',
         '/membership/role',
-        '/membership/code-backup',
         '/membership/confirm-email',
     ];
     const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
@@ -34,7 +33,7 @@ export async function middleware(request: NextRequest) {
 
         let decoded: any;
         try {
-            decoded = jwtDecode(userToken);
+            decoded = await jwtDecode(userToken);
         } catch (error) {
             const signInUrl = new URL('/membership/sign-in', request.url);
             return NextResponse.redirect(signInUrl);

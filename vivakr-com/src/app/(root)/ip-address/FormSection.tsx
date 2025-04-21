@@ -13,7 +13,7 @@ interface FormSectionProps {
     ipInfo: IIpInfo;
 }
 
-async function getInfo(ip: string): Promise<IIpInfo> {
+async function getInfoAsync(ip: string): Promise<IIpInfo> {
     const response = await fetch(`${api}/api/ip/${ip}`);
     const data: IIpInfo = await response.json();
     return data;
@@ -34,7 +34,8 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
         if (ipAddress) {
             setIsLoading(true);
             try {
-                const ipInfo = await getInfo(ipAddress);
+                // const ipInfo = await getIpInfomations(ipAddress);
+                const ipInfo = await getInfoAsync(ipAddress);
                 setInfo(ipInfo);
                 setError(null); // 성공 시 에러 초기화
             } catch (error) {
@@ -44,7 +45,6 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
                 setIsLoading(false);
             }
         }
-
     }
 
     const handleBlur = () => {

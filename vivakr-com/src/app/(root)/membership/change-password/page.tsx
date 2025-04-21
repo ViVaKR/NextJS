@@ -1,7 +1,7 @@
 'use client'
 import VivTitle from "@/components/VivTitle";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { getToken } from "@/services/auth.service";
+import { getTokenAsync } from "@/services/auth.service";
 import { Controller, useForm } from "react-hook-form";
 import { useProfile } from "../profile/Profile";
 import { Button, FilledInput, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel } from "@mui/material";
@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
     };
 
     try {
-      const token = getToken();
+      const token = await getTokenAsync();
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/account/changepassword`;
       const response = await fetch(url, {
         method: 'PUT',

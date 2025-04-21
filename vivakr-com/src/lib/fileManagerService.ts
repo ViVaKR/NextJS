@@ -1,11 +1,11 @@
 // src/lib/fileManagerService.ts
 import { IFileInfo } from "@/interfaces/i-file-info";
-import { getToken } from "@/services/auth.service";
+import { getTokenAsync } from "@/services/auth.service";
 import axios from "axios";
 
 export const uploadFile = async (formData: FormData, choice: number): Promise<IFileInfo> => {
 
-    const token = await getToken();
+    const token = await getTokenAsync();
     if (!token) {
         throw new Error("로그인이 필요합니다.")
     }
@@ -34,7 +34,7 @@ export const uploadFile = async (formData: FormData, choice: number): Promise<IF
 export const downloadFile = async (
     fileUrl: string, defaultFileName: string = 'dowonloaded-file'
 ): Promise<void> => {
-    const token = await getToken();
+    const token = await getTokenAsync();
     if (!token) {
         console.error("Authentication token is missing.");
         throw new Error("로그인이 필요합니다.") // 또는 로그인 페이지로 리다이렉션

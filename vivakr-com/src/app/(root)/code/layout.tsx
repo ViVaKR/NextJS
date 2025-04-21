@@ -1,13 +1,13 @@
 // src/app/code/layout.tsx
 export const dynamic = 'force-dynamic';
-import { fetchCodes } from '@/lib/fetchCodes';
+import { fetchCodesAsync } from '@/lib/fetchCodes';
 import { fetchCategories } from '@/lib/fetchCategories';
 import ClientLayout from '@/components/ClientLayout';
 import { Suspense } from 'react';
 
 async function fetchData() {
   const [codes, categories] = await Promise.all([
-    fetchCodes(),
+    fetchCodesAsync(),
     fetchCategories(),
   ]);
   return { codes, categories };

@@ -1,5 +1,5 @@
 'use client';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Box, styled, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
 import { ICode } from '@/interfaces/i-code';
 import { getCategories } from '@/lib/getCodes';
@@ -8,7 +8,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
-import { isAdmin } from '@/services/auth.service';
+import { isAdminAsync } from '@/services/auth.service';
 
 type codeDataProp = {
   data: ICode[],
@@ -22,19 +22,8 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   );
   const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  // const admin: boolean = isAdmin();
-  const [admin, setAdmin] = useState<boolean>(false);
+  const [admin, setAdmin] = useState(false);
   const time = 1;
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const user = await isAdmin();
-      if (user) {
-        setAdmin(user);
-      }
-    };
-    checkAdmin();
-  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,9 +31,12 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
         setIsLoading(true);
         const { categories } = await getCategories();
         setCategories(categories);
+
         const sortedCodes = [...data].sort((a, b) => b.id - a.id);
         setCodes(sortedCodes);
 
+        const isAdmin = await isAdminAsync();
+        setAdmin(isAdmin);
         if (userId) setId(userId);
 
       } catch (error: any) {
@@ -164,8 +156,7 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
             columns={columns}
             loading={isLoading}
             hideFooterSelectedRowCount={true}
-            slots={{ toolbar: GridToolbar }}
-            // slots={(admin || id === userId) ? { toolbar: GridToolbar } : {}}
+            showToolbar
             pageSizeOptions={[5, 10, 15, 25, 50, 100]}
             initialState={{
               pagination: {

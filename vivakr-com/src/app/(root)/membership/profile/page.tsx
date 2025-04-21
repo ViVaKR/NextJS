@@ -13,8 +13,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { IUpdateUserName } from '@/interfaces/i-update-user-name';
-import { getToken } from '@/services/auth.service'
-import { fetchUserCodes } from '@/lib/fetchCodes';
+import { getTokenAsync } from '@/services/auth.service'
+import { fetchUserCodesAsync } from '@/lib/fetchCodes';
 import { ICode } from '@/interfaces/i-code';
 import VivGridControl from '@/components/VivGridControl';
 
@@ -35,7 +35,7 @@ export default function Page() {
 
   const handleGetMyCodes = async () => {
     try {
-      const response: ICode[] | null = await fetchUserCodes(user.id);
+      const response: ICode[] | null = await fetchUserCodesAsync(user.id);
       if (response != null) {
         console.log('응답데이터: ', response);
         setUserCodes(response);
@@ -59,7 +59,7 @@ export default function Page() {
       email: user.email,
       newUserName: name
     }
-    const token = await getToken();
+    const token = await getTokenAsync();
 
     try {
       const response = await fetch(url, {

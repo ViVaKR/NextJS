@@ -6,7 +6,8 @@ import { useSnackbar } from '@/lib/SnackbarContext';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { ICodeResponse } from '@/interfaces/i-code-response';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
-import { deleteCode } from '@/lib/server-action';
+// import { deleteCode } from '@/lib/server-action';
+import { deleteCodeAsync } from '@/lib/fetchCodes';
 
 interface DeleteButtonProps {
     codeId: number;
@@ -19,40 +20,57 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
     const router = useRouter();
     const snackbar = useSnackbar();
     const [canDelete, loading] = useAuthCheck(userId);
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleOpen = () => setOpen(true); // 다이얼로그 열기
     const handleClose = () => setOpen(false); // 다이얼로그 닫기
-
     const handleDelete = async () => {
-        setIsDeleting(true);
-        startTransition(async () => {
-            try {
-                const response: ICodeResponse | null = await deleteCode(codeId);
-                if (response) {
-                    snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
-                    if (response.isSuccess) {
-                        router.refresh(); // 페이지 새로고침
-                        snackbar.showSnackbar('코드 삭제 성공', 'success');
-                        handleClose(); // 다이얼로그 닫기
-                    } else {
-                        snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
-                    }
-                }
-            } catch (err: any) {
-                snackbar.showSnackbar(err.message, 'error');
+        try {
+            const response: ICodeResponse = await deleteCodeAsync(codeId);
+
+            if (response.isSuccess) {
+                snackbar.showSnackbar('코드가 삭제되었습니다.', 'success');
+                router.push('/code');
+                router.refresh();
+            } else {
+                snackbar.showSnackbar(response.message, 'warning');
             }
-            finally {
-                setIsDeleting(false); // 삭제 상태 초기화
-                handleClose(); // 성공/실패 여부 관계없이 다이얼로그 닫기
-            }
-        });
+
+        } catch (err: any) {
+            snackbar.showSnackbar(err.message || '삭제 실패', 'error');
+        } finally {
+            handleClose();
+        }
     };
 
-    if (!loading) {
+    // const handleDelete = async () => {
+    //     setIsDeleting(true);
+    //     startTransition(async () => {
+    //         try {
+    //             const response: ICodeResponse | null = await deleteCode(codeId);
+    //             if (response) {
+    //                 snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
+    //                 if (response.isSuccess) {
+    //                     router.refresh(); // 페이지 새로고침
+    //                     snackbar.showSnackbar('코드 삭제 성공', 'success');
+    //                     handleClose(); // 다이얼로그 닫기
+    //                 } else {
+    //                     snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
+    //                 }
+    //             }
+    //         } catch (err: any) {
+    //             snackbar.showSnackbar(err.message, 'error');
+    //         }
+    //         finally {
+    //             setIsDeleting(false); // 삭제 상태 초기화
+    //             handleClose(); // 성공/실패 여부 관계없이 다이얼로그 닫기
+    //         }
+    //     });
+    // };
+
+    if (loading) {
         return (
             <Box sx={{ p: 2 }}>
-                <Typography>권한 확인 중...</Typography>
+                <Typography>삭제권한 확인 중...</Typography>
             </Box>
         );
     }
@@ -66,7 +84,7 @@ export default function DeleteButton({ codeId, userId }: DeleteButtonProps) {
                 bg-red-500 text-white
                 rounded-full hover:bg-red-600"
             >
-                {isDeleting ? '삭제 중...' : '삭제'}
+                삭제
             </button>
             <Dialog
                 open={open}

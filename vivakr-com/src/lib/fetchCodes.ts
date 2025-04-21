@@ -2,12 +2,12 @@
 import { CodeData } from '@/types/code-form-data';
 import { ICode } from '@/interfaces/i-code';
 import { ICodeResponse } from '@/interfaces/i-code-response';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // * All Code Data List
-export async function fetchCodes(): Promise<ICode[]> {
+export async function fetchCodesAsync(): Promise<ICode[]> {
     try {
         const url = `${apiUrl}/api/code/all`;
         const response = await fetch(url, {
@@ -20,15 +20,14 @@ export async function fetchCodes(): Promise<ICode[]> {
         }
         return response.json();
     } catch (error) {
-        console.error('Fetch error:', error);
         throw error;
     }
 }
 
 // Delete
-export async function fetchUserCodes(userId: string): Promise<ICode[] | null> {
+export async function fetchUserCodesAsync(userId: string): Promise<ICode[] | null> {
 
-    const token = await getToken();
+    const token = await getTokenAsync();
     if (!token) return null;
 
     try {
@@ -48,7 +47,6 @@ export async function fetchUserCodes(userId: string): Promise<ICode[] | null> {
         }
         return response.json();
     } catch (error) {
-        console.error('Fetch error:', error);
         throw error;
     }
 }
@@ -72,9 +70,9 @@ export async function fetchLimitedCodes(limit: number): Promise<ICode[]> {
 }
 
 // * Post Code Data
-export const postCodes = async (data: CodeData): Promise<ICodeResponse | null | undefined> => {
+export const postCodesAsync = async (data: CodeData): Promise<ICodeResponse | null> => {
 
-    const token = await getToken();
+    const token = await getTokenAsync();
     if (!token) {
         throw new Error('로그인이 필요합니다.');
     }
@@ -86,6 +84,7 @@ export const postCodes = async (data: CodeData): Promise<ICodeResponse | null | 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
+            cache: 'no-cache',
             body: JSON.stringify(data),
         });
 
@@ -107,9 +106,49 @@ export const postCodes = async (data: CodeData): Promise<ICodeResponse | null | 
 }
 
 
+// * PUT Code Data
+export async function updateCodeAsync(id: number, data: CodeData): Promise<ICodeResponse
+    | null
+    | undefined> {
+    const token = await getTokenAsync();
+    if (!token) {
+        return null;
+    }
+    try {
+        const response = await fetch(`${apiUrl}/api/code/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // 토큰 추가 (API가 필요 시)
+            },
+            cache: 'no-cache',
+            body: JSON.stringify(data),
+        });
+        const result: ICodeResponse = await response.json();
+
+        if (response.ok) {
+            return result;
+        } else {
+            const notOk: ICodeResponse = {
+                isSuccess: false,
+                message: `(fetchCodes) 코드 업데이트에 실패: ${result.message}`,
+                data: null
+            }
+            return notOk;
+        }
+    } catch (err: any) {
+        const response: ICodeResponse = {
+            isSuccess: false,
+            message: `(fetchCodes) 서버오류: ${err}`,
+            data: null
+        }
+        return response;
+    }
+}
+
 // Delete
-export const deleteCode = async (id: number): Promise<ICodeResponse> => {
-    const token = await getToken();
+export const deleteCodeAsync = async (id: number): Promise<ICodeResponse> => {
+    const token = await getTokenAsync();
     if (!token) {
         throw new Error('로그인이 필요합니다.');
     }
@@ -133,7 +172,7 @@ export const deleteCode = async (id: number): Promise<ICodeResponse> => {
 
 
 export async function fetchCodeById(id: number): Promise<ICode | null> {
-    const codes = await fetchCodes();
+    const codes = await fetchCodesAsync();
     return codes.find((c) => c.id === id) || null;
 }
 

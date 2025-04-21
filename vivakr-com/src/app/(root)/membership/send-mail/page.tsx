@@ -4,7 +4,7 @@ import VivDataGrid from '@/components/VivDataGrid';
 import VivTitle from '@/components/VivTitle';
 import { ISendMailDTO } from '@/interfaces/i-sendmail-dto';
 import { ISubscribe } from '@/interfaces/i-subscribe';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 import { CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Grid, TextField } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
@@ -13,15 +13,19 @@ import { Controller, useForm } from 'react-hook-form';
 export default function Page() {
 
     const [data, setData] = useState<ISubscribe[]>([]);
-    const token = getToken();
+
     const [openDialog, setOpenDialog] = useState(false); // 결과 다이얼로그
     const [dialogMessage, setDialogMessage] = useState<string>(''); // 결과 메시지
     const [isSuccess, setIsSuccess] = useState<boolean>(true); // 성공 여부
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/subscribe/list`;
+
+
     useEffect(() => {
+
         const getSubscriber = async () => {
             try {
+                const token = await getTokenAsync();
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -60,7 +64,7 @@ export default function Page() {
     const onSubmit = async (data: ISendMailDTO) => {
 
         setOpenDialog(false); // 이전 다이얼로그 닫기
-
+        const token = await getTokenAsync();
         const request: RequestInit = {
             method: 'POST',
             headers: {

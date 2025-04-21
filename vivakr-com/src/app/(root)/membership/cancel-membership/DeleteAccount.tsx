@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
 import { useProfile } from '../profile/Profile';
 
@@ -31,7 +31,7 @@ export default function DeleteAccount({ userPassword }: DeleteButtonProps) {
     const handleClose = () => setOpen(false); // 다이얼로그 닫기
     const handleDelete = async () => {
         try {
-            const token = getToken();
+            const token = await getTokenAsync();
             const deleteData: DeleteButtonProps = {
                 userEmail: email,
                 userPassword: userPassword,

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography, List, ListItem, ListItemText, FormControl, InputLabel, FilledInput, FormHelperText, Button } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from '@/lib/SnackbarContext';
-import { getToken, isAdmin } from '@/services/auth.service';
+import { getTokenAsync, isAdminAsync } from '@/services/auth.service';
 import { IResponse } from '@/interfaces/i-response';
 import VivTitle from '@/components/VivTitle';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -69,7 +69,7 @@ export default function RolePage() {
 
   // 역할 추가
   const onSubmit = async (data: RoleData) => {
-    if (!isAdmin()) {
+    if (!isAdminAsync()) {
       showSnackbar('권한이 부족합니다.', 'error');
       return;
     }
@@ -79,7 +79,7 @@ export default function RolePage() {
     }
 
     try {
-      const token = await getToken();
+      const token = await getTokenAsync();
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/role/create`;
       const response = await fetch(url, {
         method: 'POST',
@@ -106,7 +106,7 @@ export default function RolePage() {
   // 역할 삭제
   const handleClickDelete = async () => {
     if (!selectedRole) return;
-    if (!isAdmin()) {
+    if (!isAdminAsync()) {
       showSnackbar('권한이 부족합니다.', 'error');
       return;
     }

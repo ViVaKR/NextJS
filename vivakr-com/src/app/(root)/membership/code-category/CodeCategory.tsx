@@ -17,7 +17,7 @@ import VivTitle from '@/components/VivTitle';
 import VivLoading from '@/components/VivLoading';
 import SaveAsTwoToneIcon from '@mui/icons-material/SaveAsTwoTone';
 import { Controller, useForm } from 'react-hook-form';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 import { useSnackbar } from '@/lib/SnackbarContext';
 
 const CodeCategory = () => {
@@ -81,45 +81,9 @@ const CodeCategory = () => {
     mode: 'onTouched',
   });
 
-  // const onSubmit = async (data: ICategory) => {
-  //   try {
-  //     const token = getToken();
-  //     if (!token) throw new Error('로그인이 필요합니다.');
-  //     // 현재 categories에서 최대 id 찾기
-  //     const maxId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) : 1;
-  //     const newId = maxId + 1;
-
-  //     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/category`;
-  //     const response = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //       body: JSON.stringify({ id: newId, name: data.name }), // id는 서버에서 생성
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       throw new Error(errorData.message || '카테고리 추가 실패');
-  //     }
-
-  //     const result = await response.json();
-  //     const newCategory = { id: result.id || categories.length + 1, name: data.name }; // id가 반환되지 않을 경우 임시 처리
-  //     setCategories((prev) => [...prev, newCategory].sort((a, b) => a.id - b.id));
-  //     reset({ id: 0, name: '' }); // 폼 초기화
-  //     showSnackbar(result.message || '카테고리가 추가되었습니다.', 'success');
-  //   } catch (error: any) {
-  //     const message = error.message;
-  //     console.log(message);
-  //     showSnackbar(error.message || '카테고리 추가에 실패했습니다.', 'error');
-  //   }
-  // };
-
-
   const onSubmit = async (data: ICategory) => {
     try {
-      const token = getToken();
+      const token = await getTokenAsync();
       if (!token) throw new Error('로그인이 필요합니다.');
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/category`;
 

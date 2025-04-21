@@ -3,7 +3,7 @@
 import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { getToken, userDetail } from "@/services/auth.service";
+import { getTokenAsync, userDetailAsync } from "@/services/auth.service";
 import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ type confirmReplayData = {
 }
 
 export default function ConfirmEmailPage() {
-  const url = "https://vivakr.com/membership";
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/membership`;;
   const [email, setEmail] = useState<string | null | undefined>();
   const { showSnackbar } = useSnackbar()
   const router = useRouter();
@@ -22,14 +22,14 @@ export default function ConfirmEmailPage() {
 
   // 페이지 로드시 토큰 체크
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.push('/membership/sign-in'); // 토큰 없으면 리다리렉션
-      return;
-    }
-
     const getUserDetail = async () => {
-      const user = await userDetail();
+      const token = await getTokenAsync();
+      if (!token) {
+        router.push('/membership/sign-in'); // 토큰 없으면 리다리렉션
+        return;
+      }
+
+      const user = await userDetailAsync();
       if (!user) {
         router.push('/membership/sign-in'); // 유저 정보 없으면 리다리렉션
         return;

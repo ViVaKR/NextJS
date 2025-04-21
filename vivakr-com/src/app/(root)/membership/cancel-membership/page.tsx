@@ -7,7 +7,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useState } from 'react';
 import { useProfile } from '../profile/Profile';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { useRouter } from 'next/navigation';
 import { IAuthResponse } from '@/interfaces/i-auth-response';
@@ -56,7 +56,7 @@ export default function CancelMemberShipPage() {
     };
 
     try {
-      const token = getToken();
+      const token = await getTokenAsync();
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/account/cancel-account`;
       const response = await fetch(url, {
         method: 'DELETE',

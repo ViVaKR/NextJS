@@ -1,7 +1,7 @@
 // src/app/(root)/code/create/CreateCode.tsx
 'use client'
 import { CodeData } from '@/types/code-form-data';
-import { userDetail, getToken } from '@/services/auth.service';
+import { userDetailAsync, getTokenAsync } from '@/services/auth.service';
 import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
@@ -13,8 +13,8 @@ import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import FileUploader from '@/components/file-manager/FileUploader';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined';
-import { ICodeResponse } from '@/interfaces/i-code-response';
-import { postCodes } from '@/lib/server-action';
+import { postCodesAsync } from '@/lib/fetchCodes';
+import { getIpInfomations } from '@/lib/fetchIpInfo';
 
 export default function CreateCodePage() {
 
@@ -24,10 +24,7 @@ export default function CreateCodePage() {
     const stepValue = 15;
     const numberOfButtons = 10;
     const router = useRouter();
-    const [id, setId] = useState<string>('');
-    const [fullName, setFullName] = useState<string>('');
     const [categories, setCategories] = useState<ICategory[]>([]);
-    const [isPending, startTransition] = useTransition();
     const [isLoadingUser, setIsLoadingUser] = useState(true); // 로딩 상태 추가
 
     useEffect(() => {
@@ -80,8 +77,8 @@ export default function CreateCodePage() {
             modified: new Date(),
             note: '',
             categoryId: undefined,
-            userId: id,
-            userName: fullName,
+            userId: '',
+            userName: '',
             myIp: '0.0.0.0',
             attachImageName: '',
             attachFileName: '',
@@ -93,25 +90,23 @@ export default function CreateCodePage() {
         const getUserDetail = async () => {
             setIsLoadingUser(true);
             try {
-                const token = await getToken();
+                const token = await getTokenAsync();
                 if (!token) {
                     router.push('/membership/sign-in');
                     return;
                 }
 
-                const user = await userDetail();
+                const user = await userDetailAsync();
                 if (!user) {
                     snackbar.showSnackbar('사용자 정보를 가져오지 못했습니다.', 'error');
                     router.push('/membership/sign-in');
                     return;
                 }
-
-                setId(user.id);
-                setFullName(user.fullName);
+                const ipInfo = await getIpInfomations();
+                setValue('myIp', ipInfo.ip)
                 setValue('userId', user.id, { shouldDirty: true });
                 setValue('userName', user.fullName, { shouldDirty: true });
             } catch (err) {
-                snackbar.showSnackbar('사용자 인증 오류가 발생했습니다.', 'error');
                 router.push('/membership/sign-in');
                 return;
             } finally {
@@ -119,25 +114,27 @@ export default function CreateCodePage() {
             }
         };
         getUserDetail();
-    }, [router, snackbar, setValue]);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [router, setValue]);
 
     // 추가
     const onSubmit = async (data: CodeData) => {
 
-        startTransition(async () => {
-            try {
-                const response: ICodeResponse | null = await postCodes(data);
-                if (response?.isSuccess) {
-                    snackbar.showSnackbar(response.message, 'success');
-                    reset();
-                    router.push('/code');
-                } else {
-                    snackbar.showSnackbar(response?.message || 'Failed to submit', 'warning');
-                }
-            } catch (err: any) {
-                snackbar.showSnackbar(err.message, 'error');
+        try {
+            const response = await postCodesAsync(data);
+            if (response?.isSuccess) {
+                snackbar.showSnackbar(response.message, 'success');
+                reset();
+                router.push('/code');
+                router.refresh();
+            } else {
+                snackbar.showSnackbar(response?.message || '데이터 저장에 실패하였습니다.', 'warning');
             }
-        });
+        } catch (err: any) {
+            snackbar.showSnackbar(err.message, 'error');
+        }
+
     };
 
     const theme = createTheme({
@@ -178,7 +175,7 @@ export default function CreateCodePage() {
             <div className='flex justify-between px-4'>
                 <Typography
                     sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>
-                    {fullName}
+                    {watch('userName')}
                 </Typography>
                 <Typography
                     sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>

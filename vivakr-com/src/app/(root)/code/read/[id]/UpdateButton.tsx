@@ -2,12 +2,11 @@
 import { useAuthCheck } from '@/hooks/useAuthCheck';
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
-import { CircularProgress } from '@mui/material';
 
 export default function UpdateButton({ codeId, userId }: { codeId: number, userId: string }) {
     const [canDelete, loading] = useAuthCheck(userId);
 
-    if (!loading) {
+    if (loading) {
         return (
             <Box sx={{ p: 2 }}>
                 <Typography>수정 권한 확인 중...</Typography>

@@ -1,6 +1,6 @@
 // src/app/code/page.tsx
 'use client';
-import { fetchCodeById } from '@/lib/fetchCodes';
+import { fetchCodeById, updateCodeAsync } from '@/lib/fetchCodes';
 import { startTransition, useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from '@/lib/SnackbarContext';
@@ -8,15 +8,13 @@ import { ICategory } from '@/interfaces/i-category';
 import { fetchCategories } from '@/lib/fetchCategories';
 import { Controller, useForm } from 'react-hook-form';
 import { CodeData } from '@/types/code-form-data';
-import { getToken } from '@/services/auth.service';
+import { getTokenAsync } from '@/services/auth.service';
 import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined'
 import { Box, Button, ButtonGroup, createTheme, Grid, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import FileManager from '@/components/file-manager/FileManager';
 import FileUploader from '@/components/file-manager/FileUploader';
 import Image from 'next/image';
-import { ICodeResponse } from '@/interfaces/i-code-response';
-import { updateCode } from '@/lib/server-action';
-import { CircularProgress } from '@mui/material';
+import { getIpInfomations } from '@/lib/fetchIpInfo';
 
 export default function CodePage({ params }: { params: Promise<{ id: number }> }) {
   const [rows, setRows] = useState(5);
@@ -56,15 +54,15 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
     mode: 'all',
   });
 
-
-  // 토큰 체크
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.push('/membership/sign-in');
+    const getUserToken = async () => {
+      const token = await getTokenAsync();
+      if (!token) {
+        router.push('/membership/sign-in');
+      }
     }
+    getUserToken();
   }, [router]);
-
   // 코드 데이터 가져오기
   useEffect(() => {
     setLoaded(false);
@@ -77,6 +75,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           return;
         }
         setLoaded(true);
+
+        const ipInfo = await getIpInfomations();
         // 데이터 로드 후 폼 값 리셋
         reset({
           id: data.id,
@@ -91,7 +91,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           categoryId: data.categoryId,
           userId: data.userId,
           userName: data.userName,
-          myIp: data.myIp,
+          myIp: ipInfo.ip,
           attachImageName: data.attachImageName ?? '',
           attachFileName: data.attachFileName ?? '',
         });
@@ -101,7 +101,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
     };
     getCode();
 
-  }, [params, reset]);
+  }, [params, reset, router]);
 
   // 카테고리 가져오기
   useEffect(() => {
@@ -133,28 +133,48 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
   });
 
   // 수정
+
   const onSubmit = async (data: CodeData) => {
+    try {
 
-    startTransition(async () => {
-      try {
-        const response: ICodeResponse | null = await updateCode(data.id, data); // 수정 API가 있다면 updateCodes로 변경
-        if (response) {
-          snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
-          if (response.isSuccess) {
-            reset();
-            router.push(`/code`);
-          } else {
-            snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
-          }
+      const response = await updateCodeAsync(data.id, data); // 수정 API가 있다면 updateCodes로 변경
+      if (response) {
+        snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
+        if (response.isSuccess) {
+          reset();
+          router.push('/code');
+          router.refresh();
+        } else {
+          snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
         }
-      } catch (err: any) {
-        snackbar.showSnackbar(err.message, 'error');
-      } finally {
-        setLoaded(true);
-
       }
-    });
+    } catch (err: any) {
+      snackbar.showSnackbar(err.message, 'error');
+    }
   };
+
+  // const onSubmit = async (data: CodeData) => {
+
+  //   startTransition(async () => {
+  //     try {
+  //       const response: ICodeResponse | null = await updateCode(data.id, data); // 수정 API가 있다면 updateCodes로 변경
+  //       if (response) {
+  //         snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
+  //         if (response.isSuccess) {
+  //           reset();
+  //           router.push(`/code`);
+  //         } else {
+  //           snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
+  //         }
+  //       }
+  //     } catch (err: any) {
+  //       snackbar.showSnackbar(err.message, 'error');
+  //     } finally {
+  //       setLoaded(true);
+
+  //     }
+  //   });
+  // };
 
   const theme = createTheme({
     typography: {
@@ -166,7 +186,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
 
   return (
     <Box sx={{ px: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
-      <form autoComplete="off" className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
+      <form autoComplete="off" className="flex flex-col gap-5 w-full"
+        onSubmit={handleSubmit(onSubmit)}>
         <Grid container sx={{ width: '100%' }} columns={16} spacing={2}>
           <Grid size={11}>
             <Controller
@@ -377,7 +398,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
             cursor-pointer  my-4 border-slate-400 border"
             type="submit"
           >
-            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : '수정'}
+            {isSubmitting ? '저장 중' : '저장'}
           </button>
         </div>
       </form>

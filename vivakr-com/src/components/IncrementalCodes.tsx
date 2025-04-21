@@ -8,7 +8,7 @@ import { IIncrementalResult } from '@/interfaces/i-incremental-result';
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import Link from 'next/link';
-import { isAdmin } from '@/services/auth.service';
+import { isAdminAsync } from '@/services/auth.service';
 
 const CHUNK_SIZE = 20;
 interface IncrementalCodeLoaderProps {
@@ -33,7 +33,7 @@ export default function IncrementalCodes({ categoryName, categoryId }: Increment
 
     useEffect(() => {
         const checkAdmin = async () => {
-            const user = await isAdmin();
+            const user = await isAdminAsync();
             if (user) {
                 setAdmin(user);
             }

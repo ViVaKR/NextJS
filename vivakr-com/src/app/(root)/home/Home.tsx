@@ -8,6 +8,7 @@ import { Cute_Font } from 'next/font/google'
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { getIpInfomations } from '@/lib/fetchIpInfo';
 
 const cute = Cute_Font({
   subsets: ['latin'],
@@ -50,27 +51,12 @@ export default function Home() {
 
   useEffect(() => {
     const getIpInfo = async () => {
-      try {
-
-        // Fetch IP info from the API
-        const result: IIpInfo | null | undefined = await getInfo();
-
-        // Check if the result is null or undefined
-        if (!result) {
-          console.error('No IP info found');
-          setInfo(null);
-          return;
-        }
-        setInfo(result);
-      } catch (err) {
-        setInfo(null);
-      }
+      const result: IIpInfo | null = await getIpInfomations();
+      setInfo(result);
     }
-
     getIpInfo()
     setIpArray(info?.ip?.split('.'));
-
-  }, [info?.ip])
+  }, [info?.ip]);
 
   useEffect(() => {
     if (mathRef.current) {

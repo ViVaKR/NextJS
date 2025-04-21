@@ -1,11 +1,11 @@
 // src/lib/accountApi.ts
 import { IAuthResponseDTO, IDeleteAccountDTO } from '@/interfaces/i-auth-response';
-import { getToken, isAdmin } from '@/services/auth.service';
+import { getTokenAsync, isAdminAsync } from '@/services/auth.service';
 
 export async function deleteAccount(email: string): Promise<IAuthResponseDTO> {
 
-    const token = await getToken();
-    if (!token || !isAdmin()) throw new Error('권한이 없습니다.');
+    const token = await getTokenAsync();
+    if (!token || !isAdminAsync()) throw new Error('권한이 없습니다.');
 
     const deleteAccountDto: IDeleteAccountDTO = {
         email: email,

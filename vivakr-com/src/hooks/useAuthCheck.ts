@@ -1,7 +1,7 @@
 // src/hooks/useAuthCheck.ts
 'use client';
 import { useState, useEffect } from 'react';
-import { getToken, userDetail } from '@/services/auth.service';
+import { getTokenAsync, userDetailAsync } from '@/services/auth.service';
 import { useRouter } from 'next/navigation';
 
 const ROLES = {
@@ -22,28 +22,31 @@ export function useAuthCheck(userId: string): AuthCheckResult {
             try {
 
                 if (!userId || typeof userId !== 'string') {
-                    console.warn('Client: Invalid userId provided:', userId);
                     setCanEdit(false);
                     return;
                 }
-                const token = await getToken();
+                const token = await getTokenAsync();
                 if (!token) {
                     setCanEdit(false);
-                    router.push('/membership/sign-in');
+                    setLoading(false);
                     return;
                 }
 
-                const userDetailData = await userDetail();
+                const userDetailData = await userDetailAsync();
+
                 if (!userDetailData) {
                     setCanEdit(false);
-                    router.push('/membership/sign-in');
+                    setLoading(false);
+                    return;
                 }
 
-                const isAdmin = userDetailData?.roles.some((role) => role.toLowerCase() === ROLES.ADMIN);
+                const isAdmin = userDetailData?.roles.some((role) => role.toLowerCase() === ROLES.ADMIN) || false;
                 const isAuthor = userDetailData?.id === userId;
                 setCanEdit(isAdmin || isAuthor);
-            } catch (error) {
+            } catch (err: any) {
                 setCanEdit(false);
+            } finally {
+                setLoading(false);
             }
         }
         checkAuth();
