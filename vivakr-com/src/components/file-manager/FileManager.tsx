@@ -110,7 +110,6 @@ export default function FileManager({
                 setUploadError(true);
                 setUploadSuccess(false);
                 console.error(err.message || "파일업로드 실패", "error")
-                // snackbar.showSnackbar(err.message || "파일 업로드 실패", "error");
                 if (err.message.includes("로그인")) {
                     router.push("/membership/sign-in");
                 }

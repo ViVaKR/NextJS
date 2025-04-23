@@ -1,26 +1,29 @@
 // src/services/auth.service.ts
 import { jwtDecode } from "jwt-decode";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
-import { IUser } from "@/interfaces/i-user";
-import { apiFetch } from "@/lib/api";
 import { IUserDetailDTO } from "@/interfaces/i-userdetail-dto";
 
 const isClient = typeof window !== 'undefined';
-
 const userToken = 'user';
-
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
-export const refreshTokenAsync = async (refreshTokenValue: string, email: string, retries = 1): Promise<string | null> => {
-  if (!isClient) return null;
+export const setAuthCookie = (token: string) => {
+  document.cookie = `user=${token}; path=/; max-age=${60 * 60 * 24}`;
+  // Set-Cookie: access-token=...; Path=/; HttpOnly; Secure; SameSite=None
+};
 
-  // 이미 refresh 중이면 기존 Promise 반환
-  if (isRefreshing && refreshPromise) {
-    return refreshPromise;
-  }
+export const removeAuthCookie = () => {
+  document.cookie = 'user=; path=/; max-age=0';
+}
+
+// export const refreshTokenAsync = async (refreshTokenValue: string, email: string, retries = 1): Promise<string | null> => {
+export const refreshTokenAsync = async (refreshTokenValue: string, email: string): Promise<string | null> => {
+
+  if (!isClient) return null;
+  if (isRefreshing && refreshPromise) return refreshPromise;
 
   isRefreshing = true;
   refreshPromise = new Promise(async (resolve) => {
@@ -35,10 +38,9 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
           token: oldToken,
           refreshToken: refreshTokenValue,
           email,
-        }),
+        })
       });
       const result: IAuthResponse = await response.json();
-
       if (response.ok && result.isSuccess) {
         const newUserData = {
           token: result.token,
@@ -46,19 +48,16 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
           isSuccess: true,
         };
         localStorage.setItem(userToken, JSON.stringify(newUserData));
+        setAuthCookie(result.token!);
         resolve(result.token!);
-      } else if (retries > 0) {
-        // 재시도
-        const retryResult = await refreshTokenAsync(refreshTokenValue, email, retries - 1);
-        resolve(retryResult);
       } else {
-        // localStorage.removeItem(userToken);
-        window.location.href = '/membership/sign-in'; // 실패 시 재로그인 유도
-        resolve(null);
+        const retryResult = await refreshTokenAsync(refreshTokenValue, email);
+        resolve(retryResult);
       }
-    } catch (err) {
-      console.error('RefreshToken error:', err);
-      // localStorage.removeItem(userToken);
+    } catch (err: any) {
+      console.error('(auth.service catch 60) 토큰갱신 실패:', err);
+      localStorage.removeItem(userToken);
+      localStorage.clear();
       window.location.href = '/membership/sign-in';
       resolve(null);
     } finally {
@@ -70,7 +69,6 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
   return refreshPromise;
 };
 
-
 export const getTokenAsync = async (): Promise<string | null> => {
 
   if (!isClient) return null;
@@ -81,22 +79,19 @@ export const getTokenAsync = async (): Promise<string | null> => {
     const userDetail: IAuthResponse = JSON.parse(user);
     const token = userDetail.token;
     if (!token) return null;
-
-    // 토큰 만료 여부 확인
     const decoded: any = jwtDecode(token);
-
     const now = Math.floor(Date.now() / 1000);
 
     if (decoded.exp < now) {
       const newToken = await refreshTokenAsync(userDetail.refreshToken!, decoded.email);
 
       if (newToken) return newToken;
-      // localStorage.removeItem(userToken);
+      localStorage.removeItem(userToken);
       return null;
     }
     return token;
   } catch (err: any) {
-    // localStorage.removeItem(userToken);
+    localStorage.removeItem(userToken);
     return null;
   }
 }

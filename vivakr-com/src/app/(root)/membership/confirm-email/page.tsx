@@ -85,7 +85,6 @@ export default function ConfirmEmailPage() {
         padding: '0.5em 2em',
         borderRadius: '1em',
         fontSize: '2em', color: 'lightblue',
-        fontFamily: 'var(--font-poppins)'
       }}>
         {fullName}님
       </Typography>
@@ -95,7 +94,6 @@ export default function ConfirmEmailPage() {
         padding: '0.5em 2em',
         borderRadius: '1em',
         fontSize: '2em', color: 'lightblue',
-        fontFamily: 'var(--font-poppins)'
       }}>
         {email}
       </Typography>

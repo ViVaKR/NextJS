@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function Visualbasic() {
+export default function VisualbasicPage() {
     const title = "Visual Basic .NET"
     return (
         <div className='mx-2'>

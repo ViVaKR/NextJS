@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
-import { userDetailAsync } from './services/auth.service';
-
-
 
 export async function middleware(request: NextRequest) {
     const userToken = request.cookies.get('user')?.value;
+
     const protectedPaths = [
         '/membership/profile',
         '/membership/all-account',

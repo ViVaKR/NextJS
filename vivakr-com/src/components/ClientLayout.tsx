@@ -127,6 +127,7 @@ export default function ClientLayout({
 
         <Link
           href="/code"
+          id='code'
           className="hover:text-red-400 text-slate-400 shrink">
           <Tooltip title="데이터 목록" arrow>
             <FormatListBulletedOutlinedIcon />
@@ -136,6 +137,7 @@ export default function ClientLayout({
         {admin ? (
           <Link
             href="/code/create"
+            id='code-create'
             className="hover:text-red-400 shrink text-slate-400">
             <Tooltip title={`${fullName}님! 글쓰기`} arrow>
               <EditNoteOutlinedIcon />
@@ -145,6 +147,7 @@ export default function ClientLayout({
           <Tooltip title='로그인 후 글쓰기' arrow>
             <Link
               href={'/membership/sign-in'}
+              id='membership-sign-in'
               className='text-base text-slate-400 hover:!text-red-500'>
               <CreateIcon />
             </Link>
@@ -163,8 +166,7 @@ export default function ClientLayout({
               variants={menuVariants}
               initial="closed"
               animate="open"
-              exit="closed"
-            >
+              exit="closed">
               <h5 className="h-12 w-full bg-slate-100 rounded-full
                   shadow-cyan-500/50 shadow-xs content-center text-center" >
                 카테고리
@@ -181,8 +183,7 @@ export default function ClientLayout({
           className="max-md:start-0 start-1 w-full h-screen overflow-x-scroll"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+          transition={{ duration: 0.5 }} >
           {children}
         </motion.main>
       </AnimatePresence>

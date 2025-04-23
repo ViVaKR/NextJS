@@ -4,11 +4,10 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import styles from './Home.module.css';
 import React, { useEffect, useState } from 'react';
-import { Cute_Font } from 'next/font/google'
 import { IIpInfo } from '@/interfaces/i-ip-info';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
+import { Cute_Font } from 'next/font/google';
 
 const cute = Cute_Font({
   subsets: ['latin'],
@@ -18,11 +17,11 @@ const cute = Cute_Font({
 
 const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
 
-async function getInfo(): Promise<IIpInfo | null | undefined> {
-  const response = await fetch(`${api}/api/ip`);
-  const data: IIpInfo | null | undefined = await response.json();
-  return data ?? null;
-}
+// async function getInfo(): Promise<IIpInfo | null | undefined> {
+//   const response = await fetch(`${api}/api/ip`);
+//   const data: IIpInfo | null | undefined = await response.json();
+//   return data ?? null;
+// }
 
 export default function Home() {
 
@@ -30,7 +29,6 @@ export default function Home() {
   const message = '인간이-이해하는-코드-조각..';
   const characters = Array.from(message);
   const router = useRouter();
-  const session = useSession();
 
   const handleGoToCodeSnippets = () => {
     router.push('/code');
@@ -81,8 +79,10 @@ export default function Home() {
             <div className="text-white">
 
               <main className={`${styles.mainText} mb-4 text-9xl
-                relative flex max-xl:text-7xl text-slate-300
-                ${cute.className} max-md:text-5xl font-extrabold`}>
+                relative flex
+                ${cute.className}
+                max-xl:text-7xl text-slate-300
+                max-md:text-5xl font-extrabold`}>
 
                 {/* 인간이 이해하는 코드 조각 */}
                 {characters.map((char, index) => (
@@ -124,9 +124,6 @@ export default function Home() {
         </button>
 
       </div>
-      {/* <p>
-        {JSON.stringify(session.data?.user)}
-      </p> */}
     </div>
   );
 }

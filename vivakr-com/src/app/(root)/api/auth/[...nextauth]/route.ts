@@ -7,7 +7,6 @@ import FacebookProvider from "next-auth/providers/facebook";
 import TwitterProvider from "next-auth/providers/twitter";
 import DiscordProvider from "next-auth/providers/discord";
 import AzureADProvider from "next-auth/providers/azure-ad";
-// import AppleProvider from "next-auth/providers/apple";
 
 const handler = NextAuth({
     providers: [
@@ -41,7 +40,6 @@ const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user, account }) {
-            // 최초 로그인 시 user 객체를 token에 매핑
             if (account && user) {
                 token.user = {
                     id: user.id || account?.providerAccountId || "NoId",
@@ -74,9 +72,6 @@ const handler = NextAuth({
             return `${baseUrl}`; // 홈으로 리다이렉트
         },
     },
-    // pages: { // 자체 로그인 페이지가 있다면 설정
-    //   signIn: '/auth/signin',
-    // }
 });
 
 export { handler as GET, handler as POST };

@@ -61,6 +61,7 @@ export default function InputWithIcon() {
           <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
           <TextField
             id="input-with-sx"
+            name='input-with-sx'
             fullWidth
             label="Name"
             color="success"
@@ -81,6 +82,7 @@ export default function InputWithIcon() {
         <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
         <Input
           id="standard-adornment-password"
+          name="standard-adornment-password"
           type={showPassword ? 'text' : 'password'}
           sx={{ mr: 2 }}
           color="warning"
@@ -103,6 +105,7 @@ export default function InputWithIcon() {
       <FormControl>
         <TextField
           id="standard-suffix-shrink"
+          name="standard-suffix-shrink"
           label="Email"
           variant="standard"
           helperText="Enter Email"

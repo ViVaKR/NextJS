@@ -123,6 +123,7 @@ export default function ChangePasswordPage() {
                 {...field}
                 error={!!errors.currentPassword}
                 id="currentPassword"
+                name="currentPassword"
                 type={showPassword ? 'text' : 'password'}
                 sx={{ width: '400px' }}
                 endAdornment={
@@ -154,6 +155,7 @@ export default function ChangePasswordPage() {
                 {...field}
                 error={!!errors.newPassword}
                 id="newPassword"
+                name="newPassword"
                 type={showPassword ? 'text' : 'password'}
                 sx={{ width: '400px' }}
                 endAdornment={
@@ -185,6 +187,7 @@ export default function ChangePasswordPage() {
                 {...field}
                 error={!!errors.confirmNewPassword}
                 id="confirmNewPassword"
+                name="confirmNewPassword"
                 type={showPassword ? 'text' : 'password'}
                 sx={{ width: '400px' }}
                 endAdornment={

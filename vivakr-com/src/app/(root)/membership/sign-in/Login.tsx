@@ -115,7 +115,7 @@ export default function SignIn() {
     event.preventDefault();
   };
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <div className='content-center'>로딩 중...</div>;
 
   const showLoginSuccess = () => {
     showSnackbar('환영합니다.', 'success', 'bottom', 'right', 2000);
@@ -168,6 +168,7 @@ export default function SignIn() {
                       {...field}
                       error={!!errors.email}
                       id="email"
+                      name="email"
                     />
                   )}
                 />
@@ -187,10 +188,13 @@ export default function SignIn() {
                   rules={{ required: '비밀번호를 입력해 주세요' }}
                   render={({ field }) => (
                     <FilledInput
+                      {...field}
                       id="password"
-                      {...control.register('password')}
+                      name='password'
+                      // {...control.register('password')}
                       error={!!errors.password}
                       type={showPassword ? 'text' : 'password'}
+
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton

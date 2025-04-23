@@ -3,12 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import VivTitle from '@/components/VivTitle';
-// export const dynamic = 'force-dynamic'; // <-- 이 페이지를 동적으로 렌더링하도록 설정
 interface DemoItem {
   id: number;
   name: string;
 }
 
+// export const dynamic = 'force-dynamic'; // <-- 이 페이지를 동적으로 렌더링하도록 설정
 export default function OddsOrmPrisma() {
   const [demos, setDemos] = useState<DemoItem[]>([]);
   const [loading, setLoading] = useState(true);

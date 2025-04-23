@@ -16,8 +16,6 @@ let refreshPromise: Promise<string | null> | null = null;
 
 export const refreshTokenAsync = async (refreshTokenValue: string, email: string, retries = 1): Promise<string | null> => {
   if (!isClient) return null;
-
-  // 이미 refresh 중이면 기존 Promise 반환
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
@@ -52,13 +50,13 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
         const retryResult = await refreshTokenAsync(refreshTokenValue, email, retries - 1);
         resolve(retryResult);
       } else {
-        // localStorage.removeItem(userToken);
-        window.location.href = '/membership/sign-in'; // 실패 시 재로그인 유도
+        localStorage.removeItem(userToken);
+        window.location.href = '/membership/sign-in'; // 실패 시 재 로그인 유도
         resolve(null);
       }
     } catch (err) {
-      console.error('RefreshToken error:', err);
-      // localStorage.removeItem(userToken);
+      console.error('() 토큰 생실 오류 발생:', err);
+      localStorage.removeItem(userToken);
       window.location.href = '/membership/sign-in';
       resolve(null);
     } finally {

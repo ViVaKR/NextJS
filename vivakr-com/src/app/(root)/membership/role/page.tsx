@@ -158,6 +158,7 @@ export default function RolePage() {
                 {...field}
                 error={!!errors.roleName}
                 id="roleName"
+                name="roleName"
                 className='!font-poppins'
                 fullWidth
                 color='info'

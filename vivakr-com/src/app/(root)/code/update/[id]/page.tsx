@@ -168,32 +168,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
     }
   };
 
-  // const onSubmit = async (data: CodeData) => {
-
-  //   startTransition(async () => {
-  //     try {
-  //       const response: ICodeResponse | null = await updateCode(data.id, data); // 수정 API가 있다면 updateCodes로 변경
-  //       if (response) {
-  //         snackbar.showSnackbar(`${response.message}`, `${response.isSuccess ? 'success' : 'warning'}`);
-  //         if (response.isSuccess) {
-  //           reset();
-  //           router.push(`/code`);
-  //         } else {
-  //           snackbar.showSnackbar(response.message || '코드업데이트 실패', 'warning')
-  //         }
-  //       }
-  //     } catch (err: any) {
-  //       snackbar.showSnackbar(err.message, 'error');
-  //     } finally {
-  //       setLoaded(true);
-
-  //     }
-  //   });
-  // };
-
   const theme = createTheme({
     typography: {
-      fontFamily: 'var(--font-fira)',
       fontSize: 18,
       fontWeightRegular: 400,
     }
@@ -213,6 +189,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
                 <TextField
                   {...field}
                   label="제목"
+                  id='title'
+                  name='title'
                   variant="filled"
                   error={!!errors.title}
                   sx={{ my: '0px' }}
@@ -232,6 +210,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
                 <TextField
                   {...field}
                   select
+                  id='categoryId'
+                  name='categoryId'
                   label="카테고리"
                   value={field.value || ''}
                   onChange={(e) => field.onChange(Number(e.target.value))}
@@ -262,6 +242,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           render={({ field }) => (
             <TextField
               {...field}
+              id='subTitle'
+              name='subTitle'
               label="부 제목"
               color="success"
               variant="filled"
@@ -286,6 +268,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
             <ThemeProvider theme={theme}>
               <TextField
                 {...field}
+                id='content'
+                name='content'
                 variant="filled"
                 rows={rows}
                 label="코드"
@@ -302,10 +286,11 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           name="subContent"
           control={control}
           render={({ field }) => (
-
             <ThemeProvider theme={theme}>
               <TextField
                 {...field}
+                id='subContent'
+                name='subContent'
                 variant="filled"
                 rows={rows}
                 label="보조코드"
@@ -324,6 +309,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           render={({ field }) => (
             <TextField
               {...field}
+              id='note'
+              name='note'
               variant="filled"
               rows={rows}
               label="노트"
@@ -341,6 +328,8 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
           render={({ field }) => (
             <TextField
               {...field}
+              id='markdown'
+              name='markdown'
               variant="filled"
               rows={rows}
               label="마크다운"
@@ -367,7 +356,6 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
             sx={{ mt: 4, color: 'gray' }} gutterBottom>
             현재 이미지 (25%)
           </Typography>
-
           {
             watch('attachImageName') && (
               <Image

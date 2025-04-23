@@ -16,7 +16,8 @@ export default function UpdateButton({ codeId, userId }: { codeId: number, userI
     if (!canDelete) return null;
     return (
         <div>
-            <Link href={`/code/update/${codeId}`}
+            <Link
+                href={`/code/update/${codeId}`}
                 className="px-8
                 py-2
                 bg-sky-500

@@ -2,10 +2,7 @@ import React from 'react';
 import CodeCategory from './CodeCategory';
 const Page = () => {
     return (
-        <React.Fragment>
-            <CodeCategory />
-
-        </React.Fragment>
+        <CodeCategory />
     );
 }
 export default Page;

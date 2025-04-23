@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user';
 import { signOut, useSession } from 'next-auth/react';
-import { fetchUserDetailAsync, getTokenAsync } from '@/services/auth.service';
+import { fetchUserDetailAsync, getTokenAsync, removeAuthCookie, setAuthCookie } from '@/services/auth.service';
 
 const getRolesFromToken = (token: string | undefined): string[] => {
 
@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       try {
         const token = await getTokenAsync();
+
         if (token) {
           const detailedUser = await fetchUserDetailAsync(token);
           if (detailedUser) {
@@ -88,57 +89,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               });
             }
           } else {
-            setUser(null); // UI상 로그아웃 상태지만 localStorage는 유지
+            setUser(null);
+            localStorage.removeItem('user');
           }
         } else {
           setUser(null);
+          localStorage.removeItem('user');
         }
-        // *
+
         if (status === "authenticated" && session?.user) {
-          //? NextAuth
           const sessionUser = session.user as ExtendedUser;
           setUser({ ...sessionUser });
 
         } else if (status === "unauthenticated") {
           const storedUserString = localStorage.getItem('user');
+
           if (storedUserString) {
             let parsedUser: ExtendedUser | null = null;
             try {
               parsedUser = JSON.parse(storedUserString);
             } catch (err: any) {
-              throw err;
+              throw new Error(`(111) ${err.message}`)
             }
 
             if (parsedUser?.token) {
-              // 토큰 유효성 검사 겸 상세 정보 가져오기
               const detailedUser = await fetchUserDetail(parsedUser.token);
               if (detailedUser) {
-                // 성공: 상세 정보와 기존 정보 결합 (역할 정보 포함)
-                const roles = getRolesFromToken(parsedUser.token); // 토큰에서 역할 추출
-                setUser({ ...parsedUser, ...detailedUser, roles }); // user 상태 업데이트
+
+                const roles = getRolesFromToken(parsedUser.token);
+                setUser({ ...parsedUser, ...detailedUser, roles });
               } else {
-                // setUser(null);
-                // localStorage.removeItem('user');
+                setUser(null);
+                localStorage.removeItem('user');
               }
             } else {
-              // setUser(null);
-              // localStorage.removeItem('user');
+              setUser(null);
+              localStorage.removeItem('user');
             }
+          } else {
+            // TODO
           }
-        } else {
-          //...
         }
-
-        // *
-      } catch (err) {
-        console.error('AuthContext: Initialize error:', err);
-        // setUser(null); // 오류 시 UI만 초기화
+      } catch (err: any) {
+        console.error('(134) AuthContext: Initialize error:', err);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
     initializeAuth();
-  }, [fetchUserDetail, session?.user, status]); // logout 의존성 제거
+  }, [fetchUserDetail, session, session?.user, status]); // logout 의존성 제거
 
   // 자체 로그인 함수
   const login
@@ -190,8 +190,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             provider: 'credentials',
           };
 
-          localStorage.setItem('user', JSON.stringify(updatedUser)); // 로컬 스토리지에 저장
-          document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`; // 쿠키 저장 제거 (특별한 이유 없으면)
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          // document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`;
+          setAuthCookie(data.token)
           setUser(updatedUser); // 상태 업데이트 -> UI 즉시 반영!
           setLoading(false);
           return true;
@@ -201,8 +202,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           return false;
         }
-      } catch (error) {
-        console.error('로그인 중 오류 발생:', error);
+      } catch (err: any) {
+        console.error('(AuthContext 205) 로그인 중 오류 발생:', err);
         setUser(null);
         setLoading(false);
         return false;
@@ -214,17 +215,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // 순서 중요: 상태 업데이트 전에 로컬/세션 정리
     localStorage.removeItem('user');
+    localStorage.clear();
     // 쿠키 삭제 제거
-    document.cookie = 'user=; path=/; max-age=0';
+    // document.cookie = 'user=; path=/; max-age=0';
+    removeAuthCookie();
+
     setUser(null);
 
     // next-auth 로그아웃 (Google 등) + 커스텀 로그아웃 후 리다이렉션
     signOut({ callbackUrl: "/" });
   }, []);
 
+
   // 사용자 목록 가져오기 (관리자용)
   const fetchUsers = useCallback(async () => {
-    if (!user?.token || !user.roles?.some((role) => role.toLowerCase() !== 'admin')) return [];
+    const currentToken: string | null = await getTokenAsync();
+    if (!currentToken)
+      return [];
+    const roles: string[] | undefined = getRolesFromToken(currentToken!)
+    if (!roles) return [];
+    const isAdmin = roles.some((role) => role.toLowerCase() === 'admin');
+    if (!isAdmin) return [];
 
     try {
       const response = await fetch(
@@ -232,7 +243,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${currentToken}`,
             'Content-Type': 'application/json',
           },
           cache: 'no-cache'
@@ -240,15 +251,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (!response.ok) {
-        if (response.status === 401) throw new Error('인증 실패 (토큰 만료 등)');
-        if (response.status === 403) throw new Error('관리자 권한 필요');
-        throw new Error('회원 목록을 가져오는데 실패하였습니다.');
+        if (response.status === 401) throw new Error('(249) 인증 실패 (토큰 만료 등)');
+        if (response.status === 403) throw new Error('(250) 관리자 권한 필요');
+        throw new Error('(251) 회원 목록을 가져오는데 실패하였습니다.');
       }
       return await response.json();
-    } catch (error) {
-      throw error;
+    } catch (err: any) {
+      throw new Error(`(AuthContext 268) catch error: ${err}`)
     }
-  }, [user]); // user 상태에 의존
+  }, []); // user 상태에 의존
 
   const isAdmin = useMemo((): boolean => {
     return !!user?.roles?.includes('Admin');
@@ -267,11 +278,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // * 주기적 토큰 체크 (25분마다)
   useEffect(() => {
     const interval = setInterval(async () => {
+      console.log("(AutContext 289) Checked: " + (new Date()).toLocaleString());
       const token = await getTokenAsync();
+
+
       if (!token) {
         window.location.href = '/membership/sign-in';
       }
-    }, 25 * 60 * 1000);
+    }, 59 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 

@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function KotlinPage() {
+export default function MatlabPage() {
 
     const title = 'MATLAB';
 

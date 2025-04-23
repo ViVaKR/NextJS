@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function GoPage() {
+export default function FortranPage() {
 
     const title = 'Fortran';
 

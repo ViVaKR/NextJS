@@ -151,6 +151,8 @@ export default function Page() {
                             render={({ field }) => (
                                 <TextField
                                     {...field}
+                                    id='subject'
+                                    name='subject'
                                     label="제목"
                                     variant="filled"
                                     error={!!errors.subject}
@@ -172,6 +174,8 @@ export default function Page() {
                             render={({ field }) => (
                                 <TextField
                                     {...field}
+                                    id='message'
+                                    name='message'
                                     label="내용"
                                     variant="filled"
                                     error={!!errors.message}
@@ -188,9 +192,6 @@ export default function Page() {
                 </Grid>
 
                 <div className='w-full flex justify-center'>
-
-
-
                     <Button
                         disabled={isSubmitting} // 전송 중 버튼 비활성화
                         className='!px-4
@@ -219,7 +220,6 @@ export default function Page() {
                 </DialogActions>
             </Dialog>
 
-            {/* <VivDataGrid /> */}
             <VivDataGrid<ISubscribe>
                 columns={columns}
                 initialData={data}

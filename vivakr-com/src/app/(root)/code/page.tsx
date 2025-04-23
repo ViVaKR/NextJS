@@ -1,6 +1,5 @@
 // src/app/code/page.tsx
 export const dynamic = 'force-dynamic'; // 동적 렌더링 강제
-
 import VivTitle from '@/components/VivTitle';
 import VivGridControl from '@/components/VivGridControl';
 import { ICode } from '@/interfaces/i-code';

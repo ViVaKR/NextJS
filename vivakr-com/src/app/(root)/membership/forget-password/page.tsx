@@ -80,7 +80,7 @@ export default function ForgetPasswordPaage() {
                 {...field}
                 error={!!errors.email}
                 id="email"
-                sx={{ fontFamily: 'var(--font-poppins)' }}
+                name="email"
               />
             )}
           />
@@ -94,7 +94,7 @@ export default function ForgetPasswordPaage() {
             variant="outlined"
             color="primary"
             disabled={isSubmitting}
-            sx={{ mx: 'auto', width: 'auto', fontFamily: 'var(--font-noto)' }}>
+            sx={{ mx: 'auto', width: 'auto', }}>
 
             {isSubmitting ? <CircularProgress size={24} color="inherit" /> : '비밀번호 변경 메일전송'}
           </Button>

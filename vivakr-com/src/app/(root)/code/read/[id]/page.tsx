@@ -1,7 +1,6 @@
 // src/app/code/read/page.tsx
 import { Suspense } from 'react';
 import CodeReadContent from './CodeReadContent';
-
 export default function CodeReadPage({
   params,
 }: {

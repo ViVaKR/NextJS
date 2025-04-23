@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function SvgPage() {
+export default function TailwindcssPage() {
     const title = 'Tailwind CSS';
 
     return (

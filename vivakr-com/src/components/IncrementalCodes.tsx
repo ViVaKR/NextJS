@@ -214,7 +214,7 @@ export default function IncrementalCodes({ categoryName, categoryId }: Increment
                     loading={isLoading && allLoadedCodes.length === 0}
                     getRowId={(row) => row.id}
                     hideFooterSelectedRowCount={true}
-                    slots={(admin) ? { toolbar: GridToolbar } : {}}
+                    showToolbar
                     pageSizeOptions={[5, 10, 15, 25, 50, 100]}
                     initialState={{
                         pagination: {

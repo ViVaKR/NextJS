@@ -24,6 +24,8 @@ export default function VivSelect() {
         size="small">
         <InputLabel id="viv-label">Age</InputLabel>
         <Select
+          id='select-demo'
+          name='select-demo'
           labelId="viv-label"
           label="Age"
           value={age}

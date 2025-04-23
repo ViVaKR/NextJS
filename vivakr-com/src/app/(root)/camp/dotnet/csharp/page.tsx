@@ -1,5 +1,5 @@
 import VivTitle from '@/components/VivTitle';
-export default function CSharpPage() {
+export default function CsIntermediatePage() {
 
     return (
         <>

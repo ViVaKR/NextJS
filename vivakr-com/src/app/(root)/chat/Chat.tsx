@@ -89,6 +89,7 @@ export default function ChatPage() {
       setAvata(null);
       setIsLoading(false);
     }
+
   }, [user, profileLoading]);
 
   // *
@@ -236,11 +237,9 @@ export default function ChatPage() {
                 </div>
                 <pre className={styles.pre}>
                   <code
-                    className={`${
-                      // currentUser.userId === message.userId
-                      isMe(message.userId)
-                        ? 'flex justify-start pl-2 text-teal-700'
-                        : 'flex justify-end text-amber-900'
+                    className={`${isMe(message.userId)
+                      ? 'flex justify-start pl-2 text-teal-700'
+                      : 'flex justify-end text-amber-900'
                       } !text-base !p-0 !m-0`}>
                     {message.message}
                   </code>
@@ -265,6 +264,7 @@ export default function ChatPage() {
               <div className="px-4">
                 <TextField
                   id="filled-multiline-static"
+                  name="filled-multiline-static"
                   label="Message"
                   focused
                   multiline
@@ -275,14 +275,11 @@ export default function ChatPage() {
                   onChange={(e) => setMessageInput(e.target.value)} // 입력값 업데이트
                   onKeyDown={handleKeyDown} // Enter 키로 전송
                   sx={{
-                    // ? Text
                     '& .MuiFilledInput-root': {
                       color: '#fff',
-                      fontFamily: 'var(--font-noto)',
                       fontWeight: 'bold',
                       fontSize: '16px',
                     },
-                    //? Label
                     '& .MuiInputLabel-filled': {
                       color: '#fff !important',
                       fontWeight: 'bold',
@@ -301,7 +298,7 @@ export default function ChatPage() {
                       absolute mb-72">
               <button
                 onClick={() => setMessages([])}
-                className="px-4 py-2 font-poppins
+                className="px-4 py-2
                             cursor-pointer
                             rounded-full
                             my-4 bg-sky-500
@@ -310,7 +307,7 @@ export default function ChatPage() {
               </button>
               <button
                 onClick={copyMessages}
-                className="px-4 py-2 font-poppins
+                className="px-4 py-2
                             cursor-pointer
                             rounded-full
                             my-4 bg-sky-500
@@ -320,7 +317,6 @@ export default function ChatPage() {
               <button
                 onClick={sendMessage}
                 className="px-4 py-2
-                          font-poppins
                           cursor-pointer
                           rounded-full my-4
                           bg-sky-500

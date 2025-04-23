@@ -10,7 +10,6 @@
 
   max-height: calc(100% - 0px);
   min-height: calc(100% - 0px);
-  font-family: var(--font-noto), sans-serif;
   padding-bottom: 200px;
 }
 
@@ -110,5 +109,4 @@
   padding: 0.5rem !important; /* shiki의 기본 스타일을 덮어씌움 */
   overflow-wrap: break-word; /* word-wrap의 현대적 대안 */
   white-space: pre-wrap;
-  font-family: var(--font-fira);
 }

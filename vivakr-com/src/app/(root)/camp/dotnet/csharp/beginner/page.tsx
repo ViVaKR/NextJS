@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function Page() {
+export default function CsBeginnerPage() {
 
     const title = 'C# Beginner';
 

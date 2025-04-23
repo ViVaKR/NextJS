@@ -3,7 +3,7 @@
 import VivTitle from '@/components/VivTitle';
 import IncrementalCodes from '@/components/IncrementalCodes';
 
-export default function Page() {
+export default function CsAdvancedPage() {
 
     const title = 'C# Advanced';
     return (

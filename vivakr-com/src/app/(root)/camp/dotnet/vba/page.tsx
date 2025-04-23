@@ -1,6 +1,6 @@
 import IncrementalCodes from '@/components/IncrementalCodes';
 import VivTitle from '@/components/VivTitle';
-export default function VBA() {
+export default function VbaPage() {
 
     const title = 'Visual Basic for Application (VBA)';
     return (

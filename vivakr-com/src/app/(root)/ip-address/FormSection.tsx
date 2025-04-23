@@ -79,7 +79,7 @@ const FormSection: React.FC<FormSectionProps> = ({ ipInfo: initalIpInfo }) => {
             >
                 <h1 className="text-slate-400 text-center w-96 mx-auto mb-4">{info.ip}</h1>
 
-                <TextField id="standard-basic"
+                <TextField id="ipaddress" name='ipaddress'
                     label="IP Address"
                     variant="standard"
                     value={ipAddress}

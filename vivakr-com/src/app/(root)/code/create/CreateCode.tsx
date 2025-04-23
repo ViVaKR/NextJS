@@ -1,11 +1,11 @@
 // src/app/(root)/code/create/CreateCode.tsx
 'use client'
 import { CodeData } from '@/types/code-form-data';
-import { userDetailAsync, getTokenAsync, fetchUserDetailAsync } from '@/services/auth.service';
+import { getTokenAsync, fetchUserDetailAsync } from '@/services/auth.service';
 import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import FileManager from '@/components/file-manager/FileManager';
@@ -16,17 +16,20 @@ import GpsFixedOutlinedIcon from '@mui/icons-material/GpsFixedOutlined';
 import { postCodesAsync } from '@/lib/fetchCodes';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
+import ScrollButtons from '@/components/ScrollButtons';
 
 export default function CreateCodePage() {
 
-    const [rows, setRows] = useState(5);
+    const [rows, setRows] = useState(20);
     const snackbar = useSnackbar();
     const startValue = 5;
-    const stepValue = 15;
-    const numberOfButtons = 10;
+    const stepValue = 5;
+    const numberOfButtons = 20;
     const router = useRouter();
     const [categories, setCategories] = useState<ICategory[]>([]);
-    const [isLoadingUser, setIsLoadingUser] = useState(true); // 로딩 상태 추가
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
+    const scrollContainerRef = useRef<HTMLElement | null>(null);
+    const [error, setError] = useState<string | null>();
 
     useEffect(() => {
         const fetchAndSortCategories = async () => {
@@ -37,12 +40,13 @@ export default function CreateCodePage() {
                 );
                 setCategories(sorted);
             } catch (err: any) {
-                snackbar.showSnackbar(err.message);
+                // snackbar.showSnackbar(err.message);
+                setError(err.message);
             }
         };
         fetchAndSortCategories();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, []);
 
     function handleRowsClick(rowsCount: number) {
@@ -91,23 +95,22 @@ export default function CreateCodePage() {
         const getUserDetail = async () => {
             setIsLoadingUser(true);
             try {
-
-
                 const token = await getTokenAsync();
                 if (!token) {
+                    setError('로그인 후 사용가능합니다.');
                     router.push('/membership/sign-in');
                     return;
                 }
 
                 const user: IUserDetailDTO | null = await fetchUserDetailAsync(token);
                 if (!user) {
-                    snackbar.showSnackbar('사용자 정보를 가져오지 못했습니다.', 'error');
+                    setError('사용자 정보를 가져오지 못했습니다.');
                     router.push('/membership/sign-in');
                     return;
                 }
 
                 if (!user.emailConfirmed) {
-                    snackbar.showSnackbar("이메일 인증 후 사용하실 수 있습니다. 감사합니다.");
+                    setError('이메일 인증후 사용할 수 있습니다.');
                     router.push('/membership/confirm-email')
                     return;
                 }
@@ -116,7 +119,8 @@ export default function CreateCodePage() {
                 setValue('myIp', ipInfo.ip)
                 setValue('userId', user.id, { shouldDirty: true });
                 setValue('userName', user.fullName, { shouldDirty: true });
-            } catch (err) {
+                setIsLoadingUser(false);
+            } catch (err: any) {
                 router.push('/membership/sign-in');
                 return;
             } finally {
@@ -124,13 +128,10 @@ export default function CreateCodePage() {
             }
         };
         getUserDetail();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router, setValue]);
 
     // 추가
     const onSubmit = async (data: CodeData) => {
-
         try {
             const response = await postCodesAsync(data);
             if (response?.isSuccess) {
@@ -144,19 +145,23 @@ export default function CreateCodePage() {
         } catch (err: any) {
             snackbar.showSnackbar(err.message, 'error');
         }
-
     };
 
     const theme = createTheme({
         typography: {
-            fontFamily: 'var(--font-fira)',
-            fontSize: 18,
-            fontWeightRegular: 400,
+            fontFamily: [
+                'Menlo',
+                '"Apple Color Emoji"',
+                '"Segoe UI Emoji"',
+                '"Segoe UI Symbol"',
+            ].join(','),
+            fontSize: 24
         }
     });
 
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+
         if (e.key === 'Tab') {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
@@ -167,7 +172,6 @@ export default function CreateCodePage() {
                 target.value?.substring(0, start) +
                 spaces +
                 target.value?.substring(end);
-            // 동적으로 name 속성을 사용해 해당 필드의 값을 업데이트
             setValue(target.name as keyof CodeData, newValue, { shouldDirty: true });
             setTimeout(() => {
                 target.selectionStart = target.selectionEnd = start + spaces.length;
@@ -176,19 +180,36 @@ export default function CreateCodePage() {
     };
 
     if (isLoadingUser) {
-        return <Box>Loading...</Box>
+        return <div className='content-center text-slate-400 text-2xl'>로딩 중...</div>
     }
 
     return (
 
-        <Box sx={{ px: 2, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box
+            component="section" // Box 를 section 으로 설정하여 ref 연결가능
+            ref={scrollContainerRef}
+            sx={{
+                px: 2,
+                width: '100%',
+                display: 'flex',
+                height: '100vh',
+                overflow: 'auto',
+                flexDirection: 'column',
+                gap: 1,
+                position: 'relative'
+            }}>
+            {error && (
+                <div className='text-center text-red-400'>{error}</div>
+            )}
+
             <div className='flex justify-between px-4'>
                 <Typography
-                    sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>
+
+                    sx={{ textAlign: 'end' }}>
                     {watch('userName')}
                 </Typography>
                 <Typography
-                    sx={{ color: 'var(--color-slate-400)', textAlign: 'end' }}>
+                    sx={{ textAlign: 'end' }}>
                     {(new Date()).toLocaleDateString()}
                 </Typography>
             </div>
@@ -207,6 +228,8 @@ export default function CreateCodePage() {
                             render={({ field }) => (
                                 <TextField
                                     {...field}
+                                    id='title'
+                                    name='title'
                                     label="제목"
                                     variant="filled"
                                     error={!!errors.title}
@@ -223,13 +246,14 @@ export default function CreateCodePage() {
                         {/* 카테고리 */}
                         <Controller
                             name="categoryId"
-
                             control={control}
                             rules={{ required: "카테고리를 선택하여 주세요." }}
                             render={({ field }) => (
                                 <TextField
                                     {...field}
                                     select
+                                    id='categoryId'
+                                    name='categoryId'
                                     label="카테고리"
                                     value={field.value || ""}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
@@ -260,11 +284,11 @@ export default function CreateCodePage() {
                 <Controller
                     name="subTitle"
                     control={control}
-
                     rules={{ required: '부제목을 입력해주세요.' }}
                     render={({ field }) => (
                         <TextField
                             {...field}
+                            id='subTitle'
                             name='subTitle'
                             label="부 제목"
                             color='success'
@@ -283,6 +307,29 @@ export default function CreateCodePage() {
                     </ButtonGroup>
                 </div>
 
+                {/* 노트, note */}
+                <Controller
+                    name='note'
+                    control={control}
+                    rules={{ required: '노트를 입력해주세요.' }}
+                    render={({ field }) => (
+                        <ThemeProvider theme={theme}>
+                            <TextField
+                                {...field}
+                                id='note'
+                                name='note'
+                                variant='filled'
+                                rows={rows}
+                                label="노트"
+                                error={!!errors.note}
+                                helperText={errors.note?.message}
+                                color='success'
+                                multiline
+                            />
+                        </ThemeProvider>
+                    )}
+                />
+
                 {/* 코드, content */}
                 <Controller
                     name='content'
@@ -293,6 +340,7 @@ export default function CreateCodePage() {
                         <ThemeProvider theme={theme}>
                             <TextField
                                 {...field}
+                                id='content'
                                 name='content'
                                 variant='filled'
                                 rows={rows}
@@ -316,6 +364,7 @@ export default function CreateCodePage() {
                         <ThemeProvider theme={theme}>
                             <TextField
                                 {...field}
+                                id='subContent'
                                 name='subContent'
                                 variant='filled'
                                 rows={rows}
@@ -330,29 +379,6 @@ export default function CreateCodePage() {
                     )}
                 />
 
-                {/* 노트, note */}
-                <Controller
-                    name='note'
-                    control={control}
-                    rules={{ required: '노트를 입력해주세요.' }}
-                    render={({ field }) => (
-                        <ThemeProvider theme={theme}>
-                            <TextField
-                                {...field}
-                                name='note'
-                                variant='filled'
-                                rows={rows}
-                                label="노트"
-                                error={!!errors.note}
-                                helperText={errors.note?.message}
-                                color='success'
-                                multiline
-
-                            />
-                        </ThemeProvider>
-                    )}
-                />
-
                 {/* 마크다운, markdown */}
                 <Controller
                     name='markdown'
@@ -361,6 +387,7 @@ export default function CreateCodePage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
+                            id='markdown'
                             name='markdown'
                             variant='filled'
                             rows={rows}
@@ -375,11 +402,9 @@ export default function CreateCodePage() {
                 />
 
                 <div className='flex flex-col items-center justify-start'>
-
                     <p>
                         <strong>이미지</strong> 정상 업로드 시 미리보기와 결과 첨부된 이미지가 함께 표시됩니다.
                     </p>
-
                     <IconButton color="secondary">
                         <AddAPhotoOutlinedIcon />
                     </IconButton>
@@ -432,6 +457,7 @@ export default function CreateCodePage() {
 
                 </div>
             </form >
+            <ScrollButtons scrollableRef={scrollContainerRef} />
             <div className='min-h-screen w-full'></div>
         </Box >
     );

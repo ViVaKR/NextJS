@@ -107,6 +107,8 @@ export default function ResetPasswordPage() {
         <TextField
           label="새 비밀번호"
           type="password"
+          id="new-password"
+          name="new-password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           required
@@ -117,6 +119,8 @@ export default function ResetPasswordPage() {
         <TextField
           label="새 비밀번호 확인"
           type="password"
+          id="confirm-password"
+          name="confirm-password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required

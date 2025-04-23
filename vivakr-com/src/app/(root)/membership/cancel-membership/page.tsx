@@ -107,6 +107,7 @@ export default function CancelMemberShipPage() {
                 {...field}
                 error={!!errors.password}
                 id="password"
+                name='password'
                 type={showPassword ? 'text' : 'password'}
                 sx={{ width: '400px' }}
                 endAdornment={

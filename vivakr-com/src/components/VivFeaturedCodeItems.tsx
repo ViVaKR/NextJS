@@ -12,11 +12,6 @@ interface FeaturedCodeItemsProps {
     categories: ICategory[];
 }
 
-async function getCategory() {
-    const categories = await fetchCategories();
-    return categories as ICategory[];
-}
-
 export default function VivFeaturedCodeItems({ codes, categories }: FeaturedCodeItemsProps) {
     // 카테고리 배열을 ID 기반의 Map으로 변환 (조회 성능 향상)
     // categories prop이 변경될 때만 다시 계산됨

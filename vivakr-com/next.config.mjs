@@ -1,7 +1,7 @@
 import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm';           // GFM 지원
-import remarkRehype from 'remark-rehype';     // remark -> rehype 변환
-import rehypeStringify from 'rehype-stringify'; // HTML 출력
+// import remarkGfm from 'remark-gfm';           // GFM 지원
+// import remarkRehype from 'remark-rehype';     // remark -> rehype 변환
+// import rehypeStringify from 'rehype-stringify'; // HTML 출력
 
 /** @type {import('next').NextConfig} */
 
@@ -48,9 +48,23 @@ const nextConfig = {
         'http://vivakr.com',
         'https://kimbumjun.com',
         'https://vivabm.com',
+        'https://bm.vivabm.com',
+        'https://kimbumjun.com',
+        'https://kimbumjun.co.kr',
+        'https://writer.or.kr',
+        'https://text.or.kr',
+        'https://buddham.co.kr',
+        'https://code.vivabm.com',
+        'https://code.vivakr.com',
+        'https://code.kimbumjun.com',
+        'https://code.kimbumjun.co.kr',
+        'https://code.writer.or.kr',
+        'https://code.text.or.kr',
+        'https://api.vivakr.com',
         'http://localhost:47960',
         'http://localhost:3000', // 로컬 풀 URL
         'http://192.168.0.8:3000',
+        'http://127.0.0.1:3000',
         'localhost',            // 기본
         '127.0.0.1',
         '::1',                 // IPv6
@@ -60,10 +74,10 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-    options: {
-        remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
-        rehypePlugins: [rehypeStringify],
-    },
+    // options: {
+    //     remarkPlugins: [remarkGfm, remarkRehype], // remark-parse 대신 remark-gfm 사용
+    //     rehypePlugins: [rehypeStringify],
+    // },
 });
 
 // export default nextConfig;

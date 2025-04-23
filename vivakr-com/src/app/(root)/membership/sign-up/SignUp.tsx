@@ -178,9 +178,11 @@ export default function SignUpPage() {
               render={({ field }) => (
                 <FilledInput
                   {...field}
+
                   error={!!errors.email}
                   sx={{ color: 'white' }}
-                  id="email" />
+                  id="email"
+                  name="email" />
               )}
             />
             <FormHelperText className='!text-red-400'>{errors.email?.message}</FormHelperText>
@@ -197,7 +199,7 @@ export default function SignUpPage() {
                 <FilledInput {...field}
                   error={!!errors.fullName}
                   sx={{ color: 'white' }}
-                  id="fullName" aria-describedby="fullName-helper-text" />
+                  id="fullName" name="fullName" aria-describedby="fullName-helper-text" />
               )}
             />
             <FormHelperText className='!text-red-400'>{errors.fullName?.message}</FormHelperText>
@@ -214,6 +216,7 @@ export default function SignUpPage() {
                 <FilledInput
                   {...field}
                   id="password"
+                  name='password'
                   error={!!errors.password}
                   sx={{ color: 'white' }}
                   type={showPassword ? 'text' : 'password'}
@@ -245,6 +248,7 @@ export default function SignUpPage() {
                 <FilledInput
                   {...field}
                   id="passwordConfirm"
+                  name="passwordConfirm"
                   sx={{ color: 'white' }}
                   error={!!errors.passwordConfirm}
                   type={showPassword ? 'text' : 'password'}
