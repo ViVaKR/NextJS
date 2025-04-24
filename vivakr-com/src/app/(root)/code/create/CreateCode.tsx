@@ -2,10 +2,10 @@
 'use client'
 import { CodeData } from '@/types/code-form-data';
 import { getTokenAsync, fetchUserDetailAsync } from '@/services/auth.service';
-import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, ThemeProvider, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, TextFieldProps, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import FileManager from '@/components/file-manager/FileManager';
@@ -17,14 +17,16 @@ import { postCodesAsync } from '@/lib/fetchCodes';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import ScrollButtons from '@/components/ScrollButtons';
+import { styled } from '@mui/system';
+import IPAddress from '../../ip-address/ExGridControls';
 
 export default function CreateCodePage() {
 
     const [rows, setRows] = useState(20);
     const snackbar = useSnackbar();
     const startValue = 5;
-    const stepValue = 5;
-    const numberOfButtons = 20;
+    const stepValue = 10;
+    const numberOfButtons = 15;
     const router = useRouter();
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -32,6 +34,7 @@ export default function CreateCodePage() {
     const [error, setError] = useState<string | null>();
 
     useEffect(() => {
+        setError('');
         const fetchAndSortCategories = async () => {
             try {
                 const result = await fetchCategories();
@@ -40,13 +43,10 @@ export default function CreateCodePage() {
                 );
                 setCategories(sorted);
             } catch (err: any) {
-                // snackbar.showSnackbar(err.message);
                 setError(err.message);
             }
         };
         fetchAndSortCategories();
-
-
     }, []);
 
     function handleRowsClick(rowsCount: number) {
@@ -62,7 +62,6 @@ export default function CreateCodePage() {
         )
     });
 
-
     const {
         control,
         handleSubmit,
@@ -70,6 +69,7 @@ export default function CreateCodePage() {
         watch,
         reset,
         setValue,
+        getValues
     } = useForm<CodeData>({
         defaultValues: {
             id: 0,
@@ -114,9 +114,6 @@ export default function CreateCodePage() {
                     router.push('/membership/confirm-email')
                     return;
                 }
-
-                const ipInfo = await getIpInfomations();
-                setValue('myIp', ipInfo.ip)
                 setValue('userId', user.id, { shouldDirty: true });
                 setValue('userName', user.fullName, { shouldDirty: true });
                 setIsLoadingUser(false);
@@ -130,7 +127,14 @@ export default function CreateCodePage() {
         getUserDetail();
     }, [router, setValue]);
 
-    // 추가
+    useEffect(() => {
+        const getUserIp = async () => {
+            const ipInfo = await getIpInfomations();
+            setValue('myIp', ipInfo.ip)
+        }
+        getUserIp();
+    }, [setValue]);
+
     const onSubmit = async (data: CodeData) => {
         try {
             const response = await postCodesAsync(data);
@@ -147,18 +151,50 @@ export default function CreateCodePage() {
         }
     };
 
-    const theme = createTheme({
-        typography: {
-            fontFamily: [
-                'Menlo',
-                '"Apple Color Emoji"',
-                '"Segoe UI Emoji"',
-                '"Segoe UI Symbol"',
-            ].join(','),
-            fontSize: 24
-        }
-    });
+    // const theme = createTheme({
+    //     typography: {
+    //         fontFamily: [
+    //             'Menlo',
+    //             '"Apple Color Emoji"',
+    //             '"Segoe UI Emoji"',
+    //             '"Segoe UI Symbol"',
+    //         ].join(','),
+    //         fontSize: 18,
+    //     },
+    // });
 
+    const CodeTextField = styled((props: TextFieldProps) => (
+        <TextField {...props} />))(({ theme }) => ({
+            '& .MuiFilledInput-root': {
+                fontFamily: [
+                    'Menlo'
+                ],
+                fontSize: 20,
+                lineHeight: 1.4,
+                color: '#0F435B'
+            },
+
+        }));
+
+    // const CssTextField = styled(TextField)({
+    //     '& label.Mui-focused': {
+    //         color: '#A0AAB4',
+    //     },
+    //     '& .MuiInput-underline:after': {
+    //         borderBottomColor: '#B2BAC2',
+    //     },
+    //     '& .MuiOutlinedInput-root': {
+    //         '& fieldset': {
+    //             borderColor: '#E0E3E7',
+    //         },
+    //         '&:hover fieldset': {
+    //             borderColor: '#B2BAC2',
+    //         },
+    //         '&.Mui-focused fieldset': {
+    //             borderColor: '#6F7E8C',
+    //         },
+    //     },
+    // });
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
 
@@ -184,137 +220,142 @@ export default function CreateCodePage() {
     }
 
     return (
+        <>
+            <Box
+                component="section" // Box 를 section 으로 설정하여 ref 연결가능
+                ref={scrollContainerRef}
+                sx={{
+                    px: 2,
+                    width: '100%',
+                    display: 'flex',
+                    height: '100vh',
+                    overflow: 'auto',
+                    flexDirection: 'column',
+                    gap: 1,
+                    position: 'relative'
+                }}>
+                {error && (
+                    <div className='text-center text-red-400'>{error}</div>
+                )}
 
-        <Box
-            component="section" // Box 를 section 으로 설정하여 ref 연결가능
-            ref={scrollContainerRef}
-            sx={{
-                px: 2,
-                width: '100%',
-                display: 'flex',
-                height: '100vh',
-                overflow: 'auto',
-                flexDirection: 'column',
-                gap: 1,
-                position: 'relative'
-            }}>
-            {error && (
-                <div className='text-center text-red-400'>{error}</div>
-            )}
 
-            <div className='flex justify-between px-4'>
-                <Typography
+                <div className='flex justify-between px-4 text-slate-400'>
+                    <Typography
+                        sx={{ textAlign: 'end' }}>
+                        {watch('myIp')}
+                    </Typography>
+                    <Typography
 
-                    sx={{ textAlign: 'end' }}>
-                    {watch('userName')}
-                </Typography>
-                <Typography
-                    sx={{ textAlign: 'end' }}>
-                    {(new Date()).toLocaleDateString()}
-                </Typography>
-            </div>
-            <form
-                autoComplete='off'
-                className='flex flex-col gap-5 w-full'
-                onSubmit={handleSubmit(onSubmit)}
-            >
-                <Grid container sx={{ width: '100%' }} columns={16} spacing={2}>
-                    <Grid size={11}>
-                        {/* 제목 */}
-                        <Controller
-                            name="title"
-                            control={control}
-                            rules={{ required: '제목을 입력해주세요.' }}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    id='title'
-                                    name='title'
-                                    label="제목"
-                                    variant="filled"
-                                    error={!!errors.title}
-                                    sx={{ my: '0px' }}
-                                    color='success'
-                                    helperText={errors.title?.message}
-                                    fullWidth
-                                />
-                            )}
-                        />
-                    </Grid>
+                        sx={{ textAlign: 'center' }}>
+                        {watch('userName')}
+                    </Typography>
 
-                    <Grid tabIndex={-1} size={5}>
-                        {/* 카테고리 */}
-                        <Controller
-                            name="categoryId"
-                            control={control}
-                            rules={{ required: "카테고리를 선택하여 주세요." }}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    select
-                                    id='categoryId'
-                                    name='categoryId'
-                                    label="카테고리"
-                                    value={field.value || ""}
-                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                    variant="filled"
-                                    color="success"
-                                    fullWidth
-                                    tabIndex={-1}
-                                    slotProps={{ select: { tabIndex: -1 } }}
-                                    error={!!errors.categoryId}
-                                    helperText={errors.categoryId?.message}
-                                >
-                                    {[...categories].map((category, index) => (
-                                        <MenuItem key={index} value={category.id}>
-                                            <span className="flex items-center gap-2">
-                                                <GpsFixedOutlinedIcon />
-                                                {category.name}
-                                            </span>
-
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            )}
-                        />
-                    </Grid>
-                </Grid>
-
-                {/* 부제목 */}
-                <Controller
-                    name="subTitle"
-                    control={control}
-                    rules={{ required: '부제목을 입력해주세요.' }}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            id='subTitle'
-                            name='subTitle'
-                            label="부 제목"
-                            color='success'
-                            variant='filled'
-                            error={!!errors.subTitle}
-                            helperText={errors.subTitle?.message}
-                            fullWidth
-                        />
-                    )}
-                />
-
-                <div tabIndex={-1}
-                    className='w-full p-0 flex justify-center items-center overflow-x-scroll'>
-                    <ButtonGroup size='small' sx={{ mx: 'auto' }} color='success'>
-                        {genButtons}
-                    </ButtonGroup>
+                    <Typography
+                        sx={{ textAlign: 'end' }}>
+                        {(new Date()).toLocaleDateString()}
+                    </Typography>
                 </div>
+                <form
+                    autoComplete='off'
+                    className='flex flex-col gap-5 w-full'
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    <Grid container sx={{ width: '100%' }} columns={16} spacing={2}>
+                        <Grid size={11}>
+                            {/* 제목 */}
+                            <Controller
+                                name="title"
+                                control={control}
+                                rules={{ required: '제목을 입력해주세요.' }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        id='title'
+                                        name='title'
+                                        label="제목"
+                                        variant="filled"
+                                        error={!!errors.title}
+                                        sx={{ my: '0px' }}
+                                        color='success'
+                                        helperText={errors.title?.message}
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </Grid>
 
-                {/* 노트, note */}
-                <Controller
-                    name='note'
-                    control={control}
-                    rules={{ required: '노트를 입력해주세요.' }}
-                    render={({ field }) => (
-                        <ThemeProvider theme={theme}>
+                        <Grid tabIndex={-1} size={5}>
+                            {/* 카테고리 */}
+                            <Controller
+                                name="categoryId"
+                                control={control}
+                                rules={{ required: "카테고리를 선택하여 주세요." }}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        select
+                                        id='categoryId'
+                                        name='categoryId'
+                                        label="카테고리"
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        variant="filled"
+                                        color="success"
+                                        fullWidth
+                                        tabIndex={-1}
+                                        slotProps={{ select: { tabIndex: -1 } }}
+                                        error={!!errors.categoryId}
+                                        helperText={errors.categoryId?.message}
+                                    >
+                                        {[...categories].map((category, index) => (
+                                            <MenuItem key={index} value={category.id}>
+                                                <span className="flex items-center gap-2">
+                                                    <GpsFixedOutlinedIcon />
+                                                    {category.name}
+                                                </span>
+
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    {/* 부제목 */}
+                    <Controller
+                        name="subTitle"
+                        control={control}
+                        rules={{ required: '부제목을 입력해주세요.' }}
+                        render={({ field }) => (
                             <TextField
+                                {...field}
+                                id='subTitle'
+                                name='subTitle'
+                                label="부 제목"
+                                color='success'
+                                variant='filled'
+                                error={!!errors.subTitle}
+                                helperText={errors.subTitle?.message}
+                                fullWidth
+                            />
+                        )}
+                    />
+
+                    <div tabIndex={-1}
+                        className='w-full p-0 flex justify-center items-center overflow-x-scroll'>
+                        <ButtonGroup size='small' sx={{ mx: 'auto' }} color='success'>
+                            {genButtons}
+                        </ButtonGroup>
+                    </div>
+
+                    {/* 노트, note */}
+                    <Controller
+                        name='note'
+                        control={control}
+                        rules={{ required: '노트를 입력해주세요.' }}
+                        render={({ field }) => (
+                            <CodeTextField
                                 {...field}
                                 id='note'
                                 name='note'
@@ -325,20 +366,18 @@ export default function CreateCodePage() {
                                 helperText={errors.note?.message}
                                 color='success'
                                 multiline
+                                onKeyDown={handleKeyDown}
                             />
-                        </ThemeProvider>
-                    )}
-                />
+                        )}
+                    />
 
-                {/* 코드, content */}
-                <Controller
-                    name='content'
-                    control={control}
-                    rules={{ required: '코드를 입력해주세요.' }}
-                    render={({ field }) => (
-
-                        <ThemeProvider theme={theme}>
-                            <TextField
+                    {/* 코드, content */}
+                    <Controller
+                        name='content'
+                        control={control}
+                        rules={{ required: '코드를 입력해주세요.' }}
+                        render={({ field }) => (
+                            <CodeTextField
                                 {...field}
                                 id='content'
                                 name='content'
@@ -351,18 +390,16 @@ export default function CreateCodePage() {
                                 multiline
                                 onKeyDown={handleKeyDown}
                             />
-                        </ThemeProvider>
-                    )}
-                />
+                        )}
+                    />
 
-                {/* 보조코드, subContent */}
-                <Controller
-                    name='subContent'
-                    control={control}
-                    rules={{ required: '코드를 입력해주세요.' }}
-                    render={({ field }) => (
-                        <ThemeProvider theme={theme}>
-                            <TextField
+                    {/* 보조코드, subContent */}
+                    <Controller
+                        name='subContent'
+                        control={control}
+                        rules={{ required: '코드를 입력해주세요.' }}
+                        render={({ field }) => (
+                            <CodeTextField
                                 {...field}
                                 id='subContent'
                                 name='subContent'
@@ -375,90 +412,90 @@ export default function CreateCodePage() {
                                 multiline
                                 onKeyDown={handleKeyDown}
                             />
-                        </ThemeProvider>
-                    )}
-                />
+                        )}
+                    />
 
-                {/* 마크다운, markdown */}
-                <Controller
-                    name='markdown'
-                    control={control}
-                    rules={{ required: '코드를 입력해주세요.' }}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            id='markdown'
-                            name='markdown'
-                            variant='filled'
-                            rows={rows}
-                            label="마크다운"
-                            error={!!errors.subContent}
-                            helperText={errors.subContent?.message}
-                            color='success'
-                            multiline
-                            onKeyDown={handleKeyDown}
-                        />
-                    )}
-                />
+                    {/* 마크다운, markdown */}
+                    <Controller
+                        name='markdown'
+                        control={control}
+                        rules={{ required: '코드를 입력해주세요.' }}
+                        render={({ field }) => (
+                            <CodeTextField
+                                {...field}
+                                id='markdown'
+                                name='markdown'
+                                variant='filled'
+                                rows={rows}
+                                label="마크다운"
+                                error={!!errors.subContent}
+                                helperText={errors.subContent?.message}
+                                color='success'
+                                multiline
+                                onKeyDown={handleKeyDown}
+                            />
+                        )}
+                    />
 
-                <div className='flex flex-col items-center justify-start'>
-                    <p>
-                        <strong>이미지</strong> 정상 업로드 시 미리보기와 결과 첨부된 이미지가 함께 표시됩니다.
-                    </p>
-                    <IconButton color="secondary">
-                        <AddAPhotoOutlinedIcon />
-                    </IconButton>
-                </div>
-
-                {/* 이미지 드레그앤드롭 */}
-                <FileManager
-                    title='코드관련 이미지 (drag & drop)'
-                    choice={1}
-                    onAttachImageFinished={(dbPath: string) => {
-                        setValue('attachImageName', dbPath, { shouldDirty: true });
-                    }}
-                />
-
-                {/* 파일 업로드 */}
-                <FileUploader
-                    title="압축 파일 업로드 (최대 30MB)"
-                    onUploadComplete={(filePath: string) => {
-                        setValue('attachFileName', filePath, { shouldDirty: true });
-                    }}
-                />
-
-                {watch('attachFileName')}
-
-                {/* watch로 값이 잘 들어갔는지 확인 */}
-                {watch('attachImageName') && (
-                    <div style={{ marginTop: '10px', border: '1px solid lightblue', padding: '5px' }}>
-                        <Typography variant="caption" display="block" gutterBottom>
-                            첨부된 이미지 경로 (watch 확인용):
-                        </Typography>
-                        <Typography variant="body2" style={{ wordBreak: 'break-all' }}>
-                            {watch('attachImageName')}
-                        </Typography>
-
+                    <div className='flex flex-col items-center justify-start'>
+                        <p>
+                            <strong>이미지</strong> 정상 업로드 시 미리보기와 결과 첨부된 이미지가 함께 표시됩니다.
+                        </p>
+                        <IconButton color="secondary">
+                            <AddAPhotoOutlinedIcon />
+                        </IconButton>
                     </div>
-                )}
 
-                {/* 버튼 그룹 */}
-                <div className='w-full flex justify-center'>
-                    <Button
-                        disabled={isSubmitting}
-                        className='px-4 py-2
+                    {/* 이미지 드레그앤드롭 */}
+                    <FileManager
+                        title='코드관련 이미지 (drag & drop)'
+                        choice={1}
+                        onAttachImageFinished={(dbPath: string) => {
+                            setValue('attachImageName', dbPath, { shouldDirty: true });
+                        }}
+                    />
+
+                    {/* 파일 업로드 */}
+                    <FileUploader
+                        title="압축 파일 업로드 (최대 30MB)"
+                        onUploadComplete={(filePath: string) => {
+                            setValue('attachFileName', filePath, { shouldDirty: true });
+                        }}
+                    />
+
+                    {watch('attachFileName')}
+
+                    {/* watch로 값이 잘 들어갔는지 확인 */}
+                    {watch('attachImageName') && (
+                        <div style={{ marginTop: '10px', border: '1px solid lightblue', padding: '5px' }}>
+                            <Typography variant="caption" display="block" gutterBottom>
+                                첨부된 이미지 경로 (watch 확인용):
+                            </Typography>
+                            <Typography variant="body2" style={{ wordBreak: 'break-all' }}>
+                                {watch('attachImageName')}
+                            </Typography>
+
+                        </div>
+                    )}
+
+                    {/* 버튼 그룹 */}
+                    <div className='w-full flex justify-center'>
+                        <Button
+                            disabled={isSubmitting}
+                            className='px-4 py-2
                         cursor-pointer
                         hover:!text-white
                         !border
                         !my-8 hover:!bg-red-400'
-                        type="submit">
-                        {isSubmitting ? '저장 중' : '저장'}
-                    </Button>
+                            type="submit">
+                            {isSubmitting ? '저장 중' : '저장'}
+                        </Button>
 
-                </div>
-            </form >
-            <ScrollButtons scrollableRef={scrollContainerRef} />
-            <div className='min-h-screen w-full'></div>
-        </Box >
+                    </div>
+                </form >
+                <ScrollButtons scrollableRef={scrollContainerRef} />
+                <div className='min-h-screen w-full'></div>
+            </Box >
+        </>
     );
 }

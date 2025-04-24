@@ -20,9 +20,9 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   const [codes, setCodes] = useState<ICode[]>(
     [...data].sort((a, b) => b.id - a.id)
   );
-  const [id, setId] = useState<string | null | undefined>(undefined);
+  // const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  const [admin, setAdmin] = useState(false);
+  // const [admin, setAdmin] = useState(false);
   const time = 1;
 
   useEffect(() => {
@@ -35,9 +35,9 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
         const sortedCodes = [...data].sort((a, b) => b.id - a.id);
         setCodes(sortedCodes);
 
-        const isAdmin = await isAdminAsync();
-        setAdmin(isAdmin);
-        if (userId) setId(userId);
+        // const isAdmin = await isAdminAsync();
+        // setAdmin(isAdmin);
+        // if (userId) setId(userId);
 
       } catch (error: any) {
         console.error('카테고리 데이터를 가져오는 중 오류 발생:', error);

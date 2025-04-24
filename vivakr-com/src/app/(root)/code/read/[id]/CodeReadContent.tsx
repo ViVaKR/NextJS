@@ -129,7 +129,9 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                 {code.content && (
                     <div className={contentStyles}>
                         <VivTitle title="코드" fontColor="text-slate-400" />
-                        <Code code={code.content} lang={getLanguageName(code.categoryId)} theme={codeTheme} />
+                        <Code code={code.content}
+                            lang={getLanguageName(code.categoryId)}
+                        />
                         <SectionFooter>
                             <span className="text-sky-700 hover:text-red-400">
                                 <VivCopyClipboard content={code.content} title="코드" />
@@ -140,11 +142,12 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
 
                 {code.subContent && (
                     <div className={contentStyles}>
-                        <VivTitle title="보조코드" fontColor="text-slate-400" />
-                        <Code code={code.subContent} lang={getLanguageName(code.categoryId)} theme={codeTheme} />
+                        <VivTitle title="연관코드" fontColor="text-slate-400" />
+                        <Code code={code.subContent}
+                            lang={getLanguageName(code.categoryId)} />
                         <SectionFooter>
                             <span className="text-sky-700 hover:text-red-400">
-                                <VivCopyClipboard content={code.subContent} title="보조코드" />
+                                <VivCopyClipboard content={code.subContent} title="연관코드" />
                             </span>
                         </SectionFooter>
                     </div>

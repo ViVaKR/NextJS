@@ -21,12 +21,12 @@ export default async function Code({
 
   const html = await codeToHtml(code, {
     lang: lang ?? 'typescript',
-    theme,
+    theme: theme,
   });
 
   return (
     <div
-      className={`${fira.className} text-sm max-md:hidden min-w-md`}
+      className={`${fira.className} text-sm min-w-md`}
       dangerouslySetInnerHTML={{ __html: html }}>
     </div>
   );

@@ -191,9 +191,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           };
 
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          // document.cookie = `user=${data.token}; path=/; max-age=${60 * 60 * 24}`;
           setAuthCookie(data.token)
-          setUser(updatedUser); // 상태 업데이트 -> UI 즉시 반영!
+          setUser(updatedUser);
           setLoading(false);
           return true;
 
@@ -210,24 +209,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }, [fetchUserDetail]); // fetchUserDetail 의존성 추가
 
-  // 로그아웃 함수
+  // * 로그아웃 함수
   const logout = useCallback(() => {
 
     // 순서 중요: 상태 업데이트 전에 로컬/세션 정리
     localStorage.removeItem('user');
     localStorage.clear();
-    // 쿠키 삭제 제거
-    // document.cookie = 'user=; path=/; max-age=0';
+
+    // 쿠키삭제
     removeAuthCookie();
-
     setUser(null);
-
     // next-auth 로그아웃 (Google 등) + 커스텀 로그아웃 후 리다이렉션
     signOut({ callbackUrl: "/" });
   }, []);
 
-
-  // 사용자 목록 가져오기 (관리자용)
+  // * 사용자 목록 가져오기 (관리자용)
   const fetchUsers = useCallback(async () => {
     const currentToken: string | null = await getTokenAsync();
     if (!currentToken)
@@ -259,7 +255,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       throw new Error(`(AuthContext 268) catch error: ${err}`)
     }
-  }, []); // user 상태에 의존
+  }, []);
 
   const isAdmin = useMemo((): boolean => {
     return !!user?.roles?.includes('Admin');
@@ -280,8 +276,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const interval = setInterval(async () => {
       console.log("(AutContext 289) Checked: " + (new Date()).toLocaleString());
       const token = await getTokenAsync();
-
-
       if (!token) {
         window.location.href = '/membership/sign-in';
       }

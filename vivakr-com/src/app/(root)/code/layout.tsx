@@ -24,7 +24,7 @@ export default async function Layout({
       <ClientLayout codes={codes} categories={categories}>
         {children}
       </ClientLayout>
-      <div></div>
+      <div className='h-screen'></div>
     </Suspense>
   );
 }

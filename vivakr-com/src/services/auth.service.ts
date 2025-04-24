@@ -29,8 +29,18 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
   refreshPromise = new Promise(async (resolve) => {
     try {
       const userData = localStorage.getItem(userToken);
-      const oldToken = userData ? JSON.parse(userData).token : '';
+      if (!userData) {
+        localStorage.clear();
+        removeAuthCookie();
+        window.location.href = '/membership/sign-in';
+      }
 
+      const oldToken = userData ? JSON.parse(userData).token : '';
+      if (oldToken == '') {
+        localStorage.clear();
+        removeAuthCookie();
+        window.location.href = '/membership/sign-in';
+      }
       const response = await fetch(`${apiUrl}/api/account/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,8 +50,14 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
           email,
         })
       });
+
+      if (!response.ok) {
+        localStorage.clear();
+        removeAuthCookie();
+        window.location.href = '/membership/sign-in';
+      }
       const result: IAuthResponse = await response.json();
-      if (response.ok && result.isSuccess) {
+      if (result.isSuccess) {
         const newUserData = {
           token: result.token,
           refreshToken: result.refreshToken,
@@ -51,12 +67,13 @@ export const refreshTokenAsync = async (refreshTokenValue: string, email: string
         setAuthCookie(result.token!);
         resolve(result.token!);
       } else {
-        const retryResult = await refreshTokenAsync(refreshTokenValue, email);
-        resolve(retryResult);
+        localStorage.clear();
+        removeAuthCookie();
+        window.location.href = '/membership/sign-in';
+
       }
     } catch (err: any) {
       console.error('(auth.service catch 60) 토큰갱신 실패:', err);
-      localStorage.removeItem(userToken);
       localStorage.clear();
       window.location.href = '/membership/sign-in';
       resolve(null);

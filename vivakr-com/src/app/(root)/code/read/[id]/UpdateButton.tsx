@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
 
 export default function UpdateButton({ codeId, userId }: { codeId: number, userId: string }) {
-    const [canDelete, loading] = useAuthCheck(userId);
+    const [canEdit, loading] = useAuthCheck(userId);
 
     if (loading) {
         return (
@@ -13,7 +13,7 @@ export default function UpdateButton({ codeId, userId }: { codeId: number, userI
             </Box>
         );
     }
-    if (!canDelete) return null;
+    if (!canEdit) return null;
     return (
         <div>
             <Link

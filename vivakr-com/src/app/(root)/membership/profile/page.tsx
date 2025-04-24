@@ -58,9 +58,9 @@ export default function Page() {
       email: user.email,
       newUserName: name
     }
-    const token = await getTokenAsync();
 
     try {
+      const token = await getTokenAsync();
       const response = await fetch(url, {
         method: 'PUT',
         headers: {

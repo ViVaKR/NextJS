@@ -12,7 +12,6 @@ import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBullet
 import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutlined';
 import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
-import { useAuth } from '@/lib/AuthContext';
 import { userDetailAsync } from '@/services/auth.service';
 import CreateIcon from '@mui/icons-material/Create';
 
@@ -33,20 +32,25 @@ export default function ClientLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 여부 확인
   const pathname = usePathname();
-  const [admin, setAdmin] = useState<boolean>();
+  // const [admin, setAdmin] = useState<boolean>();
   const router = useRouter();
   const [fullName, setFullName] = useState<string>();
-  const auth = useAuth();
+  const [confirmed, setConfirmed] = useState<boolean | null>(false);
+  // const auth = useAuth();
 
   useEffect(() => {
     const getUserDetail = async () => {
-      const detail = await userDetailAsync();
+      const detail: IUserDetail | null = await userDetailAsync();
+
       setFullName(detail?.fullName);
-      setAdmin(detail?.roles.some((role) => role.toLowerCase() === 'admin'));
+      setConfirmed(detail?.emailConfirmed ?? false);
+
+
+      // setAdmin(detail?.roles.some((role) => role.toLowerCase() === 'admin'));
     }
     getUserDetail();
 
-  }, [auth, router]);
+  }, [router]);
 
   useEffect(() => {
     try {
@@ -134,17 +138,17 @@ export default function ClientLayout({
           </Tooltip>
         </Link>
 
-        {admin ? (
+        {fullName ? (
           <Link
             href="/code/create"
             id='code-create'
             className="hover:text-red-400 shrink text-slate-400">
-            <Tooltip title={`${fullName}님! 글쓰기`} arrow>
+            <Tooltip title={`${fullName}님! 글쓰기 (이메일 인증 후 필요)`} arrow>
               <EditNoteOutlinedIcon />
             </Tooltip>
           </Link>
         ) : (
-          <Tooltip title='로그인 후 글쓰기' arrow>
+          <Tooltip title='회원가입 및 이메일 확인 후 글쓰기 가능합니다.' arrow>
             <Link
               href={'/membership/sign-in'}
               id='membership-sign-in'
@@ -153,7 +157,6 @@ export default function ClientLayout({
             </Link>
           </Tooltip>
         )}
-
 
       </div >
 

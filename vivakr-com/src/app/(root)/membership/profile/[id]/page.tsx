@@ -1,5 +1,4 @@
 'use client';
-import FileManager from '@/components/file-manager/FileManager';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { useParams, useSearchParams } from 'next/navigation';
 
@@ -11,7 +10,6 @@ export default function UserProfile() {
   const user: IUserDetailDTO | null = userQuery
     ? JSON.parse(decodeURIComponent(userQuery))
     : null;
-
   return (
     <div>
       <h1>UserProfile</h1>
