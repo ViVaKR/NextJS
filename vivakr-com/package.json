@@ -23,6 +23,7 @@
     "@mui/styled-engine-sc": "^7.0.2",
     "@mui/system": "^7.0.2",
     "@mui/utils": "^7.0.2",
+    "@mui/x-charts": "^8.1.0",
     "@mui/x-data-grid": "^8.0.0",
     "@next/mdx": "^15.3.1",
     "@prisma/client": "^6.6.0",

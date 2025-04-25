@@ -18,7 +18,6 @@ import { getIpInfomations } from '@/lib/fetchIpInfo';
 import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import ScrollButtons from '@/components/ScrollButtons';
 import { styled } from '@mui/system';
-import IPAddress from '../../ip-address/ExGridControls';
 
 export default function CreateCodePage() {
 

@@ -1,7 +1,7 @@
 'use client';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { Typography, Box, Tooltip } from '@mui/material';
+import { Typography, Box, Tooltip, Grid } from '@mui/material';
 import GavelIcon from '@mui/icons-material/Gavel';
 import CookieIcon from '@mui/icons-material/Cookie';
 import { useState } from 'react';
@@ -10,10 +10,18 @@ import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';
 import Link from 'next/link';
 import VivDailogBox from './VivDialogBox';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import { Stack } from '@mui/system';
+import { getSites } from '@/data/site-list';
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import VivBarChart from './VivBarChart';
+// import { red } from '@mui/material/colors';
 
 export default function VivBottomNav() {
     const [value, setValue] = useState('');
     const router = useRouter();
+    const sites = getSites();
+    // const redColor = red[500];
 
     const handleChange = (e: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
@@ -22,7 +30,16 @@ export default function VivBottomNav() {
     const handleClick = (url: string) => {
         router.push(url);
     };
-
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: (theme).palette.text.secondary,
+        ...theme.applyStyles('dark', {
+            backgroundColor: '#1A2027',
+        }),
+    }));
     return (
         <Box component="footer"
             sx={{
@@ -137,9 +154,24 @@ export default function VivBottomNav() {
                         </span>
                     </Tooltip>
                 </Link>
-
             </Typography>
+
+            <Grid container
+                sx={{ margin: 4 }}
+                spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                {sites.map((site, index) => (
+                    <Grid key={index} size={{ xs: 2, sm: 4, md: 3, lg: 2 }}>
+                        <Item sx={{ borderRadius: '50%', color: '#00838f' }}>
+                            <Link href={`https:\/\/${site}`} target='_blank'>
+                                {site}
+                            </Link>
+                            {/* <Item>{site}</Item> */}
+                        </Item>
+                    </Grid>
+                ))}
+            </Grid>
+
+            <VivBarChart />
         </Box >
     );
 }
-// https://github.com/ViVaKR/NextJS/tree/main/vivakr-com

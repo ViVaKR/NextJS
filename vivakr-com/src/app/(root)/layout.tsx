@@ -8,6 +8,7 @@ import { SnackbarProvider } from '@/lib/SnackbarContext';
 import VivBottomNav from '@/components/VivBottom';
 import { Suspense } from 'react';
 import ClientSessionProvider from '@/components/ClientSessionProvider';
+import VivBarChart from '@/components/VivBarChart';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -43,7 +44,9 @@ export default function RootLayout({
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                 <nav><NavMenu /></nav>
                 <main className='grow-main'>{children}</main>
-                <footer className='bg-slate-200 xs:h-auto md:h-[248px]'><VivBottomNav /></footer>
+                <footer className='bg-slate-200 xs:h-auto md:h-[248px]'>
+                  <VivBottomNav />
+                </footer>
               </Suspense>
             </SnackbarProvider>
           </AuthProvider>
