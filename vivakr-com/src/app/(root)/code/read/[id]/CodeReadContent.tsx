@@ -9,43 +9,40 @@ import { Typography } from '@mui/material';
 import Code from '@/components/Code'; // 서버 컴포넌트 유지
 import DeleteButton from './DeleteButton'; // 클라이언트 컴포넌트로 분리
 import UpdateButton from './UpdateButton';
-import MarkdownIt from 'markdown-it';
-import Shiki from '@shikijs/markdown-it';
 import { Fira_Code } from 'next/font/google';
+import { getMarkdownParser } from '@/lib/markdown';
+
 const fira = Fira_Code({
     subsets: ['latin'],
     display: 'swap',
 });
 
 export default async function CodeReadContent({ params }: { params: Promise<{ id: string }> }) {
+
     const resolvedParams = await params;
     const id = Number(resolvedParams.id);
-    const code = await fetchCodeById(id);
 
-    const codeTheme = 'everforest-dark';
-    const lightTheme = 'github-light';
-
-    const md = MarkdownIt({
-        html: true,
-        linkify: true,
-        typographer: true,
-    }).use(await Shiki({
-        themes: { // 테마 정보 전달
-            light: lightTheme,
-            dark: codeTheme,
-        },
-        langs: [
-            'javascript', 'js', 'typescript', 'ts', 'jsx', 'tsx',
-            'css', 'html', 'json', 'yaml', 'markdown', 'md', 'bash', 'shell',
-        ]
-    }));
-
-    const noteHtml = code?.note ? md.render(code.note) : '';
-    const markdownHtml = code?.markdown ? md.render(code.markdown) : '';
-
-    if (!code) {
-        return <Typography>코드를 찾을 수 없습니다.</Typography>;
+    // --- 데이터 페칭 에러 핸들링 추가 ---
+    let code;
+    try {
+        code = await fetchCodeById(id);
+    } catch (error) {
+        console.error("Failed to fetch code:", error);
+        // 사용자에게 보여줄 에러 메시지나 특정 페이지로 리다이렉트 고려
+        return <Typography>코드를 불러오는 중 오류가 발생했습니다.</Typography>;
     }
+    // --- 끝 ---
+
+    if (!code)
+        return <Typography>코드를 찾을 수 없습니다.</Typography>;
+
+    // --- Shiki 초기화 로직 변경 ---
+    const md = await getMarkdownParser(); // 분리된 함수 호출
+
+    // 렌더링 전에 code.note와 code.markdown이 실제로 존재하는지 확인
+    const noteHtml = code?.note ? md.render(code.note) : '';
+    const markdownHtml = code?.markdown ? md.render(code?.markdown) : '';
+    // --- 끝 ---
 
     const proseStyles = [
         'prose',
@@ -60,7 +57,6 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
         'px-8',
         'w-full',
         'bg-gray-50',
-        // Shiki 테마와 어울리도록 prose 스타일 조정이 필요할 수 있음
         '[&>pre]:bg-transparent [&>pre]:p-0', // prose가 pre 태그에 넣는 배경/패딩 제거 (Shiki가 관리하도록)
     ].join(' ');
 
@@ -78,15 +74,16 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
         '[&>pre]:bg-transparent [&>pre]:p-0', // prose가 pre 태그에 넣는 배경/패딩 제거 (Shiki가 관리하도록)
     ].join(' ');
 
+    // markdownStyles에 fira 폰트 적용 방식 수정 (클래스 이름 직접 사용)
+    const markdownContainerStyles = [ // 클래스 이름 변경 (markdownStyles -> markdownContainerStyles)
+        'prose', 'prose-sm', 'lg:prose-base', 'max-w-none',
+        'mb-4', 'py-4', 'px-8', 'w-full', 'bg-gray-50',
+        '[&>pre]:bg-transparent [&>pre]:p-0',
+    ].join(' ');
+
     const contentStyles = [
-        'w-full',
-        'h-auto',
-        'border',
-        'border-slate-300',
-        'rounded-md',
-        'py-4',
-        'px-8',
-        'overflow-scroll',
+        'w-full', 'h-auto', 'border', 'border-slate-300', 'rounded-md',
+        'py-4', 'px-8', 'overflow-x-auto'
     ].join(' ');
 
     const SectionFooter = ({ children }: { children: React.ReactNode }) => (
@@ -114,10 +111,13 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
             </div>
 
             <div className="min-w-full flex flex-col gap-4">
-                {/* {html} */}
+                {/* Note 섹션  */}
                 {code.note && noteHtml && (
                     <div className={proseStyles}>
-                        <div className={markdownStyles} dangerouslySetInnerHTML={{ __html: noteHtml }} />
+                        {/* <div className={markdownStyles} dangerouslySetInnerHTML={{ __html: noteHtml }} /> */}
+                        {/* dangerouslySetInnerHTML 적용 수정 */}
+                        <div className={fira.className} dangerouslySetInnerHTML={{ __html: noteHtml }} />
+
                         <SectionFooter>
                             <span className="text-sky-700 hover:text-red-400">
                                 <VivCopyClipboard content={code.note} title="노트" />
@@ -126,6 +126,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                     </div>
                 )}
 
+                {/* 코드 섹션 */}
                 {code.content && (
                     <div className={contentStyles}>
                         <VivTitle title="코드" fontColor="text-slate-400" />
@@ -140,6 +141,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                     </div>
                 )}
 
+                {/* SubContent 섹션 */}
                 {code.subContent && (
                     <div className={contentStyles}>
                         <VivTitle title="연관코드" fontColor="text-slate-400" />
@@ -155,10 +157,11 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
 
                 {code.markdown && markdownHtml && (
                     <div className={proseStyles}>
-                        <div className={markdownHtml}>
+                        <div className={markdownContainerStyles}>
                             <VivTitle title="CONCLUSION" fontColor="text-slate-400" />
-                            <div className={`${fira.className}`} dangerouslySetInnerHTML={{ __html: markdownHtml }} />
-
+                            {/* <div className={`${fira.className}`} dangerouslySetInnerHTML={{ __html: markdownHtml }} /> */}
+                            {/* markdownHtml을 직접 렌더링 */}
+                            <div className={fira.className} dangerouslySetInnerHTML={{ __html: markdownHtml }} />
                             <SectionFooter>
                                 <span className="text-sky-700 hover:text-red-400">
                                     <VivCopyClipboard content={code.markdown} title="결론" />

@@ -73,6 +73,7 @@ export default function ConfirmEmailReplayPage() {
         className="border-1 px-4
                         py-2
                         text-slate-500
+                        cursor-pointer
                         hover:bg-yellow-300
                         hover:border-yellow-300
                         border-slate-400

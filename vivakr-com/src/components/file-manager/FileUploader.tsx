@@ -74,7 +74,7 @@ export default function FileUploader({ onUploadComplete, title = '파일 업로�
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
-                accept=".zip,.rar,.7z,.tar"
+            // accept=".zip,.rar,.7z,.tar,.pdf"
             />
             <Button
                 variant="contained"

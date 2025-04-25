@@ -150,18 +150,6 @@ export default function CreateCodePage() {
         }
     };
 
-    // const theme = createTheme({
-    //     typography: {
-    //         fontFamily: [
-    //             'Menlo',
-    //             '"Apple Color Emoji"',
-    //             '"Segoe UI Emoji"',
-    //             '"Segoe UI Symbol"',
-    //         ].join(','),
-    //         fontSize: 18,
-    //     },
-    // });
-
     const CodeTextField = styled((props: TextFieldProps) => (
         <TextField {...props} />))(({ theme }) => ({
             '& .MuiFilledInput-root': {
@@ -174,26 +162,6 @@ export default function CreateCodePage() {
             },
 
         }));
-
-    // const CssTextField = styled(TextField)({
-    //     '& label.Mui-focused': {
-    //         color: '#A0AAB4',
-    //     },
-    //     '& .MuiInput-underline:after': {
-    //         borderBottomColor: '#B2BAC2',
-    //     },
-    //     '& .MuiOutlinedInput-root': {
-    //         '& fieldset': {
-    //             borderColor: '#E0E3E7',
-    //         },
-    //         '&:hover fieldset': {
-    //             borderColor: '#B2BAC2',
-    //         },
-    //         '&.Mui-focused fieldset': {
-    //             borderColor: '#6F7E8C',
-    //         },
-    //     },
-    // });
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
 

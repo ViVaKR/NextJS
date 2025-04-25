@@ -20,7 +20,7 @@ export default function VivBarChart() {
             setAccounts(result);
         }
         getAccounts();
-    }, []);
+    }, [apiUrl]);
 
     useEffect(() => {
         const getCodes = async () => {
@@ -30,7 +30,7 @@ export default function VivBarChart() {
             setCodes(result);
         }
         getCodes();
-    }, []);
+    }, [apiUrl]);
 
     useEffect(() => {
         const getSubscribes = async () => {
@@ -40,7 +40,7 @@ export default function VivBarChart() {
             setSubscribe(result);
         }
         getSubscribes();
-    }, []);
+    }, [apiUrl]);
 
     useEffect(() => {
         const getSubscribes = async () => {
@@ -50,7 +50,7 @@ export default function VivBarChart() {
             setSubscribe(result);
         }
         getSubscribes();
-    }, []);
+    }, [apiUrl]);
 
     useEffect(() => {
         const getFiles = async () => {
@@ -60,7 +60,7 @@ export default function VivBarChart() {
             setFileCount(result);
         }
         getFiles();
-    }, []);
+    }, [apiUrl]);
 
     return (
         <div className='flex flex-row justify-around min-w-[480px]'>
