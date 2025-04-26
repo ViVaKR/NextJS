@@ -4,7 +4,7 @@ import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
 import { getTokenAsync, userDetailAsync } from "@/services/auth.service";
-import { Button, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,12 +14,13 @@ type confirmReplayData = {
 }
 
 export default function ConfirmEmailPage() {
-  const url = `https://vivakr.com/membership`;
+
   const [email, setEmail] = useState<string | null | undefined>();
   const { showSnackbar } = useSnackbar()
   const router = useRouter();
-  const [fullName, setFullName] = useState<string>('')
-
+  const [fullName, setFullName] = useState<string>('');
+  const [disable, setDisable] = useState<boolean>(false);
+  const [domainUrl, setDomainUrl] = useState('//'); // 도메인 초기값
   // 페이지 로드시 토큰 체크
   useEffect(() => {
     const getUserDetail = async () => {
@@ -40,11 +41,18 @@ export default function ConfirmEmailPage() {
     getUserDetail();
   }, [router])
 
+
+  useEffect(() => {
+    // 도메인 정보 클라이언트에서 설정
+    setDomainUrl(`${window.location.protocol}//${window.location.hostname}`);
+  }, []);
+
   const handleSendMail = async () => {
+    setDisable(true);
     try {
       const data: confirmReplayData = {
         email: email || '',
-        replayUrl: url
+        replayUrl: domainUrl
       }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/confirm-send-mail`, {
         method: 'POST',
@@ -60,6 +68,7 @@ export default function ConfirmEmailPage() {
         } catch (e) {
           errorMsg = `${errorMsg} - ${response.statusText}`
         }
+        setDisable(false);
         throw new Error(errorMsg);
       }
 
@@ -67,11 +76,15 @@ export default function ConfirmEmailPage() {
 
       if (result.isSuccess) {
         showSnackbar(`Success: ${result.message || '요청이 성공적으로 처리되었습니다.'}`); // 메시지 없을 경우 기본값 추가
+        router.push('/');
+
       } else {
         showSnackbar(`Failed: ${result.message || '알 수 없는 오류가 발생했습니다.'}`); // 메시지 없을 경우 기본값 추가
       }
+      setDisable(false);
 
     } catch (err: any) {
+      setDisable(false);
       showSnackbar(`오류발생 : ${err.message || err}`)
     }
   }
@@ -79,6 +92,7 @@ export default function ConfirmEmailPage() {
   return (
     <div className="w-full px-48 py-8 flex flex-col justify-center items-center gap-4">
       <VivTitle title="메일 인증" />
+      <p className="text-slate-400 text-xs"> {domainUrl} </p>
       <Typography sx={{
         textAlign: 'center',
         border: '4px solid lightblue',
@@ -86,8 +100,9 @@ export default function ConfirmEmailPage() {
         borderRadius: '1em',
         fontSize: '2em', color: 'lightblue',
       }}>
-        {fullName}님
+        {fullName} 님
       </Typography>
+
       <Typography sx={{
         textAlign: 'center',
         border: '4px solid lightblue',
@@ -100,6 +115,7 @@ export default function ConfirmEmailPage() {
       <Button
         onClick={() => handleSendMail()}
         variant='contained'
+        disabled={disable}
         color="secondary"
         sx={{
           ":hover": { backgroundColor: 'lightblue', color: 'white' },
@@ -107,7 +123,7 @@ export default function ConfirmEmailPage() {
           fontWeight: 'bold',
           fontSize: '1em'
         }}>
-        전송
+        {disable ? <CircularProgress size={24} color="inherit" /> : '메일전송'}
       </Button>
     </div>
   );

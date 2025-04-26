@@ -80,6 +80,7 @@ export default function SignUpPage() {
     formState: { errors, isValid, dirtyFields }, // isValid, dirtyFields 추가
     watch,
     getValues,
+    reset,
     trigger, // 필드 유효성 검사를 수동으로 트리거하기 위해 추가
   } = useForm<SignUpFormData>({
     defaultValues: {
@@ -90,6 +91,18 @@ export default function SignUpPage() {
     },
     mode: 'onTouched' // onTouched 또는 onChange로 설정해야 dirtyFields, isValid가 잘 동작함
   });
+
+
+  useEffect(() => {
+    const clearInputs = () => {
+      reset();
+
+    };
+    clearInputs();
+    // Edge가 늦게 자동 완성할 경우 대비
+    const timeout = setTimeout(clearInputs, 2000);
+    return () => clearTimeout(timeout);
+  }, [reset]);
 
   // 비밀번호 보이기/숨기기 핸들러
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
@@ -214,6 +227,7 @@ export default function SignUpPage() {
       {/* 폼 시작 */}
       {hideMembership && (
         <form
+          autoComplete='off'
           onSubmit={handleSubmit(onSubmit)}
           className="xl:w-1/2 2xl:w-1/3 lg:w-3/5 md:2/3
                     shadow-2xl border-lime-400 border-4
@@ -228,6 +242,7 @@ export default function SignUpPage() {
             <Controller
               name="email"
               control={control}
+
               rules={{
                 required: '이메일을 입력해주세요.',
                 pattern: { // 간단한 이메일 형식 검사 추가 (선택 사항)
@@ -239,6 +254,7 @@ export default function SignUpPage() {
                 <FilledInput
                   {...field}
                   error={!!errors.email}
+                  autoComplete='off'
                   sx={{ color: 'white' }}
                   id="email"
                   name="email" />
@@ -375,7 +391,7 @@ export default function SignUpPage() {
               type="button"
               variant="outlined"
               color="primary"
-              onClick={() => router.back()} // 취소 시 이전 페이지로 이동 등
+              onClick={() => reset()} // 취소 시 이전 페이지로 이동 등
               className="!text-lime-300 !border-lime-300 !font-bold hover:!bg-sky-500 hover:!text-white">
               취소
             </Button>

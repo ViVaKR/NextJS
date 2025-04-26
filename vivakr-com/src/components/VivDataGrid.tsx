@@ -1,14 +1,14 @@
 'use client';
 import { Box } from '@mui/material';
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import VivTitle from './VivTitle';
 
 interface VivDataGridProps<T> {
   title?: string;
   columns: GridColDef[];
-  initialData?: T[]; // 초기 데이터 (선택적)
-  onRowClick?: (params: GridRowParams) => void; // 행클릭 핸들러 추가
+  initialData?: T[];
+  onRowClick?: (params: GridRowParams) => void;
 }
 
 export default function VivDataGrid<T>({
@@ -25,17 +25,17 @@ export default function VivDataGrid<T>({
     const loadData = async () => {
       try {
         setIsLoading(true);
-        let fetchedData: T[] = initialData; // 초기 데이터 사용
+        let fetchedData: T[] = initialData;
         setData(fetchedData);
         setError(undefined);
       } catch (err: any) {
         setError(err?.message);
       } finally {
-        setIsLoading(false); // 즉시 로딩 해제
+        setIsLoading(false);
       }
     };
 
-    loadData(); // 한 번만 호출
+    loadData();
   }, [initialData]);
 
   return (
@@ -55,16 +55,22 @@ export default function VivDataGrid<T>({
           <DataGrid
             rows={data}
             columns={columns}
+            showToolbar
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 5,
+                  pageSize: 10,
                 },
               },
+              columns: {
+                columnVisibilityModel: {
+                  id: true
+                }
+              }
             }}
-            pageSizeOptions={[5, 25, 50, 100]}
+            pageSizeOptions={[5, 10, 15, 25, 50, 100]}
             disableRowSelectionOnClick
-            onRowClick={onRowClick} // DataGrid 에 onRowClick 연결
+            onRowClick={onRowClick}
             sx={{
               boxShadow: 2,
               border: 2,

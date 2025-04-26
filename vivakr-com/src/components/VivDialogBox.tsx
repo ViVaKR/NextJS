@@ -29,7 +29,9 @@ export default function VivDailogBox() {
     //? 구독신청
     const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         setDisable(true)
+
         // 이메일 유효성 검사
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError('유효한 이메일을 입력해주세요.');

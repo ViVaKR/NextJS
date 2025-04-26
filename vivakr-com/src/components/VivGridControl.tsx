@@ -8,7 +8,6 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
-import { isAdminAsync } from '@/services/auth.service';
 
 type codeDataProp = {
   data: ICode[],
@@ -20,9 +19,7 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   const [codes, setCodes] = useState<ICode[]>(
     [...data].sort((a, b) => b.id - a.id)
   );
-  // const [id, setId] = useState<string | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  // const [admin, setAdmin] = useState(false);
   const time = 1;
 
   useEffect(() => {
@@ -31,14 +28,8 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
         setIsLoading(true);
         const { categories } = await getCategories();
         setCategories(categories);
-
         const sortedCodes = [...data].sort((a, b) => b.id - a.id);
         setCodes(sortedCodes);
-
-        // const isAdmin = await isAdminAsync();
-        // setAdmin(isAdmin);
-        // if (userId) setId(userId);
-
       } catch (error: any) {
         console.error('카테고리 데이터를 가져오는 중 오류 발생:', error);
       } finally {

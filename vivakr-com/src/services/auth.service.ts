@@ -114,14 +114,14 @@ export const getTokenAsync = async (): Promise<string | null> => {
 }
 
 
-export const userDetailAsync = async (): Promise<IUserDetail | null> => {
+export const userDetailAsync = async (): Promise<IUserDetailDTO | null> => {
   const token = await getTokenAsync();
   if (!token) return null;
   try {
     const decoded: any = jwtDecode(token);
     const roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role].filter(Boolean);
 
-    const detail: IUserDetail = {
+    const detail: IUserDetailDTO = {
       id: decoded.nameid,
       fullName: decoded.name,
       email: decoded.email,
@@ -155,6 +155,7 @@ export const fetchUserDetailAsync = async (tkn: string): Promise<IUserDetailDTO 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        cache: 'no-cache'
       });
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);

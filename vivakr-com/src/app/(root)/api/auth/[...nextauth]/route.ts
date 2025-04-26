@@ -69,7 +69,10 @@ const handler = NextAuth({
         },
 
         async redirect({ url, baseUrl }) {
-            return `${baseUrl}`; // 홈으로 리다이렉트
+            if (url.startsWith('/')) {
+                return `${baseUrl}${url}`; // baseUrl = https://vivakr.com
+            }
+            return url; // 홈으로 리다이렉트
         },
     },
 });

@@ -52,7 +52,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         {
           method: 'GET',
           headers,
-        }
+          cache: 'no-cache'
+        },
+
       );
 
       if (!response.ok) return null;
@@ -82,10 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 id: detailedUser.id,
                 fullName: detailedUser.fullName,
                 email: detailedUser.email,
-                emailConfirmed: detailedUser.emailConfirmed,
-                phoneNumber: detailedUser.phoneNumber,
-                twoFactorEnabled: detailedUser.twoFactorEnabled,
-                avata: detailedUser.avata,
+                emailConfirmed: detailedUser.emailConfirmed ?? false,
+                phoneNumber: detailedUser.phoneNumber ?? '000-0000-0000',
+                twoFactorEnabled: detailedUser.twoFactorEnabled ?? false,
+                avata: detailedUser.avata ?? '',
               });
             }
           } else {
@@ -141,76 +143,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUserDetail, session, session?.user, status]); // logout 의존성 제거
 
   // 자체 로그인 함수
-  const login
-    = useCallback(async (email: string, password: string): Promise<boolean> => {
-      setLoading(true);
-      try {
-        const response = await fetch(
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+    setLoading(true);
+    try {
+      const response = await fetch(
 
-          `${process.env.NEXT_PUBLIC_API_URL}/api/account/signin`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-          }
-        );
-        const data: IAuthResponse = await response.json();
-
-        if (!response.ok) {
-          if (response.status === 401) throw new Error('인증 실패 (잘못된 이메일/비밀번호)');
-          if (response.status === 403) throw new Error('계정 잠김 또는 비활성화');
-          throw new Error('로그인에 실패하였습니다.');
+        `${process.env.NEXT_PUBLIC_API_URL}/api/account/signin`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
         }
+      );
+      const data: IAuthResponse = await response.json();
 
-        if (data.isSuccess && data.token) {
-          const detailedUser = await fetchUserDetail(data.token);
-          if (!detailedUser) {
-            setUser(null); // 혹시 모르니 초기화
-            setLoading(false);
-            return false;
-          }
-          const roles = getRolesFromToken(data.token);
+      if (!response.ok) {
+        if (response.status === 401) throw new Error('인증 실패 (잘못된 이메일/비밀번호)');
+        if (response.status === 403) throw new Error('계정 잠김 또는 비활성화');
+        throw new Error('로그인에 실패하였습니다.');
+      }
 
-          const updatedUser: ExtendedUser = {
-            // 상세 정보 우선 사용, 필요한 경우 data의 정보 추가
-            id: detailedUser.id,
-            fullName: detailedUser.fullName,
-            email: detailedUser.email,
-            emailConfirmed: detailedUser.emailConfirmed,
-            roles: roles, // 추출된 역할 저장
-            phoneNumber: detailedUser.phoneNumber,
-            twoFactorEnabled: detailedUser.twoFactorEnabled,
-            token: data.token, // 받은 토큰 저장
-            refreshToken: data.refreshToken!, // 리프레시 토큰 저장
-            isSuccess: data.isSuccess,
-            message: data.message || '',
-            phoneNumberConformed: detailedUser.phoneNumberConformed || false,
-            accessFailedCount: detailedUser.accessFailedCount || 0,
-            avata: detailedUser.avata || '',
-            provider: 'credentials',
-          };
-
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-          setAuthCookie(data.token)
-          setUser(updatedUser);
-          setLoading(false);
-          return true;
-
-        } else {
-          setUser(null);
+      if (data.isSuccess && data.token) {
+        const detailedUser = await fetchUserDetail(data.token);
+        if (!detailedUser) {
+          setUser(null); // 혹시 모르니 초기화
           setLoading(false);
           return false;
         }
-      } catch (err: any) {
-        console.error('(AuthContext 205) 로그인 중 오류 발생:', err);
+        const roles = getRolesFromToken(data.token);
+
+        const updatedUser: ExtendedUser = {
+          // 상세 정보 우선 사용, 필요한 경우 data의 정보 추가
+          id: detailedUser.id,
+          fullName: detailedUser.fullName,
+          email: detailedUser.email,
+          emailConfirmed: detailedUser.emailConfirmed ?? false,
+          roles: roles, // 추출된 역할 저장
+          phoneNumber: detailedUser.phoneNumber,
+          twoFactorEnabled: detailedUser.twoFactorEnabled ?? false,
+          token: data.token, // 받은 토큰 저장
+          refreshToken: data.refreshToken!, // 리프레시 토큰 저장
+          isSuccess: data.isSuccess,
+          message: data.message || '',
+          phoneNumberConformed: detailedUser.phoneNumberConformed || false,
+          accessFailedCount: detailedUser.accessFailedCount || 0,
+          avata: detailedUser.avata || '',
+          provider: 'credentials',
+        };
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setAuthCookie(data.token)
+        setUser(updatedUser);
+        setLoading(false);
+        return true;
+
+      } else {
         setUser(null);
         setLoading(false);
         return false;
       }
-    }, [fetchUserDetail]); // fetchUserDetail 의존성 추가
+    } catch (err: any) {
+      console.error('(AuthContext 205) 로그인 중 오류 발생:', err);
+      setUser(null);
+      setLoading(false);
+      return false;
+    }
+  }, [fetchUserDetail]); // fetchUserDetail 의존성 추가
 
   // * 로그아웃 함수
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
 
     // 순서 중요: 상태 업데이트 전에 로컬/세션 정리
     localStorage.removeItem('user');
@@ -219,8 +220,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 쿠키삭제
     removeAuthCookie();
     setUser(null);
+
+    // 현재 도메인으로 리다이렉션, 비동기 signOut 호출
+    const url = `${window.location.protocol}\/\/${window.location.hostname}`;
+    console.log('URL:', url);
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : url;
+    await signOut({ redirect: false }); // 서버 리다이렉션 방지
+    window.location.href = baseUrl;
+
     // next-auth 로그아웃 (Google 등) + 커스텀 로그아웃 후 리다이렉션
-    signOut({ callbackUrl: "/" });
+    // signOut({ callbackUrl: "/" });
+
   }, []);
 
   // * 사용자 목록 가져오기 (관리자용)

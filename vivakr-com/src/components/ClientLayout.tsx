@@ -14,6 +14,7 @@ import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import { userDetailAsync } from '@/services/auth.service';
 import CreateIcon from '@mui/icons-material/Create';
+import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 
 interface ClientLayoutProps {
   codes: ICode[];
@@ -36,17 +37,12 @@ export default function ClientLayout({
   const router = useRouter();
   const [fullName, setFullName] = useState<string>();
   const [confirmed, setConfirmed] = useState<boolean | null>(false);
-  // const auth = useAuth();
 
   useEffect(() => {
     const getUserDetail = async () => {
-      const detail: IUserDetail | null = await userDetailAsync();
-
+      const detail: IUserDetailDTO | null = await userDetailAsync();
       setFullName(detail?.fullName);
       setConfirmed(detail?.emailConfirmed ?? false);
-
-
-      // setAdmin(detail?.roles.some((role) => role.toLowerCase() === 'admin'));
     }
     getUserDetail();
 

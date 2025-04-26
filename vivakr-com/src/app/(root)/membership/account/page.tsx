@@ -9,7 +9,7 @@ import {
   Box,
   Button,
   TextField,
-  Chip,
+  // Chip,
   Autocomplete,
   CircularProgress,
   Typography,
@@ -39,8 +39,8 @@ export default function AccountList() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const userData = await fetchUsers();
-        const roleData = await fetchRoles(); // 모든 역할 목록 가져오기
+        const userData: IUserDetailDTO[] = await fetchUsers();
+        const roleData = await fetchRoles();
         setUsers(userData);
         setRoles(roleData);
       } catch (err: any) {
@@ -118,17 +118,18 @@ export default function AccountList() {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 250, filterable: true, type: 'string', headerAlign: 'center', },
-    { field: 'email', headerName: '아이디', width: 250, filterable: true, type: 'string', headerAlign: 'center', },
+    { field: 'id', headerName: 'ID', minWidth: 300, maxWidth: 310, filterable: true, type: 'string', headerAlign: 'center', flex: 1 },
+    { field: 'email', headerName: '아이디', minWidth: 220, maxWidth: 250, filterable: true, type: 'string', headerAlign: 'center', },
     { field: 'fullName', headerName: '이름', width: 120, filterable: true, type: 'string', },
     { field: 'emailConfirmed', headerName: '인증', width: 100, filterable: true, type: 'boolean', },
-    { field: 'roles', headerName: '권한', width: 300, filterable: true, type: 'string', valueGetter: (params: string[]) => Array.isArray(params) ? params.join(', ') : '', },
+    { field: 'roles', headerName: '권한', minWidth: 150, maxWidth: 180, filterable: true, type: 'string', valueGetter: (params: string[]) => Array.isArray(params) ? params.join(', ') : '', },
     {
       field: 'actions',
       headerName: '작업',
       width: 100,
       sortable: false,
       filterable: false,
+      flex: 1,
       renderCell: (params) => (
         <IconButton
           color="error"
@@ -167,19 +168,20 @@ export default function AccountList() {
             value={editedRoles}
             onChange={handleRoleChange}
             freeSolo // 새로운 역할 입력 허용 (옵션)
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const { key, onDelete, ...rest } = getTagProps({ index });
-                return (
-                  <Chip
-                    key={option} // 역할 이름으로 고유성 보장
-                    label={option}
-                    onDelete={onDelete}
-                    {...rest}
-                  />
-                );
-              })
-            }
+
+            // renderTags={(value, getTagProps) =>
+            //   value.map((option, index) => {
+            //     const { key, onDelete, ...rest } = getTagProps({ index });
+            //     return (
+            //       <Chip
+            //         key={option} // 역할 이름으로 고유성 보장
+            //         label={option}
+            //         onDelete={onDelete}
+            //         {...rest}
+            //       />
+            //     );
+            //   })
+            // }
             renderInput={(params) => (
               <TextField {...params} label="역할" variant="outlined" fullWidth />
             )}

@@ -12,6 +12,8 @@ import { getMembershipItems } from "@/data/menu-items";
 import { useProfile } from "@/app/(root)/membership/profile/Profile";
 import { useSession } from "next-auth/react";
 import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
+import { Badge, styled } from "@mui/material";
+import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -22,11 +24,13 @@ export default function AccountMenu() {
   const { data: session, status } = useSession();
 
   const getAvataUrl = () => {
-    if (user == null || user.avata == null) return null;
     if (session && status === 'authenticated') {
       return session.user.avata;
     }
-    return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
+    if (user == null || user?.avata == '') {
+      return ''; // '/images/default-avata.png'
+    }
+    return `${baseUrl}/images/${user?.id}_${user?.avata.toLowerCase()}`;
   };
 
   const getFullName = () => user?.fullName || "";
@@ -60,6 +64,39 @@ export default function AccountMenu() {
 
   if (profileError) return null;
 
+  const StyledBadge = styled(Badge)(({ theme }) => ({
+    '& .MuiBadge-badge': {
+      backgroundColor: '#FF0000',
+
+      color: '#FF0000',
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        animation: 'ripple 1.2s infinite ease-in-out',
+        border: '1px solid currentColor',
+        content: '""',
+      },
+
+    },
+    // zIndex: 10,
+    '@keyframes ripple': {
+      '0%': {
+        transform: 'scale(.8)',
+        opacity: 1,
+      },
+      '100%': {
+        transform: 'scale(2.4)',
+        opacity: 0,
+      },
+    },
+  }));
+
+
   return (
     <Box sx={{ display: "flex", alignItems: "center", marginRight: "0.5em" }}>
       <Box className="flex gap-2 text-nowrap">
@@ -73,16 +110,33 @@ export default function AccountMenu() {
           aria-expanded={open ? "true" : undefined}
           disabled={profileLoading}
         >
-          <Avatar
-            sx={{
-              width: 40, height: 40,
-              '&:hover': {
-                bgcolor: '#00ffff', // 호버 시 배경색
-              },
-            }}
-            alt={user?.avata}
-            src={getAvataUrl() ?? '/images/login-icon.png'}>
-          </Avatar>
+
+          {getAvataUrl() ? (
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              variant="dot">
+              <Avatar
+                sx={{
+                  width: 40, height: 40,
+                  '&:hover': {
+                    bgcolor: '#00ffff', // 호버 시 배경색
+                  },
+                }}
+                alt={user?.avata}
+                src={getAvataUrl()}></Avatar>
+            </StyledBadge>
+          ) : (
+            <span>
+              <LoginOutlinedIcon sx={{
+                color: '#FFFFFF',
+                fontSize: '1.5em',
+                ":hover": {
+                  color: '#FF00FF',
+                }
+              }} />
+            </span>
+          )}
         </IconButton>
 
         <div className="flex flex-col gap-1 text-xs justify-center max-md:hidden">

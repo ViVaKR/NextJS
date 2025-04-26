@@ -4,13 +4,14 @@ import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { IConfirmEmailReplay } from "@/interfaces/i-confirm-email-replay";
 import { useSnackbar } from "@/lib/SnackbarContext";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ConfirmEmailReplayPage() {
   const [data, setData] = useState<IConfirmEmailReplay>();
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   useEffect(() => {
     const emailFromUrl = searchParams.get('email');
@@ -35,6 +36,7 @@ export default function ConfirmEmailReplayPage() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/confirm-reply-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-cache',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -50,6 +52,9 @@ export default function ConfirmEmailReplayPage() {
 
       const result: IAuthResponse = await response.json();
       if (result.isSuccess) {
+        router.refresh();
+        router.push('/membership/profile');
+
         showSnackbar(`Success: ${result.message || '요청이 성공적으로 처리되었습니다.'}`);
       } else {
         showSnackbar(`Failed: ${result.message || '알 수 없는 오류가 발생했습니다.'}`);

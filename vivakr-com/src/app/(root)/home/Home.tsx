@@ -15,19 +15,14 @@ const cute = Cute_Font({
   display: 'swap',
 });
 
-const api = process.env.NEXT_PUBLIC_IPINFO_URL2;
-
-// async function getInfo(): Promise<IIpInfo | null | undefined> {
-//   const response = await fetch(`${api}/api/ip`);
-//   const data: IIpInfo | null | undefined = await response.json();
-//   return data ?? null;
-// }
-
 export default function Home() {
 
   const mathRef = React.useRef<HTMLDivElement>(null);
   const message = '인간이-이해하는-코드-조각..';
   const characters = Array.from(message);
+  const [ipArray, setIpArray] = useState<string[] | null | undefined>([]);
+  // const [domainUrl, setDomainUrl] = useState('//'); // 도메인 초기값
+
   const router = useRouter();
 
   const handleGoToCodeSnippets = () => {
@@ -43,9 +38,14 @@ export default function Home() {
     isp: ''
   });
 
-  const [ipArray, setIpArray] = useState<string[] | null | undefined>([]);
+
 
   const expression: string = 'R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}';
+
+  // useEffect(() => {
+  //   // 도메인 정보 클라이언트에서 설정
+  //   setDomainUrl(`${window.location.protocol}//${window.location.hostname}`);
+  // }, []);
 
   useEffect(() => {
     const getIpInfo = async () => {
@@ -54,6 +54,7 @@ export default function Home() {
     }
     getIpInfo()
     setIpArray(info?.ip?.split('.'));
+
   }, [info?.ip]);
 
   useEffect(() => {

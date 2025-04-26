@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSnackbar } from '@/lib/SnackbarContext';
 import { IUpdateUserName } from '@/interfaces/i-update-user-name';
-import { getTokenAsync } from '@/services/auth.service'
+import { fetchUserDetailAsync, getTokenAsync } from '@/services/auth.service'
 import { fetchUserCodesAsync } from '@/lib/fetchCodes';
 import { ICode } from '@/interfaces/i-code';
 import VivGridControl from '@/components/VivGridControl';
@@ -26,10 +26,39 @@ export default function Page() {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
+  // 프로필 페이지 마운트 시 최신 사용자 정보 패칭
+  useEffect(() => {
+    const refreshUser = async () => {
+      try {
+        const token = await getTokenAsync();
+        if (token && user) {
+          const detailedUser = await fetchUserDetailAsync(token);
+          if (detailedUser) {
+            updateUser({
+              id: detailedUser.id,
+              fullName: detailedUser.fullName,
+              email: detailedUser.email,
+              emailConfirmed: detailedUser.emailConfirmed ?? false,
+              phoneNumber: detailedUser.phoneNumber ?? '000-0000-0000',
+              twoFactorEnabled: detailedUser.twoFactorEnabled ?? false,
+              avata: detailedUser.avata ?? '',
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to refresh user data:', error);
+        showSnackbar('사용자 정보를 갱신하지 못했습니다.');
+      }
+    };
+
+    if (user) {
+      refreshUser();
+    }
+  }, [user, updateUser, showSnackbar]); // user가 변경될 때마다 실행
   if (user === null) return null;
 
   const getAvataUrl = () => {
-    if (user == null || user.avata == null) return null;
+    if (user == null || user.avata == '') return '/images/default-avata.png';
     return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
   };
 
@@ -99,7 +128,7 @@ export default function Page() {
         <CardContent>
           <Avatar
             alt={user?.avata}
-            src={getAvataUrl() ?? '/images/login-icon.png'}
+            src={getAvataUrl() ?? '/images/default-avata.png'}
             sx={{ width: 56, height: 56, margin: 'auto' }}
           />
 

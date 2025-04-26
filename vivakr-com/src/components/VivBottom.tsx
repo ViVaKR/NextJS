@@ -10,12 +10,10 @@ import PrivacyTipOutlinedIcon from '@mui/icons-material/PrivacyTipOutlined';
 import Link from 'next/link';
 import VivDailogBox from './VivDialogBox';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import { Stack } from '@mui/system';
 import { getSites } from '@/data/site-list';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import VivBarChart from './VivBarChart';
-// import { red } from '@mui/material/colors';
 
 export default function VivBottomNav() {
     const [value, setValue] = useState('');
@@ -141,13 +139,15 @@ export default function VivBottomNav() {
                         <EmailOutlinedIcon />
                     </Tooltip>
                 </Link>
+
+                {/* 구독 */}
                 <VivDailogBox />
 
                 <Link
                     href="https://github.com/ViVaKR/NextJS/tree/main/vivakr-com"
                     target="_blank"
-                    className="px-4 py-2 bg-slate-400 text-slate-200 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-150 hover:bg-rose-800 hover:text-white rounded-2xl"
-                >
+                    className="px-4 py-2 bg-slate-400 text-slate-200 transition delay-150 duration-300
+                    ease-in-out hover:-translate-y-1 hover:scale-150 hover:bg-rose-800 hover:text-white rounded-2xl" >
                     <Tooltip title="사이트 소스(Next.js)" arrow placement="right">
                         <span className="text-transparent bg-github bg-contain bg-no-repeat bg-center">
                             source

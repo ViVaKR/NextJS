@@ -140,7 +140,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className={`${styles.signinForm} bg-gradient-to-b from-sky-100 to-sky-500`}>
+    <div className={`${styles.signinForm} bg-gradient-to-b from-sky-50 to-sky-500`}>
       <div className={styles.box}>
         <span className={styles.borderLine}></span>
         {hideMembership && (
@@ -148,8 +148,14 @@ export default function SignIn() {
             onSubmit={handleSubmit(onFormSubmit)}
             className="flex flex-col gap-4
                         rounded-xl
-                        form p-4 border-4
-                        !bg-slate-200
+                        form
+                        p-4
+                        border-4
+
+                        !bg-gradient-to-b
+                        !from-white
+                        !to-slate-400
+
                         border-slate-600">
             <h1 className={styles.title}>Sign In</h1>
 
@@ -219,7 +225,7 @@ export default function SignIn() {
               </FormControl>
             </div>
 
-            <div className={styles.links}>
+            <div className={`${styles.links} text-slate-500`}>
               <Link href="/membership/forget-password">Forget pasword</Link>
               <Link href="/membership/sign-up">Do not have an account</Link>
             </div>
@@ -234,7 +240,6 @@ export default function SignIn() {
               </button>
             </div>
             <span className="flex-1 clear-both"></span>
-
 
             {domain == 'vivakr.com' ? (
               <>
@@ -306,7 +311,6 @@ export default function SignIn() {
                     Microsoft
                   </button>
                 </div>
-
 
                 <div
                   hidden
@@ -393,7 +397,7 @@ export default function SignIn() {
                           rounded-lg
                           hover:bg-sky-500
                           hover:text-white
-                          text-slate-400
+                          text-slate-100
                           justify-center
                           px-4 py-2
                           w-auto h-auto">
