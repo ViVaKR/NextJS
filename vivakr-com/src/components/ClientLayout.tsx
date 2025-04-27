@@ -170,7 +170,7 @@ export default function ClientLayout({
                   shadow-cyan-500/50 shadow-xs content-center text-center" >
                 카테고리
               </h5>
-              <span className="max-h-[80vh] overflow-y-scroll">
+              <span className="max-h-screen overflow-y-scroll">
                 <CategoryAccordion categories={categories} codes={codes} />
               </span>
             </motion.aside>

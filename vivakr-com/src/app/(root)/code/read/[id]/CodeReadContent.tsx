@@ -91,7 +91,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
     );
 
     return (
-        <div className="flex flex-col w-full px-4 ml-2 items-center relative">
+        <div className="flex flex-col w-full px-4 ml-2 h-auto items-center relative">
             <VivTitle title={`${code.id}. ${code.title}`} />
             <h4 className="text-slate-400">{code.subTitle}</h4>
 
@@ -200,6 +200,7 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                     <UpdateButton codeId={code.id} userId={code.userId} />
                 </div>
             </div>
+            <div className='min-h-[50%]'></div>
 
         </div>
     );

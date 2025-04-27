@@ -58,7 +58,7 @@ export default function Page() {
   if (user === null) return null;
 
   const getAvataUrl = () => {
-    if (user == null || user.avata == '') return '/images/default-avata.png';
+    if (user == null || user.avata == '') return '/images/no-avata.svg';
     return `${baseUrl}/images/${user?.id}_${user.avata.toLowerCase()}`;
   };
 
@@ -128,7 +128,7 @@ export default function Page() {
         <CardContent>
           <Avatar
             alt={user?.avata}
-            src={getAvataUrl() ?? '/images/default-avata.png'}
+            src={getAvataUrl() ?? '/images/no-avata.svg'}
             sx={{ width: 56, height: 56, margin: 'auto' }}
           />
 

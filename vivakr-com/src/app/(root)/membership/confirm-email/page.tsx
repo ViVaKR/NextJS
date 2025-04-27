@@ -44,7 +44,7 @@ export default function ConfirmEmailPage() {
 
   useEffect(() => {
     // 도메인 정보 클라이언트에서 설정
-    setDomainUrl(`${window.location.protocol}//${window.location.hostname}`);
+    setDomainUrl(`${window.location.protocol}\/\/${window.location.hostname}/membership`);
   }, []);
 
   const handleSendMail = async () => {

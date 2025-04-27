@@ -9,7 +9,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Divider } from '@mui/material';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
-import { Opacity } from '@mui/icons-material';
 
 export default function VivListMenu({
   items,

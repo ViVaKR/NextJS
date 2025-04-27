@@ -63,6 +63,7 @@ export default function CodePage({ params }: { params: Promise<{ id: number }> }
     const getUserToken = async () => {
       const token = await getTokenAsync();
       if (!token) {
+        console.log()
         router.push('/membership/sign-in');
       }
       const user: IUserDetailDTO | null = await fetchUserDetailAsync(token!);

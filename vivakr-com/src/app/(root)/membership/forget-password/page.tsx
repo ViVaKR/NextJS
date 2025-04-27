@@ -3,6 +3,7 @@ import VivTitle from "@/components/VivTitle";
 import { IAuthResponse } from "@/interfaces/i-auth-response";
 import { useSnackbar } from "@/lib/SnackbarContext";
 import { Button, CircularProgress, FilledInput, FormControl, FormHelperText, InputLabel, Stack } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type ForgetPasswordFormData = {
@@ -11,10 +12,16 @@ type ForgetPasswordFormData = {
 }
 
 export default function ForgetPasswordPaage() {
-  const { showSnackbar } = useSnackbar()
+  const { showSnackbar } = useSnackbar();
+  const [domainUrl, setDomainUrl] = useState('//'); // 도메인 초기값
+
+  useEffect(() => {
+    // 도메인 정보 클라이언트에서 설정
+    setDomainUrl(`${window.location.protocol}\/\/${window.location.hostname}/membership`);
+  }, []);
   const onSubmit = async (data: ForgetPasswordFormData) => {
 
-    data.replayUrl = "https://vivakr.com/membership";
+    data.replayUrl = domainUrl; // "https://vivakr.com/membership";
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/account/forgetpwd`, { // <-- 괄호 제거

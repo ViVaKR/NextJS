@@ -13,7 +13,6 @@ import { useProfile } from "@/app/(root)/membership/profile/Profile";
 import { useSession } from "next-auth/react";
 import LensBlurOutlinedIcon from '@mui/icons-material/LensBlurOutlined';
 import { Badge, styled } from "@mui/material";
-import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 
 export default function AccountMenu() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -27,8 +26,11 @@ export default function AccountMenu() {
     if (session && status === 'authenticated') {
       return session.user.avata;
     }
-    if (user == null || user?.avata == '') {
-      return ''; // '/images/default-avata.png'
+    if (user == null) {
+      return '/images/login.svg';
+    }
+    if (user.avata.trim() == '') {
+      return '/images/no-avata.svg';
     }
     return `${baseUrl}/images/${user?.id}_${user?.avata.toLowerCase()}`;
   };
@@ -66,9 +68,8 @@ export default function AccountMenu() {
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
-      backgroundColor: '#FF0000',
-
-      color: '#FF0000',
+      backgroundColor: '#FF00FF',
+      color: '#FF00FF',
       boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
       '&::after': {
         position: 'absolute',
@@ -81,9 +82,7 @@ export default function AccountMenu() {
         border: '1px solid currentColor',
         content: '""',
       },
-
     },
-    // zIndex: 10,
     '@keyframes ripple': {
       '0%': {
         transform: 'scale(.8)',
@@ -99,7 +98,7 @@ export default function AccountMenu() {
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", marginRight: "0.5em" }}>
-      <Box className="flex gap-2 text-nowrap">
+      <Box className="flex gap-2 items-center justify-center text-nowrap">
 
         <IconButton
           onClick={avataHandleClick}
@@ -111,38 +110,28 @@ export default function AccountMenu() {
           disabled={profileLoading}
         >
 
-          {getAvataUrl() ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              variant="dot">
-              <Avatar
-                sx={{
-                  width: 40, height: 40,
-                  '&:hover': {
-                    bgcolor: '#00ffff', // 호버 시 배경색
-                  },
-                }}
-                alt={user?.avata}
-                src={getAvataUrl()}></Avatar>
-            </StyledBadge>
-          ) : (
-            <span>
-              <LoginOutlinedIcon sx={{
-                color: '#FFFFFF',
-                fontSize: '1.5em',
-                ":hover": {
-                  color: '#FF00FF',
-                }
-              }} />
-            </span>
-          )}
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            variant="dot">
+            <Avatar
+              sx={{
+                width: 40, height: 40,
+                '&:hover': {
+                  bgcolor: '#00ffff', // 호버 시 배경색
+                },
+              }}
+              alt={user?.fullName}
+              src={getAvataUrl()}>
+            </Avatar>
+          </StyledBadge>
         </IconButton>
 
         <div className="flex flex-col gap-1 text-xs justify-center max-md:hidden">
           <span>{getFullName()}</span>
           <span>{getRoles()}</span>
         </div>
+
       </Box>
 
       <Menu
