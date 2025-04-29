@@ -223,7 +223,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // 현재 도메인으로 리다이렉션, 비동기 signOut 호출
     const url = `${window.location.protocol}\/\/${window.location.hostname}`;
-    console.log('URL:', url);
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : url;
     await signOut({ redirect: false }); // 서버 리다이렉션 방지
     window.location.href = baseUrl;
@@ -284,7 +283,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // * 주기적 토큰 체크 (25분마다)
   useEffect(() => {
     const interval = setInterval(async () => {
-      console.log("(AutContext 289) Checked: " + (new Date()).toLocaleString());
       const token = await getTokenAsync();
       if (!token) {
         window.location.href = '/membership/sign-in';

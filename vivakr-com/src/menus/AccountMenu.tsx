@@ -95,7 +95,6 @@ export default function AccountMenu() {
     },
   }));
 
-
   return (
     <Box sx={{ display: "flex", alignItems: "center", marginRight: "0.5em" }}>
       <Box className="flex gap-2 items-center justify-center text-nowrap">
@@ -107,8 +106,7 @@ export default function AccountMenu() {
           aria-controls={open ? "account-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
-          disabled={profileLoading}
-        >
+          disabled={profileLoading}>
 
           <StyledBadge
             overlap="circular"

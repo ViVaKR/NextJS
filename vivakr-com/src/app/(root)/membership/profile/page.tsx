@@ -188,7 +188,7 @@ export default function Page() {
               size="small"
               onClick={() => router.push('/membership/confirm-email')}
               color="secondary">
-              메인인증
+              메일인증
             </Button>
           )}
 

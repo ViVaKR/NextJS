@@ -1,6 +1,7 @@
 import OddsAccordion from "@/app/(root)/odds/accordion/OddsAccordion";
 import OddsCodeHtml from "@/app/(root)/odds/code-html/OddsCodeHtml";
 import OddsCodeRunner from "@/app/(root)/odds/code-runner/OddsCodeRunner";
+import MazeGame from "@/app/(root)/odds/maze/MazeGame";
 import OddsOrmPrisma from "@/app/(root)/odds/orm-prisma/OddsOrmPrisma";
 import { IMenu } from "@/interfaces/i-menu";
 
@@ -33,5 +34,6 @@ export const getOddsItems = (): IMenu[] => {
         { id: 1, title: '예쁜코드', url: '/odds/code-html', Component: OddsCodeHtml },
         { id: 2, title: '아코디언', url: '/odds/accordion', Component: OddsAccordion },
         { id: 3, title: 'Prisma', url: '/odds/orm-prisma', Component: OddsOrmPrisma },
+        { id: 4, title: '미로게임', url: '/odds/maze', Component: MazeGame },
     ]
 }

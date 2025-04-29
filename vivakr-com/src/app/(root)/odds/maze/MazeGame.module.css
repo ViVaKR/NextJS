@@ -1,0 +1,183 @@
+/* MazeGame.module.css */
+.container {
+  /* Optional: Add overall container styling if needed */
+  width: 100%;
+}
+
+.controlsContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  margin-bottom: 1rem;
+}
+
+.levelSelector {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.levelLabel {
+  font-size: 1.3rem;
+  color: #454545;
+  margin-right: 0.5rem;
+}
+
+.selectDropdown {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-size: 1rem;
+  appearance: none;
+  padding: 10px;
+  width: 150px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  background-color: #007bff; /* Default blue */
+  transition: background-color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Special button colors if needed */
+.startButton {
+  background-color: #28a745;
+} /* Green */
+.startButton:hover:not(:disabled) {
+  background-color: #218838;
+}
+.stopButton {
+  background-color: #dc3545;
+} /* Red */
+.stopButton:hover:not(:disabled) {
+  background-color: #c82333;
+}
+.pathButton {
+  background-color: #ffc107;
+  color: #333;
+} /* Yellow */
+.pathButton:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+.submitButton {
+  background-color: #17a2b8;
+} /* Teal */
+.submitButton:hover:not(:disabled) {
+  background-color: #138496;
+}
+
+.timerDisplay {
+  font-weight: bold;
+  color: darkred;
+  margin: 1rem 0;
+}
+
+.canvasContainer {
+  position: relative; /* For loading overlay positioning */
+  width: fit-content; /* Adjust as needed */
+  margin: 0 auto; /* Center the canvas container */
+}
+
+.mazeCanvas {
+  border: solid 5px rgb(7, 127, 143);
+  display: block; /* Prevents extra space below canvas */
+}
+
+.answerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1rem;
+  max-width: 600px; /* Limit width */
+  margin: 1rem auto; /* Center */
+}
+
+.answerInput {
+  width: 100%; /* Take full width of container */
+  box-sizing: border-box; /* Include padding in width */
+  padding: 20px;
+  border: solid 1px gray;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.resultMessage {
+  margin-top: 1rem;
+  font-weight: bold;
+  min-height: 1.2em; /* Prevent layout shift */
+}
+
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(2px, 2px);
+  }
+  25% {
+    transform: translate(-2px, -2px);
+  }
+  50% {
+    transform: translate(2px, -2px);
+  }
+  75% {
+    transform: translate(-2px, 2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* --- Loading Indicator Styles --- */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: inherit; /* Match canvas border-radius if any */
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

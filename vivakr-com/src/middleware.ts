@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
 
 export async function middleware(request: NextRequest) {
+
     const userToken = request.cookies.get('user')?.value;
 
     const protectedPaths = [
@@ -11,7 +12,6 @@ export async function middleware(request: NextRequest) {
         '/membership/send-mail',
         '/membership/code-category',
         '/membership/cancel-membership',
-        '/membership/code-backup',
         '/membership/change-password',
         '/membership/change-name',
         '/membership/my-code',
@@ -20,9 +20,10 @@ export async function middleware(request: NextRequest) {
     ];
 
     const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
-    const pathname = request.nextUrl.pathname;
-    if (protectedPaths.some((path) => pathname.startsWith(path))) {
 
+    const pathname = request.nextUrl.pathname;
+
+    if (protectedPaths.some((path) => pathname.startsWith(path))) {
 
         if (!userToken) {
             const signInUrl = new URL('/membership/sign-in', request.url);

@@ -9,6 +9,7 @@ import OddsAccordion from './accordion/OddsAccordion';
 import OddsOrmPrisma from './orm-prisma/OddsOrmPrisma';
 import OddsCodeRunner from './code-runner/OddsCodeRunner';
 import OddsCodeHtml from './code-html/OddsCodeHtml';
+import MazeGame from './maze/MazeGame';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -21,6 +22,7 @@ const components = [
   { id: 1, Component: OddsCodeHtml, props: {} },
   { id: 2, Component: OddsAccordion, props: {} },
   { id: 3, Component: OddsOrmPrisma, props: {} },
+  { id: 4, Component: MazeGame, props: {} },
 ];
 
 function CustomTabPanel(props: TabPanelProps) {
