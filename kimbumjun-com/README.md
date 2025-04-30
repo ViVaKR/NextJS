@@ -1,1 +1,0 @@
-# KIMBUMJUN.COM
