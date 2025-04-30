@@ -227,12 +227,3 @@ export default function Page() {
         </>
     );
 }
-/*
-VivDataGrid<T>({
-  title,
-  columns,
-  initialData = [],
-  onRowClick,
-}: VivDataGridProps<T>)
-
-*/

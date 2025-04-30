@@ -40,6 +40,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# naver
+/maps
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

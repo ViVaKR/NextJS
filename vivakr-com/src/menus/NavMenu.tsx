@@ -38,7 +38,7 @@ export default function NavMenu() {
   const isAuthenticated = !!user; // user 객체의 존재 여부로 로그인 상태 판단
 
   const filteredMenus = menusData.filter((menu) => {
-    if (menu.id === 1) { // '코드작성' 메뉴 ID가 1이라고 가정
+    if (menu.id === 1 || menu.requiresAuth) { // '코드작성' 메뉴 ID가 1이라고 가정
       return isAuthenticated;
     }
     return true;

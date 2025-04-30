@@ -2,14 +2,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './MazeGame.module.css'; // CSS 모듈 임포트
 import VivTitle from '@/components/VivTitle';
+import { Noto_Sans_KR } from 'next/font/google';
 
-import { Cute_Font } from 'next/font/google';
-
-const cute = Cute_Font({
-    variable: '--font-cute',
-    weight: '400',
-    display: 'swap',
-    subsets: ['latin']
+const noto = Noto_Sans_KR({
+    variable: '--font-noto',
+    subsets: ['latin'],
+    weight: ['400'],
+    display: 'swap'
 })
 
 // --- 상수 및 타입 정의 ---
@@ -57,7 +56,6 @@ const MazeGame: React.FC<MazeGameProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [remainingTime, setRemainingTime] = useState<number>(LEVEL_TIME_LIMITS[0]); // ★ 남은 시간 상태
     const [score, setScore] = useState(0); // ★ 점수 상태
-    // const [timerSeconds, setTimerSeconds] = useState(0);
     const [resultMsg, setResultMsg] = useState('');
     const [playerPos, setPlayerPos] = useState<Point>({ x: 0, y: 0 });
     const [visitedCells, setVisitedCells] = useState<Set<string>>(new Set(['0,0'])); // 현재 경로 (색 변경용)
@@ -102,7 +100,7 @@ const MazeGame: React.FC<MazeGameProps> = ({
             // 초기 화면 (예: 빈 캔버스 또는 안내 메시지) 그리기
             if (ctxRef.current) {
                 ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
-                ctxRef.current.font = `sans-serif text-[20px]`;
+                ctxRef.current.font = `20px ${noto.style.fontFamily}`;
                 ctxRef.current.textAlign = "center";
                 ctxRef.current.fillText("게임을 시작하세요!", canvas.width / 2, canvas.height / 2);
             }
@@ -145,7 +143,7 @@ const MazeGame: React.FC<MazeGameProps> = ({
 
             // ★★★ 폰트 설정 부분 수정 ★★★
             const fontSize = l.isLabel ? CELL / 4 : CELL / 3;
-            ctx.font = `${fontSize}px '빙그레 따옴체'`;
+            ctx.font = `${fontSize}px ${noto.style.fontFamily}`; // 수정: 폰트 통일
             ctx.fillText(l.char, l.x * CELL + CELL / 2, l.y * CELL + CELL / 2);
         }
 
@@ -227,9 +225,7 @@ const MazeGame: React.FC<MazeGameProps> = ({
                     return;
                 }
             }
-            // requestAnimationFrame 사용 고려 가능 (setTimeout(0) 보다 부드러울 수 있음)
             requestAnimationFrame(stepBatch);
-            // setTimeout(stepBatch, 0);
         }
         requestAnimationFrame(stepBatch); // 첫 프레임에서 시작
     }, [getIndex, removeWalls, openExtraPaths]);
@@ -265,21 +261,29 @@ const MazeGame: React.FC<MazeGameProps> = ({
             logic.path.pop(); return false;
         }
         dfs(0, 0)
+        // 추가: 경로 디버깅 로그
+        console.log(`findAnswerPath: 경로 길이=${logic.path.length}, 경로=`, logic.path);
     }, [getIndex]);
 
     const placeLetters = useCallback(() => {
         const logic = gameLogicRef.current;
+        // 수정: 명시적 초기화
         logic.letters = [];
+        logic.answerLetterCoords.clear();
+        logic.totalAnswerLetters = 0;
         const answerChars = logic.answer.split("");
         const N = answerChars.length;
         const availablePathCoords = logic.path.slice(1, -1);
         const L = availablePathCoords.length;
-
-        if (L < N) { /* Error handling or simple placement */ return; }
+        // 추가: 초기 상태 로그
+        console.log(`placeLetters: 경로 길이=${L}, 글자 수=${N}`);
+        if (L < N) {
+            console.error(`경로 길이 부족! 사용 가능 경로: ${L}, 필요한 글자 수: ${N}`);
+            return;
+        }
 
         const occupiedIndices = new Set<number>();
         let lastPlacedIndex = -1;
-
         for (let i = 0; i < N; i++) {
             let targetIndex, offsetRange;
             const searchStartIndex = lastPlacedIndex + 1;
@@ -299,15 +303,21 @@ const MazeGame: React.FC<MazeGameProps> = ({
                 if (!occupiedIndices.has(currentIdx)) { foundIndex = currentIdx; break; }
             }
             if (foundIndex === -1) {
-                for (let currentIdx = placementIndex - 1; currentIdx >= searchStartIndex; currentIdx--) {
+                for (let currentIdx = placementIndex - 1;
+                    currentIdx >= searchStartIndex;
+                    currentIdx--) {
                     if (!occupiedIndices.has(currentIdx)) { foundIndex = currentIdx; break; }
                 }
             }
             if (foundIndex !== -1) {
                 const p = availablePathCoords[foundIndex];
                 logic.letters.push({ x: p.i, y: p.j, char: answerChars[i], isAnswer: true });
+                logic.answerLetterCoords.add(`${p.i},${p.j}`);
+                logic.totalAnswerLetters++;
                 occupiedIndices.add(foundIndex); lastPlacedIndex = foundIndex;
-            } else { /* Emergency placement */
+                // 추가: 글자 배치 로그
+                console.log(`글자 ${answerChars[i]} 배치: (${p.i},${p.j})`);
+            } else {
                 let emergencyIndex = -1;
                 for (let tempIdx = searchStartIndex; tempIdx < L; tempIdx++) {
                     if (!occupiedIndices.has(tempIdx)) { emergencyIndex = tempIdx; break; }
@@ -315,12 +325,19 @@ const MazeGame: React.FC<MazeGameProps> = ({
                 if (emergencyIndex !== -1) {
                     const p = availablePathCoords[emergencyIndex];
                     logic.letters.push({ x: p.i, y: p.j, char: answerChars[i], isAnswer: true });
+                    logic.answerLetterCoords.add(`${p.i},${p.j}`);
+                    logic.totalAnswerLetters++;
                     occupiedIndices.add(emergencyIndex); lastPlacedIndex = emergencyIndex;
+
+                    // 추가: 비상 배치 로그
+                    console.log(`비상 배치 ${answerChars[i]}: (${p.i},${p.j})`);
                 } else { console.error("!!! 글자 비상 배치 실패 !!!"); }
             }
         }
         logic.letters.push({ x: 0, y: 0, char: "출발", isAnswer: false, isLabel: true });
         logic.letters.push({ x: logic.COLS - 1, y: logic.ROWS - 1, char: "도착", isAnswer: false, isLabel: true });
+        // 추가: 배치 완료 로그
+        console.log(`placeLetters 완료: totalAnswerLetters=${logic.totalAnswerLetters}, answerLetterCoords=`, Array.from(logic.answerLetterCoords));
     }, []);
 
     const placeDecoyLetters = useCallback(() => {
@@ -355,8 +372,9 @@ const MazeGame: React.FC<MazeGameProps> = ({
             logic.letters.push({ x: cell.x, y: cell.y, char: randomChar, isAnswer: false, isDecoy: true });
             placedCount++;
         }
-    }, []);
 
+        console.log(`placeDecoyLetters: 배치된 미끼 글자 수=${placedCount}`);
+    }, []);
 
     // --- 게임 종료 처리 함수 ---
     const endGame = useCallback((message: string) => {
@@ -367,10 +385,10 @@ const MazeGame: React.FC<MazeGameProps> = ({
         }
         setResultMsg(message);
         // Optional: 약간의 딜레이 후 결과 메시지 표시 등
+        // 추가: 미끼 글자 배치 로그
     }, []);
 
     // --- 게임 시작/정지 함수 ---
-    // --- 게임 시작/정지 함수 (수정) ---
     const handleStartGame = useCallback(() => {
         if (isLoading) return;
         setIsLoading(true);
@@ -385,6 +403,9 @@ const MazeGame: React.FC<MazeGameProps> = ({
         setShowPathFlag(false);
         gameLogicRef.current.moveStack = [{ x: 0, y: 0 }];
         gameLogicRef.current.answer = ANSWERS_LIST[level - 1];
+        // 추가: 게임 시작 전 초기화
+        gameLogicRef.current.answerLetterCoords.clear();
+        gameLogicRef.current.totalAnswerLetters = 0;
         if (gameLogicRef.current.intervalId) clearInterval(gameLogicRef.current.intervalId);
         gameLogicRef.current.intervalId = null;
 
@@ -392,6 +413,9 @@ const MazeGame: React.FC<MazeGameProps> = ({
             findAnswerPath();
             placeLetters();
             placeDecoyLetters();
+
+            console.log(`handleStartGame: answerLetterCoords=${Array.from(gameLogicRef.current.answerLetterCoords)}, totalAnswerLetters=${gameLogicRef.current.totalAnswerLetters}`);
+
             setIsLoading(false);
             setIsGameActive(true);
             draw();
@@ -415,7 +439,21 @@ const MazeGame: React.FC<MazeGameProps> = ({
         draw(); // 비활성 상태 반영
     }, [draw, endGame]);
 
-    // --- 플레이어 이동 (수정: 점수, 승리/패배 체크 추가) ---
+    // 추가: 도착 체크 함수 분리
+    const checkArrival = useCallback((nextX: number, nextY: number, updatedCollectedCoords: Set<string>) => {
+        const logic = gameLogicRef.current;
+        if (nextX === logic.COLS - 1 && nextY === logic.ROWS - 1) {
+            // 추가: 디버깅 로그
+            console.log(`도착! collectedLetterCoords.size=${updatedCollectedCoords.size}, totalAnswerLetters=${logic.totalAnswerLetters}`);
+            if (updatedCollectedCoords.size === logic.totalAnswerLetters) {
+                setScore(prev => prev + 10);
+                endGame(`클리어! 🎉 점수: ${score + 10}, 남은 시간: ${remainingTime} 초`);
+            } else {
+                endGame(`도착했지만 모든 글자를 모으지 못했어요! 😥`);
+            }
+        }
+    }, [score, remainingTime, endGame]);
+
     const handleMove = useCallback((dx: number, dy: number) => {
         if (!isGameActive || isLoading) return;
 
@@ -423,9 +461,18 @@ const MazeGame: React.FC<MazeGameProps> = ({
         const nextX = playerPos.x + dx;
         const nextY = playerPos.y + dy;
 
-        if (nextX < 0 || nextY < 0 || nextX >= logic.COLS || nextY >= logic.ROWS) return;
+        // 추가: 이동 디버깅 로그
+        console.log(`이동 시도: 현재=(${playerPos.x},${playerPos.y}), 다음=(${nextX},${nextY})`);
+
+        if (nextX < 0 || nextY < 0 || nextX >= logic.COLS || nextY >= logic.ROWS) {
+            console.log("범위 초과로 이동 불가");
+            return;
+        }
         const currentCell = logic.grid[getIndex(playerPos.x, playerPos.y)];
-        if (!currentCell) return;
+        if (!currentCell) {
+            console.log("currentCell 없음");
+            return;
+        }
 
         let moved = false;
         if (dx === 1 && !currentCell.walls[1]) moved = true;
@@ -433,33 +480,41 @@ const MazeGame: React.FC<MazeGameProps> = ({
         if (dy === 1 && !currentCell.walls[2]) moved = true;
         if (dy === -1 && !currentCell.walls[0]) moved = true;
 
+        console.log(`이동 여부: ${moved}, 벽 상태: ${currentCell.walls}`);
+
         if (moved) {
             const nextPos = { x: nextX, y: nextY };
             const nextPosKey = `${nextX},${nextY}`;
 
-            // ★ 점수 획득 로직 ★
-            if (logic.answerLetterCoords.has(nextPosKey) && !collectedLetterCoords.has(nextPosKey)) {
-                setCollectedLetterCoords(prev => new Set(prev).add(nextPosKey));
-                setScore(prev => prev + 10); // 글자당 10점 (조절 가능)
+            // 수정: 비동기 상태 업데이트 문제 해결
+            let updatedCollectedCoords = new Set(collectedLetterCoords);
+            if (logic.answerLetterCoords.has(nextPosKey) && !updatedCollectedCoords.has(nextPosKey)) {
+                updatedCollectedCoords.add(nextPosKey);
+                setCollectedLetterCoords(updatedCollectedCoords);
+                setScore(prev => {
+                    const scoreDisplay = document.querySelector(`.${styles.timerDisplay}:first-child`);
+                    if (scoreDisplay) {
+                        scoreDisplay.classList.add(styles.scoreUpdated);
+                        setTimeout(() => scoreDisplay.classList.remove(styles.scoreUpdated), 200);
+                    }
+                    return prev + 10;
+                });
+                console.log(`정답 글자 수집: 좌표=(${nextX},${nextY}), 현재 size=${updatedCollectedCoords.size}`);
             }
 
-            // 상태 업데이트
             setPlayerPos(nextPos);
             gameLogicRef.current.moveStack.push(nextPos);
             setVisitedCells(prev => new Set(prev).add(nextPosKey));
+            draw();
 
-            // ★ 도착 지점 확인 및 승리/패배 판정 ★
-            if (nextX === logic.COLS - 1 && nextY === logic.ROWS - 1) {
-                // 모든 정답 글자를 모았는지 확인 (여기서 collectedLetterCoords 사용)
-                if (collectedLetterCoords.size === logic.totalAnswerLetters) {
-                    endGame(`클리어! 🎉 점수: ${score + 10}, 남은 시간: ${remainingTime} 초`); // 도착 점수 추가?
-                } else {
-                    endGame(`도착했지만 모든 글자를 모으지 못했어요! 😥`);
-                }
-            }
+            // 수정: 별도 함수로 도착 체크
+            checkArrival(nextX, nextY, updatedCollectedCoords);
         }
-    }, [isGameActive, isLoading, playerPos, getIndex, collectedLetterCoords, score, remainingTime, endGame]);
+    }, [isGameActive, isLoading, playerPos, collectedLetterCoords, getIndex, draw, checkArrival]);
 
+
+
+    //
     useEffect(() => {
         // 로딩 중 아닐 때만 그리기
         if (!isLoading && (isGameActive || showPathFlag)) { // 게임 활성 또는 경로 표시 시에만 그림
@@ -487,7 +542,6 @@ const MazeGame: React.FC<MazeGameProps> = ({
         setPlayerPos(prevPos);
 
     }, [isGameActive, isLoading, playerPos]);
-
 
     // --- 키보드 및 터치 이벤트 핸들러 ---
     useEffect(() => {
@@ -537,14 +591,13 @@ const MazeGame: React.FC<MazeGameProps> = ({
         setShowPathFlag(false);
     }, []);
 
-
     // --- 레벨 선택 핸들러 ---
     const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLevel(parseInt(e.target.value));
         handleStopGame(); // 레벨 변경 시 일단 게임 중지
         if (canvasRef.current && ctxRef.current) { // 캔버스 초기화
             ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-            ctxRef.current.font = "20px sans-serif";
+            ctxRef.current.font = `20px ${noto.style.fontFamily}`;
             ctxRef.current.textAlign = "center";
             ctxRef.current.fillText("새로운 레벨 선택됨. 게임 시작 버튼을 누르세요.", canvasRef.current.width / 2, canvasRef.current.height / 2);
         }
@@ -553,7 +606,7 @@ const MazeGame: React.FC<MazeGameProps> = ({
     // --- JSX 반환 ---
     return (
         <div className={styles.container} ref={containerRef}>
-            <VivTitle title='정답 기반 미로 게임' />
+            <VivTitle title='미로 게임' />
 
             <div className={styles.controlsContainer}>
                 <div className={styles.levelSelector}>
@@ -590,8 +643,10 @@ const MazeGame: React.FC<MazeGameProps> = ({
 
             {/* ★★★ 게임 정보 표시 (점수, 남은 시간) ★★★ */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', margin: '1rem 0' }}>
-                <p className={styles.timerDisplay}>🏆 점수: {score}</p>
+                <p className={styles.timerDisplay}>🏆 현재 점수: {score}</p>
                 <p className={styles.timerDisplay}>⏳ 남은 시간: {remainingTime}초</p>
+                {/* 추가: 글자 수집 상태 표시 */}
+                <p className={styles.timerDisplay}>📝 글자: {collectedLetterCoords.size}/{gameLogicRef.current.totalAnswerLetters}</p>
             </div>
 
             <div className={styles.canvasContainer}>
@@ -610,10 +665,14 @@ const MazeGame: React.FC<MazeGameProps> = ({
                 />
 
             </div>
-
-            <p id="resultMsg" className={`${styles.resultMessage} text-center`}> {resultMsg}
-            </p>
-
+            <div className='flex flex-col items-center justify-center gap-2 my-4'>
+                <p id="resultMsg" className={`${styles.resultMessage} text-2xl text-red-400`}>{resultMsg}</p>
+                {resultMsg && (
+                    <button onClick={handleStartGame} className={`${styles.button} ${styles.startButton}`}>
+                        다시 플레이
+                    </button>
+                )}
+            </div>
             <p
                 className='text-xs text-slate-400 mb-4 text-center'>
                 미로 생성 및 경로 탐색 로직 구현에 도움을 준 나의 친구 <b>아띠 (Atti)</b>에게 감사합니다.

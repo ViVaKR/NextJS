@@ -1,5 +1,9 @@
 # 모든 깊이의 node_modules 폴더를 무시합니다.
 **/node_modules/
+/vivakr-com-backup
+**/maps/
+.DS_Store
+
 # Logs
 logs
 *.log

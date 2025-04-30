@@ -17,7 +17,7 @@ const Page = async () => {
   return (
     <>
       <VivTitle title="IP Address Info" />
-      <FormSection ipInfo={ipInfo} />
+      <FormSection initialIpInfo={ipInfo} />
     </>
   );
 };

@@ -86,12 +86,6 @@
   background-color: #138496;
 }
 
-.timerDisplay {
-  font-weight: bold;
-  color: darkred;
-  margin: 1rem 0;
-}
-
 .canvasContainer {
   position: relative; /* For loading overlay positioning */
   width: fit-content; /* Adjust as needed */
@@ -173,6 +167,17 @@
   animation: spin 1s linear infinite;
 }
 
+.timerDisplay {
+  font-weight: bold;
+  color: darkblue;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.timerDisplay.scoreUpdated {
+  transform: scale(1.2);
+  transition: transform 0.2s ease;
+}
 @keyframes spin {
   0% {
     transform: rotate(0deg);

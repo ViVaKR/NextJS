@@ -52,7 +52,6 @@ export default function SignUpPage() {
   const { showSnackbar } = useSnackbar();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  // const apiUrl = 'https://localhost:55588'; // 디버깅 및 개발 용
 
   // --- 필명 체크 관련 상태 추가 ---
   const [isNameAvailable, setIsNameAvailable] = useState<boolean | null>(null); // null: 체크 전, true: 사용 가능, false: 사용 불가능
@@ -96,10 +95,8 @@ export default function SignUpPage() {
   useEffect(() => {
     const clearInputs = () => {
       reset();
-
     };
     clearInputs();
-    // Edge가 늦게 자동 완성할 경우 대비
     const timeout = setTimeout(clearInputs, 2000);
     return () => clearTimeout(timeout);
   }, [reset]);
@@ -242,7 +239,6 @@ export default function SignUpPage() {
             <Controller
               name="email"
               control={control}
-
               rules={{
                 required: '이메일을 입력해주세요.',
                 pattern: { // 간단한 이메일 형식 검사 추가 (선택 사항)

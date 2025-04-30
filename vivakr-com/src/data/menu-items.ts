@@ -13,6 +13,7 @@ export const getNavMenuItems = (): IMenu[] => {
         { id: 3, title: '정보', url: '/ip-address' },
         { id: 4, title: '캠프', url: '/camp' },
         { id: 5, title: '잡동사니', url: '/odds' },
+        { id: 6, title: '지도', url: '/maps', requiresAuth: true },
     ];
 }
 
