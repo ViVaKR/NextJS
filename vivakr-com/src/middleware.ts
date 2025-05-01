@@ -17,10 +17,9 @@ export async function middleware(request: NextRequest) {
         '/membership/my-code',
         '/membership/role',
         '/membership/confirm-email',
-        '/maps'
     ];
 
-    const adminPaths = ['/maps', '/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
+    const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
 
     const pathname = request.nextUrl.pathname;
     console.log(pathname);

@@ -52,6 +52,18 @@ declare namespace naver.maps {
     }
 
     // 필요한 다른 Naver Maps 타입들 (Event, Size, Point 등)
+    interface PointerEvent {
+        coord: Coord;
+        point: Point;
+        offset: Point;
+        domEvent: MouseEvent;
+    }
+
+    class Point {
+        constructor(x: number, y: number);
+        x: number;
+        y: number;
+    }
 }
 
 // 전역 window 객체에 naver 속성 추가

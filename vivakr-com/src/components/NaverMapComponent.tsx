@@ -1,71 +1,133 @@
-// components/NaverMapComponent.tsx
 "use client";
 
 import { IPosData } from '@/interfaces/i-pos-data';
-import { number } from 'framer-motion';
-import React, { JSX, useEffect, useRef } from 'react';
+import React, { JSX, useCallback, useEffect, useRef } from 'react';
 
-export default function NaverMapComponent({ params }: { params: IPosData }): JSX.Element {
+interface AddressInfo {
+    lat: number;
+    lng: number;
+    jibunAddress?: string;
+    roadAddress?: string;
+}
+
+interface NaverMapComponentProps {
+    params: IPosData;
+    onAddressUpdate: (addressInfo: AddressInfo | null) => void; // 부모로 주소 정보 전달
+}
+
+export default function NaverMapComponent({ params, onAddressUpdate }: NaverMapComponentProps): JSX.Element {
     const { latitude, longitude }: IPosData = params;
     const mapElement = useRef<HTMLDivElement>(null);
+    const mapInstanceRef = useRef<naver.maps.Map | null>(null);
+    const markerRef = useRef<naver.maps.Marker | null>(null);
+
+    const searchCoordinateToAddress = useCallback(
+        (coord: naver.maps.Coord) => {
+            const map = mapInstanceRef.current;
+            if (!map) {
+                console.warn("Map not initialized yet.");
+                return;
+            }
+
+            naver.maps.Service.reverseGeocode(
+                {
+                    coords: coord,
+                    orders: [
+                        naver.maps.Service.OrderType.ROAD_ADDR,
+                        naver.maps.Service.OrderType.ADDR,
+                    ].join(','),
+                },
+                (status, response) => {
+                    if (status !== naver.maps.Service.Status.OK) {
+                        console.error('ReverseGeocode Error:', status);
+                        onAddressUpdate(null); // 에러 시 null 전달
+                        return;
+                    }
+
+                    const result = response.v2;
+                    const address = result.address;
+                    const addressInfo: AddressInfo = {
+                        lat: (coord as naver.maps.LatLng).lat(),
+                        lng: (coord as naver.maps.LatLng).lng(),
+                        jibunAddress: address?.jibunAddress,
+                        roadAddress: address?.roadAddress,
+                    };
+
+                    onAddressUpdate(addressInfo); // 부모로 주소 정보 전달
+                }
+            );
+        },
+        [onAddressUpdate]
+    );
 
     useEffect(() => {
-        // window 객체 및 naver.maps 객체가 로드되었는지 확인
-        // 타입 정의 파일(navermaps.d.ts) 덕분에 TypeScript가 naver 객체를 인식합니다.
         if (typeof window !== "undefined" && window.naver && window.naver.maps) {
-            // mapElement ref가 현재 DOM 노드를 가리키는지 확인
             if (!mapElement.current) {
                 console.error("Map container element not found.");
                 return;
             }
 
-            // 지도 생성 옵션 (타입 정의에 따라 자동 완성 및 타입 체크 가능)
-            console.log(latitude, longitude);
-            const location = new window.naver.maps.LatLng(Number(latitude!), Number(longitude!));
+            const lat = Number(latitude);
+            const lng = Number(longitude);
+            if (isNaN(lat) || isNaN(lng)) {
+                console.error("Invalid latitude or longitude:", latitude, longitude);
+                return;
+            }
+
+            const initialLocation = new window.naver.maps.LatLng(lat, lng);
             const mapOptions: naver.maps.NaverMapOptions = {
-                center: location,
+                center: initialLocation,
                 zoom: 15,
-                zoomControl: true
+                zoomControl: true,
             };
 
-            // 지도 인스턴스 생성 (타입 명시)
-            const mapInstance = new window.naver.maps.Map(mapElement.current, mapOptions);
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.destroy();
+            }
 
-            // (선택) 마커 생성 (타입 정의에 따라 자동 완성 및 타입 체크 가능)
-            const markerOptions: naver.maps.NaverMarkerOptions = { // 타입 명시
-                position: location,
-                map: mapInstance,
+            mapInstanceRef.current = new window.naver.maps.Map(mapElement.current, mapOptions);
+            const map = mapInstanceRef.current;
+
+            if (markerRef.current) {
+                markerRef.current.setMap(null);
+            }
+            markerRef.current = new window.naver.maps.Marker({
+                position: initialLocation,
+                map,
+            });
+
+            const listeners: naver.maps.MapEventListener[] = [];
+
+            listeners.push(
+                naver.maps.Event.addListener(map, 'click', (e: naver.maps.PointerEvent) => {
+                    searchCoordinateToAddress(e.coord);
+
+                    // 클릭한 위치에 마커 이동
+                    if (markerRef.current) {
+                        markerRef.current.setPosition(e.coord);
+                        markerRef.current.setMap(map);
+                    }
+                })
+            );
+
+            return () => {
+                listeners.forEach(listener => naver.maps.Event.removeListener(listener));
+                if (mapInstanceRef.current) {
+                    mapInstanceRef.current.destroy();
+                    mapInstanceRef.current = null;
+                }
+                markerRef.current = null;
             };
-            new window.naver.maps.Marker(markerOptions);
-
-            // (선택) Geocoding / Reverse Geocoding 사용 예시
-            // naver.maps.Service.geocode({ query: '청학로학교길 8-5' }, (status, response) => {
-            //     // TODO
-            //     if (status !== naver.maps.Service.Status.OK) {
-            //         return alert('Something wrong!');
-            //     }
-            // });
-            // naver.maps.Service.reverseGeocode({ coords: location }, (status, response) => {
-
-            //     // TODO
-            // });
-
-            // 컴포넌트 언마운트 시 정리 (필요한 경우)
-            // return () => {
-            //     mapInstance; // 네이버 지도 API 버전에 따라 destroy 메서드가 있을 수 있음 (확인 필요)
-            // };
-
         } else {
             console.warn("네이버 스크립트 로드가 되지 않았습니다.");
-            // 로딩 중이거나 스크립트 로드 실패 시 대체 로직 (예: 로딩 스피너)
         }
-    }, [latitude, longitude]);
+    }, [latitude, longitude, searchCoordinateToAddress]);
 
     return (
         <div
             ref={mapElement}
             className='border-8 rounded-2xl border-slate-400'
-            style={{ width: 'calc(100% - 2rem)', margin: '1rem', height: 'calc((100vh * 2) / 3)', backgroundColor: '#eee' }} // 초기 로딩 시 회색 배경 등
+            style={{ width: '100%', margin: 0, height: 'calc((100vh * 2) / 3)', backgroundColor: '#eee', overflow: 'hidden' }}
         />
     );
 }

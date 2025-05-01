@@ -30,31 +30,25 @@ export default function NavMenu() {
 
   if (loading) {
     return (
-      <nav className="w-full h-[72px] bg-sky-900 border-b-4 border-red-800 flex items-center justify-center text-white opacity-50">
+      <nav className="w-full h-[72px] bg-sky-900 border-b-4 border-red-800 flex
+                      items-center justify-center text-white opacity-50">
       </nav>
     );
   }
 
-  const isAuthenticated = !!user; // user 객체의 존재 여부로 로그인 상태 판단
+  const isAuthenticated = !!user;
 
   const filteredMenus = menusData.filter((menu) => {
-    if (menu.id === 1 || menu.requiresAuth) { // '코드작성' 메뉴 ID가 1이라고 가정
+    if (menu.id === 1 || menu.requiresAuth) {
       return isAuthenticated;
     }
     return true;
   });
+
   return (
-    <nav
-      className={`w-full
-                text-lg
-                h-[72px]
-              bg-sky-900
-              text-white
-                flex
-                border-b-4
-              border-red-800
-                justify-center
-                items-center`}>
+    <nav className={`w-full text-lg h-[72px] bg-sky-900
+              text-white flex border-b-4 border-red-800
+                justify-center items-center`}>
       {/* 로고 (변경 없음) */}
       <div className="flex flex-shrink-0 items-center pl-10">
         <Link
