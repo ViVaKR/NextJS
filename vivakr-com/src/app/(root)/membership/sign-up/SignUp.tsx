@@ -215,10 +215,7 @@ export default function SignUpPage() {
                 w-full`}>
 
       {hideMembership && (
-        <VivTitle
-          title="회원가입"
-          fontColor="text-lime-400"
-        />
+        <VivTitle title="회원가입" fontColor="text-lime-400" />
       )}
 
       {/* 폼 시작 */}
@@ -297,7 +294,10 @@ export default function SignUpPage() {
               <FormHelperText id="fullName-helper-text" className='!text-green-400'>사용 가능한 필명입니다.</FormHelperText>
             )}
             {!isCheckingName && isNameAvailable === false && (
-              <FormHelperText id="fullName-helper-text" className='!text-red-400'>이미 사용 중이거나 사용할 수 없는 필명입니다.</FormHelperText>
+              // <FormHelperText id="fullName-helper-text" className='!text-red-400'>이미 사용 중이거나 사용할 수 없는 필명입니다.</FormHelperText>
+              <FormHelperText className='!text-red-400'>
+                이런, 별똥별처럼 빠르게 사라진 이름이에요! 새로운 별 하나 만들어봐요 ✨
+              </FormHelperText>
             )}
             {/* 체크 중 메시지는 InputAdornment로 이동 */}
           </FormControl>

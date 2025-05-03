@@ -1,7 +1,6 @@
 'use client'
 
 import { BarChart } from '@mui/x-charts/BarChart';
-import { number } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 export default function VivBarChart() {

@@ -10,6 +10,8 @@ import OddsOrmPrisma from './orm-prisma/OddsOrmPrisma';
 import OddsCodeRunner from './code-runner/OddsCodeRunner';
 import OddsCodeHtml from './code-html/OddsCodeHtml';
 import MazeGame from './maze/MazeGame';
+import GoogleMapPage from '../google-map/page';
+import { useProfile } from '../membership/profile/Profile';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -23,10 +25,12 @@ const components = [
   { id: 2, Component: OddsAccordion, props: {} },
   { id: 3, Component: OddsOrmPrisma, props: {} },
   { id: 4, Component: MazeGame, props: {} },
+
 ];
 
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+
 
   return (
     <div
@@ -51,9 +55,15 @@ export default function OddsHome() {
   const [value, setValue] = React.useState(0);
   const menus: IMenu[] = getOddsItems();
 
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const filterMenus = menus.filter((menu) => {
+
+    return true;
+  });
 
   return (
     <Box
@@ -73,7 +83,7 @@ export default function OddsHome() {
         sx={{
           maxWidth: 'calc(100vw - 2rem)',
         }}>
-        {menus.map((menu, index) => (
+        {filterMenus.map((menu, index) => (
           <Tab
             key={index}
             label={menu.title}

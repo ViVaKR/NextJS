@@ -17,9 +17,10 @@ export async function middleware(request: NextRequest) {
         '/membership/my-code',
         '/membership/role',
         '/membership/confirm-email',
+        '/google-map'
     ];
 
-    const adminPaths = ['/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
+    const adminPaths = ['/google-map', '/membership/all-account', '/membership/code-category', '/membership/role', '/membership/send-mail'];
 
     const pathname = request.nextUrl.pathname;
     console.log(pathname);
@@ -53,6 +54,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: ['/membership/((?!sign-in|sign-up|unauthorized).*)', // /membership/ 하위 경로 중 sign-in, sign-up, unauthorized 제외
-        '/maps/:path*', // maps 및 하위 경로 모두 포함..
+        '/google-map/:path*', // maps 및 하위 경로 모두 포함..
     ],
 };

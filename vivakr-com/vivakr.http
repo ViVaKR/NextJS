@@ -10,7 +10,12 @@ GET {{vivakrUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
 GET {{vivakrUrl}}/api/locationinfo HTTP/1.1
 
 ###
+GET {{api}}/api/test HTTP/1.1
 
+###
+POST {{api}}/api/test HTTP/1.1
+
+###
 GET {{vivakrUrl}}/api/category/list HTTP/1.1
 
 ###

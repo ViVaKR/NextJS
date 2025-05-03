@@ -18,6 +18,9 @@ services:
         NEXT_PUBLIC_ENABLE_LOGIN_MENU: ${NEXT_PUBLIC_ENABLE_LOGIN_MENU:-true}
         NEXT_PUBLIC_STORAGE_KEY: ${NEXT_PUBLIC_STORAGE_KEY:-user}
         NEXT_PUBLIC_MYIP: ${NEXT_PUBLIC_MYIP:-} # 로컬 IP는 빌드 시점에 따라 달라질 수 있어 주의
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
+        NEXT_PUBLIC_GOOGLE_MAP_ID: ${NEXT_PUBLIC_GOOGLE_MAP_ID:-}
+
     ports:
       # Nginx가 연결할 호스트 포트 : 컨테이너 내부 포트
       - '47960:3000'

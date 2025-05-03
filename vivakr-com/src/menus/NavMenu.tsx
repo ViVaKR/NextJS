@@ -7,12 +7,12 @@ import AccountMenu from './AccountMenu';
 import Link from 'next/link';
 import styles from './NavMenu.module.css';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/AuthContext';
 import { getIpInfomations } from '@/lib/fetchIpInfo';
+import { useProfile } from '@/app/(root)/membership/profile/Profile';
 
 export default function NavMenu() {
   const menusData: IMenu[] = getNavMenuItems();
-  const { user, loading } = useAuth();
+  const { user, isAdmin, isLoading } = useProfile();
   const [hideMembership, setHideMembership] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function NavMenu() {
     checkIp();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <nav className="w-full h-[72px] bg-sky-900 border-b-4 border-red-800 flex
                       items-center justify-center text-white opacity-50">
@@ -39,6 +39,10 @@ export default function NavMenu() {
   const isAuthenticated = !!user;
 
   const filteredMenus = menusData.filter((menu) => {
+    if (menu.id === 6) {
+      if (!isAdmin)
+        return false;
+    }
     if (menu.id === 1 || menu.requiresAuth) {
       return isAuthenticated;
     }
