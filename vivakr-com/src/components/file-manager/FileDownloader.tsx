@@ -1,6 +1,9 @@
 // components/FileDownloader.tsx
 'use client'
+import { useProfile } from "@/app/(root)/membership/profile/Profile";
+import { getTokenAsync } from "@/services/auth.service";
 import { Box, Button } from "@mui/material";
+import Link from "next/link";
 import { useCallback } from "react";
 
 interface FileDownloaderProps {
@@ -8,12 +11,26 @@ interface FileDownloaderProps {
 }
 
 const FileDownloader: React.FC<FileDownloaderProps> = ({ fileUrl }) => {
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const { user } = useProfile();
+
     const downloadFile = useCallback(async () => {
         try {
+            const token = await getTokenAsync();
             // Next.js API 호출
             const response = await fetch(
-                `/api/download-code?fileUrl=${encodeURIComponent(fileUrl)}`
-            );
+                `${apiUrl}/api/filemanager/downloadcodefile?fileUrl=${encodeURIComponent(fileUrl)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            // `/api/download-code?fileUrl=${encodeURIComponent(fileUrl)}`
+            console.log(response);
+
+            // const result = await response.json();
 
             if (!response.ok) {
                 throw new Error("파일 다운로드 실패");
@@ -39,10 +56,6 @@ const FileDownloader: React.FC<FileDownloaderProps> = ({ fileUrl }) => {
                 }
             }
 
-            // 인코딩 그대로의 이름...
-            // fileName =
-            //     disposition?.match(/filename="(.+)"/)?.[1] || fileUrl || "download";
-
             // 다운로드 링크 생성
             const a = document.createElement("a");
             a.style.display = "none";
@@ -54,25 +67,35 @@ const FileDownloader: React.FC<FileDownloaderProps> = ({ fileUrl }) => {
             // 정리
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
-        } catch (error) {
-            console.error("다운로드 오류:", error);
-            alert("파일을 다운로드하는 중 문제가 발생했습니다.");
+        } catch (err: any) {
+            alert("파일을 다운로드하는 중 문제가 발생했습니다.: " + err);
+
         }
-    }, [fileUrl]);
+    }, [apiUrl, fileUrl]);
 
     return (
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            p: 2,
-            alignItems: 'center',
-            width: '100%'
-        }}>
-            <em className="text-xs text-red-300">{fileUrl}</em>
-            <Button color='primary' onClick={downloadFile}>
-                첨부파일 다운로드
-            </Button>
-        </Box>
+        <>
+            {user?.emailConfirmed ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 2,
+                    alignItems: 'center',
+                    width: '100%'
+                }}>
+                    <em className="text-xs text-red-300">{fileUrl}</em>
+                    <Button color='primary' onClick={downloadFile}>
+                        첨부파일 다운로드
+                    </Button>
+                </Box>
+            ) : (
+                <Link
+                    href={`/membership/sign-up`}
+                    className="text-red-400 flex justify-center w-full p-4">
+                    첨부파일은 자체회원 또는 이메일 확인후 다운로드가 가능합니다.
+                </Link>
+            )}
+        </>
 
     );
 };

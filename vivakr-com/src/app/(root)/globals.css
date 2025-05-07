@@ -17,7 +17,7 @@
     background-image: url('/images/avata-1024.png');
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
+    background-position: center center;
   }
 
   .absolute-center {

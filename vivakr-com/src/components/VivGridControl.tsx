@@ -8,6 +8,8 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Link from 'next/link';
 import VivLoading from '@/components/VivLoading';
 import { useEffect, useState } from 'react';
+import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
+import { useProfile } from '@/app/(root)/membership/profile/Profile';
 
 type codeDataProp = {
   data: ICode[],
@@ -19,6 +21,7 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
   const [codes, setCodes] = useState<ICode[]>(
     [...data].sort((a, b) => b.id - a.id)
   );
+  const { isAdmin, user } = useProfile();
   const [isLoading, setIsLoading] = useState(true);
   const time = 1;
 
@@ -52,11 +55,25 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
     {
       field: 'id',
       headerName: 'ID',
-      width: 80,
+      width: 100,
       filterable: true,
+      headerAlign: 'center',
       type: 'number',
       renderCell: (params: GridRenderCellParams<ICode, string>) => (
-        <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+        <div className='flex justify-between items-center gap-1'>
+          <Tooltip title={`${params.row.id} 읽기`} arrow placement='top'>
+            <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+          </Tooltip>
+          {(isAdmin || user?.id === params.row.userId) && (
+            <Tooltip title={`${params.row.id} 수정`} arrow placement='top'>
+              <Link
+                href={`/code/update/${params.row.id}`}
+                className="p-1" >
+                <EditNoteOutlinedIcon />
+              </Link>
+            </Tooltip>
+          )}
+        </div>
       ),
     },
     {
@@ -129,9 +146,14 @@ export default function VivGridControl({ data, userId }: codeDataProp) {
       flex: 1,
       type: 'string',
       renderCell: (params: GridRenderCellParams<ICode, string>) => (
-        <CustomWidthTooltip title={params.row.note}>
-          <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
-        </CustomWidthTooltip>
+        <>
+          <CustomWidthTooltip title={params.row.note}>
+            <Link href={`/code/read/${params.row.id}`}>{params.value}</Link>
+          </CustomWidthTooltip>
+
+
+        </>
+
       ),
     },
   ];

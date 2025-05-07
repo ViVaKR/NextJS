@@ -8,6 +8,7 @@ import { IUserDetailDTO } from '@/interfaces/i-userdetail-dto';
 import { ExtendedUser } from '@/interfaces/i-extended-user';
 import { signOut, useSession } from 'next-auth/react';
 import { fetchUserDetailAsync, getTokenAsync, removeAuthCookie, setAuthCookie } from '@/services/auth.service';
+import { useSnackbar } from './SnackbarContext';
 
 const getRolesFromToken = (token: string | undefined): string[] => {
 
@@ -160,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         if (response.status === 401) throw new Error('인증 실패 (잘못된 이메일/비밀번호)');
         if (response.status === 403) throw new Error('계정 잠김 또는 비활성화');
-        throw new Error('로그인에 실패하였습니다.');
+        throw new Error('로그인에 실패하였습니다. ' + response.status);
       }
 
       if (data.isSuccess && data.token) {

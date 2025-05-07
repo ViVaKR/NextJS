@@ -18,6 +18,7 @@ export async function GET(request: Request) {
         // 환경 변수에서 기본 경로를 가져오거나, fallback으로 사용자 홈 디렉토리 사용
         const basePath = process.env.FILE_STORAGE_PATH || path.join(process.env.HOME || process.env.USERPROFILE || "", "Temp");
         const filePath = path.join(basePath, "FileData", "Files", "Code", fileUrl);
+        console.log('download file: ', filePath);
         try {
             await fs.access(filePath);
         } catch {

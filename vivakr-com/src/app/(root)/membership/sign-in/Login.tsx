@@ -122,7 +122,7 @@ export default function SignIn() {
   };
 
   const showLoginFailed = () =>
-    showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'right', 3000);
+    showSnackbar('로그인 실패하였습니다.', 'error', 'bottom', 'right', 2000);
 
   // --> 로그인 처리
   const onFormSubmit = async (data: ISignInRequest) => {
@@ -131,11 +131,12 @@ export default function SignIn() {
       if (result) {
         showLoginSuccess();
         router.push('/');
-      } else {
+      }
+      else {
         showLoginFailed();
       }
     } catch (e: any) {
-      throw new Error(e.message);
+      showSnackbar('로그인 실패 --> ' + e, 'error', 'bottom', 'right', 2000);
     }
   };
 

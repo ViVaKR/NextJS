@@ -46,7 +46,6 @@ const FormSection: React.FC<FormSectionProps> = ({ initialIpInfo, onIpInfoFetche
             setIsLoading(true);
             setError(null); // 이전 에러 초기화
             try {
-                // const ipInfo = await getIpInfomations(ipAddress);
                 const fetchedIpInfo = await getInfoAsync(ipAddress);
                 setInfo(fetchedIpInfo); // 자식 컴포넌트 내부 상태 업데이트 (표시용)
 
@@ -59,8 +58,6 @@ const FormSection: React.FC<FormSectionProps> = ({ initialIpInfo, onIpInfoFetche
                 setError(errorMessage);
                 console.error('Error fetching IP info: ', error);
                 // 에러 발생 시 부모에게 알릴 필요가 있다면, onIpInfoFetched(null) 등을 호출할 수도 있음
-
-
                 const nullIp: IIpInfo = {}
                 if (onIpInfoFetched)
                     onIpInfoFetched(nullIp); // 예시: 에러 시 null 전달

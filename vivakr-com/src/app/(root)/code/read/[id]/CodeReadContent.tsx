@@ -201,7 +201,6 @@ export default async function CodeReadContent({ params }: { params: Promise<{ id
                 </div>
             </div>
             <div className='min-h-[50%]'></div>
-
         </div>
     );
 }
