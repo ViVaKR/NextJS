@@ -42,6 +42,7 @@ const nextConfig = {
                 hostname: 'appleid.apple.com',
             },
         ],
+        unoptimized: true
     },
     allowedDevOrigins: [
         'https://vivakr.com', // 프로토콜 포함

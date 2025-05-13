@@ -14,6 +14,8 @@ export const getNavMenuItems = (): IMenu[] => {
         { id: 4, title: '캠프', url: '/camp' },
         { id: 5, title: '잡동사니', url: '/odds' },
         { id: 6, title: '지도', url: '/google-map' },
+        { id: 7, title: '마블', url: '/blue-marble' },
+
     ];
 }
 

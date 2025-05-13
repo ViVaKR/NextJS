@@ -34,6 +34,7 @@
     "axios": "^1.9.0",
     "beasties": "^0.3.3",
     "file-type": "^20.5.0",
+    "firebase": "^11.7.1",
     "framer-motion": "^12.9.4",
     "jwt-decode": "^4.0.0",
     "katex": "^0.16.22",
