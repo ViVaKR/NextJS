@@ -45,12 +45,25 @@ async function uploadQuizDataToFirebase(roomId: string) {
     }
 }
 
-function getRandomNumbers(count: number, max: number): number[] {
-    if (count > max) throw new Error('Count cannot exceed max');
-    if (count < 0 || max <= 0) throw new Error('Count and max must be positive');
-    const numbers = Array.from({ length: max }, (_, i) => i + 1);
+// function getRandomNumbers(count: number, max: number): number[] {
+//     if (count > max) throw new Error('Count cannot exceed max');
+//     if (count < 0 || max <= 0) throw new Error('Count and max must be positive');
+//     const numbers = Array.from({ length: max }, (_, i) => i + 1);
+//     for (let i = 0; i < count; i++) {
+//         const j = Math.floor(Math.random() * (max - i)) + i;
+//         [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+//     }
+//     return numbers.slice(0, count);
+// }
+function getRandomNumbers(count: number, min: number, max: number): number[] {
+    if (min > max) throw new Error('Min cannot exceed max');
+    if (count < 0 || min < 0 || max < 0) throw new Error('Count, min, and max must be non-negative');
+    const range = max - min + 1;
+    if (count > range) throw new Error('Count cannot exceed range (max - min + 1)');
+
+    const numbers = Array.from({ length: range }, (_, i) => i + min);
     for (let i = 0; i < count; i++) {
-        const j = Math.floor(Math.random() * (max - i)) + i;
+        const j = Math.floor(Math.random() * (range - i)) + i;
         [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
     }
     return numbers.slice(0, count);
@@ -58,7 +71,7 @@ function getRandomNumbers(count: number, max: number): number[] {
 
 function getColoredRandomNumbers(max: number): { sky: number[], red: number[] } {
     if (max < 10) throw new Error('Max must be at least 10');
-    const numbers = getRandomNumbers(10, max);
+    const numbers = getRandomNumbers(10, 5, max);
     const shuffled = [...numbers];
     for (let i = 0; i < 3; i++) {
         const j = Math.floor(Math.random() * (10 - i)) + i;
@@ -75,12 +88,47 @@ async function initializeRoomData(roomId: string, title: string, creatorId: numb
         status: 'waiting',
         players: {},
         colorGroup,
-        lastRoll: null
+        lastRoll: null,
+        currentTurn: null
     };
     await set(ref(dbInstance, `rooms/${roomId}`), initialData);
     await uploadQuizDataToFirebase(roomId);
-    console.log(`[Server] Initialized room ${roomId}:`, { title, colorGroup });
+    console.log(`[Server] Initialized room ${roomId}:`, { title, creatorId, colorGroup });
     return initialData;
+}
+
+async function resetGameData(roomId: string) {
+    const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+    if (!roomSnap.exists()) {
+        throw new Error('Room not found');
+    }
+    const roomData = roomSnap.val();
+    const players = roomData.players || {};
+    const playerIds = Object.keys(players).map(Number);
+
+    // 현재 플레이어 유지, 상태만 초기화
+    const resetPlayers: { [key: number]: any } = {};
+    playerIds.forEach(id => {
+        resetPlayers[id] = {
+            char: players[id].char,
+            position: 1,
+            joinedAt: players[id].joinedAt,
+            lastMoveTimestamp: null
+        };
+    });
+
+    const colorGroup = getColoredRandomNumbers(100);
+    const updates: { [key: string]: any } = {
+        [`rooms/${roomId}/players`]: resetPlayers,
+        [`rooms/${roomId}/colorGroup`]: colorGroup,
+        [`rooms/${roomId}/lastRoll`]: null,
+        [`rooms/${roomId}/currentTurn`]: playerIds.sort((a, b) => players[a].joinedAt - players[b].joinedAt)[0],
+        [`rooms/${roomId}/status`]: 'playing'
+    };
+
+    await update(ref(dbInstance), updates);
+    console.log(`[Server] Reset room ${roomId}:`, { players: resetPlayers, colorGroup });
+    return { players: resetPlayers, colorGroup };
 }
 
 export async function GET() {
@@ -95,7 +143,6 @@ export async function GET() {
             playerCount: Object.keys(data.players || {}).length,
             players: data.players || {}
         }));
-        console.log('[API GET] Returning room list:', roomList);
         return NextResponse.json({ rooms: roomList }, { status: 200 });
     } catch (err) {
         console.error('[API GET] Error:', err);
@@ -109,32 +156,14 @@ export async function POST(request: Request) {
         const { action, roomId, playerId, title } = body;
 
         if (action === 'createRoom') {
-            if (!title) {
-                return NextResponse.json({ error: 'Title required' }, { status: 400 });
+            if (!title || playerId === undefined) {
+                return NextResponse.json({ error: 'Title and playerId required' }, { status: 400 });
             }
             const roomRef = push(ref(dbInstance, 'rooms'));
             const newRoomId = roomRef.key!;
             await initializeRoomData(newRoomId, title, playerId);
-            console.log(`[API POST] Created room ${newRoomId}`);
-            return NextResponse.json({ roomId: newRoomId }, { status: 200 });
-        }
-
-        if (action === 'deleteRoom') {
-            if (!roomId) {
-                return NextResponse.json({ error: 'roomId required' }, { status: 400 });
-            }
-            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
-            if (!roomSnap.exists()) {
-                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
-            }
-            // 추후 권한 체크 추가 가능
-            // const roomData = roomSnap.val();
-            // if (playerId !== roomData.creatorId) {
-            //     return NextResponse.json({ error: 'Only creator can delete room' }, { status: 403 });
-            // }
-            await remove(ref(dbInstance, `rooms/${roomId}`));
-            console.log(`[API POST] Deleted room ${roomId}`);
-            return NextResponse.json({ success: true }, { status: 200 });
+            console.log(`[API POST] Created room ${newRoomId} by player ${playerId}`);
+            return NextResponse.json({ roomId: newRoomId, creatorId: playerId }, { status: 200 });
         }
 
         if (action === 'joinRoom') {
@@ -170,12 +199,47 @@ export async function POST(request: Request) {
             if (roomData.creatorId === null) {
                 updates[`rooms/${roomId}/creatorId`] = playerId;
             }
-            // 방장이 없는 경우 첫 입장자를 방장으로 설정
-            if (roomData.createId === null) {
-                updates[`rooms/${roomId}/creatorId`] = playerId;
-            }
             await update(ref(dbInstance), updates);
             console.log(`[API POST] Player ${playerId} joined room ${roomId}`);
+            return NextResponse.json({ success: true, creatorId: roomData.creatorId || playerId }, { status: 200 });
+        }
+
+        if (action === 'resetGame') {
+            // 방장 확인
+            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+            }
+            const roomData = roomSnap.val();
+            if (playerId !== roomData.creatorId) {
+                return NextResponse.json({ error: '방장만 게임을 초기화 할 수 있습니다.' }, { status: 403 });
+            }
+
+            // 플레이어 수 확인
+            const players = roomData.players || {};
+            const playerCount = Object.keys(players).length;
+            if (playerCount < 2) {
+                return NextResponse.json({ error: `최소 2명이 참여해야 게임 시작이 가능합니다. 현재 ${playerCount}/4명` }, { status: 400 });
+            }
+
+            const { players: resetPlayers, colorGroup } = await resetGameData(roomId);
+            return NextResponse.json({ players: resetPlayers, colorGroup }, { status: 200 });
+        }
+
+        if (action === 'deleteRoom') {
+            if (!roomId || playerId === undefined) {
+                return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
+            }
+            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+            }
+            const roomData = roomSnap.val();
+            if (playerId !== roomData.creatorId) {
+                return NextResponse.json({ error: 'Only creator can delete room' }, { status: 403 });
+            }
+            await remove(ref(dbInstance, `rooms/${roomId}`));
+            console.log(`[API POST] Deleted room ${roomId} by player ${playerId}`);
             return NextResponse.json({ success: true }, { status: 200 });
         }
 
@@ -197,18 +261,28 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: `At least 2 players required. Current: ${playerCount}/4` }, { status: 400 });
             }
             const colorGroup = getColoredRandomNumbers(100);
+            const playerIds = Object.keys(players).map(Number).sort((a, b) => players[a].joinedAt - players[b].joinedAt);
             await update(ref(dbInstance, `rooms/${roomId}`), {
                 status: 'playing',
                 colorGroup,
-                lastRoll: null
+                lastRoll: null,
+                currentTurn: playerIds[0]
             });
-            console.log(`[API POST] Started game in room ${roomId}:`, { colorGroup });
+
             return NextResponse.json({ success: true, colorGroup }, { status: 200 });
         }
 
         if (action === 'rollDice') {
             if (!roomId || playerId === undefined) {
                 return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
+            }
+            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+            }
+            const roomData = roomSnap.val();
+            if (roomData.currentTurn !== playerId) {
+                return NextResponse.json({ error: 'Not your turn' }, { status: 403 });
             }
             const diceResult = Math.floor(Math.random() * 6) + 1;
             const diceData = { value: diceResult, timestamp: Date.now(), playerId };
@@ -221,6 +295,14 @@ export async function POST(request: Request) {
             const { diceValue } = body;
             if (!roomId || playerId === undefined || typeof diceValue !== 'number' || diceValue < 1 || diceValue > 6) {
                 return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
+            }
+            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+            }
+            const roomData = roomSnap.val();
+            if (roomData.currentTurn !== playerId) {
+                return NextResponse.json({ error: 'Not your turn' }, { status: 403 });
             }
             const playerRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}`);
             const playerSnap = await get(playerRef);
@@ -255,14 +337,19 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'Position update failed' }, { status: 500 });
             }
 
-            await update(ref(dbInstance, `rooms/${roomId}/players/${playerId}`), {
-                lastMoveTimestamp: Date.now()
-            });
-            await set(ref(dbInstance, `rooms/${roomId}/lastRoll`), null);
             const playersSnap = await get(ref(dbInstance, `rooms/${roomId}/players`));
             const players = playersSnap.val() || {};
-            console.log(`[API POST] Player ${playerId} moved to position ${finalPosition} in room ${roomId}`);
-            return NextResponse.json({ players, newPosition: finalPosition }, { status: 200 });
+            const playerIds = Object.keys(players).map(Number).sort((a, b) => players[a].joinedAt - players[b].joinedAt);
+            const currentIndex = playerIds.indexOf(playerId);
+            const nextTurn = playerIds[(currentIndex + 1) % playerIds.length];
+
+            await update(ref(dbInstance, `rooms/${roomId}`), {
+                currentTurn: nextTurn,
+                lastRoll: null,
+                [`players/${playerId}/lastMoveTimestamp`]: Date.now()
+            });
+            console.log(`[API POST] Player ${playerId} moved to position ${finalPosition} in room ${roomId}, next turn: ${nextTurn}`);
+            return NextResponse.json({ players, newPosition: finalPosition, nextTurn }, { status: 200 });
         }
 
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

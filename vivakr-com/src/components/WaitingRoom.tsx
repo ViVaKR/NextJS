@@ -1,6 +1,8 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase/clientApp';
 import { ref, onValue, off } from 'firebase/database';
 import Image from 'next/image';
@@ -34,22 +36,50 @@ const playerChars = [
 export default function WaitingRoom({ roomId, playerId, creatorId, title, onStartGame }: WaitingRoomProps) {
     const [players, setPlayers] = useState<Player[]>([]);
     const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(playerId);
+    const [isLeaving, setIsLeaving] = useState(false);
+    const isMounted = useRef(true);
+    const router = useRouter();
 
+    // Firebase 플레이어 리스너
     useEffect(() => {
+        console.log('[WaitingRoom] Setting up players listener for room:', roomId);
         const playersRef = ref(db, `rooms/${roomId}/players`);
         const unsubscribe = onValue(playersRef, (snapshot) => {
             const data = snapshot.val() || {};
             const playerList = Object.entries(data).map(([id, p]: [string, any]) => ({
                 playerId: Number(id),
                 char: p.char,
-                position: p.position,
+                position: p.position || 1,
                 joinedAt: p.joinedAt
             }));
+            console.log('[WaitingRoom] Players updated:', playerList);
             setPlayers(playerList);
+        }, (err) => {
+            console.error('[WaitingRoom] Players listener error:', err);
         });
-        return () => off(playersRef, 'value', unsubscribe);
-    }, [roomId]);
 
+        return () => {
+            console.log('[WaitingRoom] Cleaning up players listener');
+            off(playersRef, 'value', unsubscribe);
+        };
+    }, [roomId]);
+    /*
+        // 컴포넌트 언마운트 시 leaveRoom 처리
+        useEffect(() => {
+            isMounted.current = true;
+            console.log('[WaitingRoom] Component mounted, playerId:', selectedPlayerId);
+
+            return () => {
+                isMounted.current = false;
+                console.log('[WaitingRoom] Component unmounting, isLeaving:', isLeaving, 'selectedPlayerId:', selectedPlayerId);
+                const hasJoined = selectedPlayerId !== null && players.some(p => p.playerId === selectedPlayerId);
+                if (hasJoined && !isLeaving) {
+                    console.log('[WaitingRoom] Triggering handleLeaveRoom on unmount');
+                    handleLeaveRoom();
+                }
+            };
+        }, [roomId, selectedPlayerId]); // players 제거, hasJoined는 내부에서 체크
+     */
     const handleJoin = async () => {
         if (selectedPlayerId === null) {
             alert('캐릭터를 선택하세요.');
@@ -60,16 +90,15 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
             return;
         }
         try {
+            console.log('[WaitingRoom] Joining room:', roomId, 'playerId:', selectedPlayerId);
             const res = await fetch('/api/marble', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'joinRoom',
-                    roomId, playerId: selectedPlayerId
-                })
+                body: JSON.stringify({ action: 'joinRoom', roomId, playerId: selectedPlayerId })
             });
             const data = await res.json();
             if (!res.ok) {
+                console.error('[WaitingRoom] Join error:', data.error);
                 alert(data.error || '입장 실패');
             }
         } catch (err) {
@@ -78,6 +107,37 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
         }
     };
 
+    /*     const handleLeaveRoom = async () => {
+            if (selectedPlayerId === null || isLeaving || !isMounted.current) {
+                console.log('[WaitingRoom] handleLeaveRoom skipped:', { selectedPlayerId, isLeaving, isMounted: isMounted.current });
+                return;
+            }
+            setIsLeaving(true);
+            console.log('[WaitingRoom] handleLeaveRoom called, playerId:', selectedPlayerId);
+            try {
+                const res = await fetch('/api/marble', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'leaveRoom', roomId, playerId: selectedPlayerId })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    console.log('[WaitingRoom] Left room:', roomId);
+                    if (isMounted.current) {
+                        router.push('/games/marble');
+                    }
+                } else {
+                    console.error('[WaitingRoom] Leave room error:', data.error);
+                }
+            } catch (err) {
+                console.error('[WaitingRoom] Leave room error:', err);
+            } finally {
+                if (isMounted.current) {
+                    setIsLeaving(false);
+                }
+            }
+        };
+     */
     const handleStartGame = async () => {
         if (!isCreator) {
             alert('방장만 게임을 시작할 수 있습니다.');
@@ -88,19 +148,17 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
             return;
         }
         try {
+            console.log('[WaitingRoom] Starting game, roomId:', roomId);
             const res = await fetch('/api/marble', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'startGame',
-                    roomId,
-                    playerId: selectedPlayerId
-                })
+                body: JSON.stringify({ action: 'startGame', roomId, playerId: selectedPlayerId })
             });
             const data = await res.json();
             if (res.ok) {
                 onStartGame();
             } else {
+                console.error('[WaitingRoom] Start game error:', data.error);
                 alert(data.error || '게임 시작 실패');
             }
         } catch (err) {
@@ -110,17 +168,14 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
     };
 
     const handlePlayerChange = (event: SelectChangeEvent<string>) => {
-        const newPlayerId = event.target.value === ''
-            ? null :
-            Number(event.target.value);
-
+        const newPlayerId = event.target.value === '' ? null : Number(event.target.value);
+        console.log('[WaitingRoom] Player changed to:', newPlayerId);
         setSelectedPlayerId(newPlayerId);
     };
 
     const isCreator = selectedPlayerId === creatorId;
     const canStart = isCreator && players.length >= 2;
-    const hasJoined = selectedPlayerId !== null
-        && players.some(p => p.playerId === selectedPlayerId);
+    const hasJoined = selectedPlayerId !== null && players.some(p => p.playerId === selectedPlayerId);
 
     return (
         <div className="min-h-screen bg-slate-100 p-8 flex flex-col items-center">
@@ -154,8 +209,7 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
                     <button
                         onClick={handleJoin}
                         disabled={selectedPlayerId === null}
-                        className="w-full bg-blue-500 text-white p-2
-                        rounded hover:bg-blue-600 disabled:bg-gray-400 mb-4"
+                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400 mb-4"
                     >
                         입장
                     </button>
@@ -174,9 +228,7 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
                                 className="rounded-full"
                             />
                             <span>{player.char.split('.')[0]}</span>
-                            {player.playerId === creatorId
-                                &&
-                                <span className="text-blue-500">(방장)</span>}
+                            {player.playerId === creatorId && <span className="text-blue-500">(방장)</span>}
                         </div>
                     ))
                 )}
@@ -190,6 +242,15 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
                         게임 시작
                     </button>
                 )}
+                {/* {hasJoined && (
+                    <button
+                        onClick={handleLeaveRoom}
+                        disabled={isLeaving}
+                        className="w-full mt-4 bg-orange-500 text-white p-2 rounded hover:bg-orange-600 disabled:bg-gray-400"
+                    >
+                        나가기
+                    </button>
+                )} */}
             </div>
         </div>
     );

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './VivMarble.module.css';
 import Image from 'next/image';
 import { db } from '@/lib/firebase/clientApp';
 import { ref, onValue, off, DataSnapshot } from 'firebase/database';
 import WaitingRoom from './WaitingRoom';
+import { number } from 'framer-motion';
 
 interface ColorGroups {
     sky: number[];
@@ -31,6 +33,11 @@ interface VivMarbleProps {
     playerId: number;
 }
 
+interface Gammer {
+    name: string;
+    score: number;
+}
+
 export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     const [players, setPlayers] = useState<Player[]>([]);
     const [currentRollingPlayerId, setCurrentRollingPlayerId] = useState<number | null>(null);
@@ -41,6 +48,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     const [title, setTitle] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [lastProcessedRoll, setLastProcessedRoll] = useState<string | null>(null);
+    const [currentTurn, setCurrentTurn] = useState<number | null>(null);
+    const [score, setScore] = useState<Gammer | null>();
+    const router = useRouter();
 
     useEffect(() => {
         const roomRef = ref(db, `rooms/${roomId}`);
@@ -51,6 +61,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 setCreatorId(roomData.creatorId ?? -1);
                 setTitle(roomData.title || '');
                 setColorGroup(roomData.colorGroup || null);
+                setCurrentTurn(roomData.currentTurn ?? null);
                 const playersData = roomData.players || {};
                 const playerList = Object.entries(playersData).map(([id, p]: [string, any]) => ({
                     playerId: Number(id),
@@ -59,19 +70,27 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     joinedAt: p.joinedAt,
                     lastMoveTimestamp: p.lastMoveTimestamp
                 }));
+                console.log('[VivMarble] Players updated:', playerList, 'Current turn:', roomData.currentTurn);
                 setPlayers(playerList);
                 setIsLoading(false);
             } else {
                 setIsLoading(false);
+                router.push('/games/marble');
             }
         }, (e) => {
-            console.error('[Room Listener] Error:', e);
+            console.error('[VivMarble] Room listener error:', e);
             setIsLoading(false);
         });
-        return () => off(roomRef, 'value', unsubscribe);
+
+        return () => {
+            console.log('[VivMarble] Cleaning up room listener');
+            off(roomRef, 'value', unsubscribe);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roomId]);
 
     useEffect(() => {
+        console.log('[VivMarble] Setting up lastRoll listener for room:', roomId);
         const lastRollRef = ref(db, `rooms/${roomId}/lastRoll`);
         const unsubscribe = onValue(lastRollRef, (snapshot: DataSnapshot) => {
             if (snapshot.exists()) {
@@ -80,20 +99,77 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     const rollKey = `${rollData.playerId}:${rollData.timestamp}`;
                     if (rollKey !== lastProcessedRoll) {
                         setLastDiceRoll(rollData);
+
                         setLastProcessedRoll(rollKey);
-                        animateDice(rollData.value, 2000, 1080, rollData.playerId);
+                        animateDice(rollData.value, 4000, 2160, rollData.playerId);
                     }
                 }
             } else {
+                const p: Gammer = {
+                    name: players.find(p => p.playerId === lastDiceRoll?.playerId)?.char.split('.')[0] || '-',
+                    score: lastDiceRoll?.value || 0
+                }
+                setScore(p);
                 setLastDiceRoll(null);
             }
         }, (e) => {
-            console.error('[LastRoll Listener] Error:', e);
+            console.error('[VivMarble] LastRoll listener error:', e);
         });
-        return () => off(lastRollRef, 'value', unsubscribe);
+        return () => {
+            console.log('[VivMarble] Cleaning up lastRoll listener');
+            off(lastRollRef, 'value', unsubscribe);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roomId, lastProcessedRoll]);
 
+    const handleDeleteRoom = async () => {
+        if (!confirm('정말로 이 방을 삭제하시겠습니까?')) {
+            return;
+        }
+        try {
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deleteRoom', roomId, playerId })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log('[VivMarble] Deleted room:', roomId);
+                router.push('/games/marble');
+            } else {
+                console.error('[VivMarble] Delete room error:', data.error);
+                alert(data.error || '방 삭제 실패');
+            }
+        } catch (err) {
+            console.error('[VivMarble] Delete room error:', err);
+            alert('방 삭제 중 오류 발생');
+        }
+    };
+
+    const handleResetRoom = async () => {
+        if (!confirm('정말로 이 방을 다시 시작 하시겠습니까?')) {
+            return;
+        }
+        try {
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'resetGame', roomId, playerId })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log('[VivMarble] Reset room:', roomId);
+                alert('게임이 초기화되었습니다.');
+                // 상태는 Firebase 리스너가 자동 갱신
+            } else {
+                console.error('[VivMarble] Reset room error:', data.error);
+                alert(data.error || '방 초기화 실패');
+            }
+        } catch (err) {
+            console.error('[VivMarble] Reset room error:', err);
+            alert('방 초기화 중 오류 발생');
+        }
+    };
     const buildDice = () => {
         const pipMap = {
             1: ['pos-c'],
@@ -115,10 +191,10 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             );
         }
         return faces;
-    };
+    }
 
     const rollDice = async (playerId: number) => {
-        if (currentRollingPlayerId != null) return;
+        if (currentRollingPlayerId != null || currentTurn !== playerId) return;
         setCurrentRollingPlayerId(playerId);
         try {
             const res = await fetch('/api/marble', {
@@ -129,14 +205,16 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             const data = await res.json();
             if (res.ok) {
                 setLastDiceRoll({ playerId, value: data.diceResult, timestamp: Date.now() });
-                animateDice(data.diceResult, 2000, 1080, playerId, () => {
+                animateDice(data.diceResult, 4000, 2016, playerId, () => {
                     moveToken(playerId, data.diceResult);
                 });
             } else {
+                console.error('[VivMarble] Roll dice error:', data.error);
                 throw new Error(data.error);
             }
         } catch (err) {
-            console.error('[RollDice] Error:', err);
+            console.error('[VivMarble] Roll dice error:', err);
+            alert('주사위 굴리기 실패');
         } finally {
             setCurrentRollingPlayerId(null);
         }
@@ -150,9 +228,12 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 body: JSON.stringify({ action: 'moveToken', roomId, playerId, diceValue })
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
+            if (!res.ok) {
+                console.error('[VivMarble] Move token error:', data.error);
+                throw new Error(data.error);
+            }
         } catch (err) {
-            console.error('[MoveToken] Error:', err);
+            console.error('[VivMarble] Move token error:', err);
         }
     };
 
@@ -165,6 +246,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
         const diceEl = document.getElementById('dice');
         if (!diceEl) return;
 
+        diceEl.classList.remove(styles.hidden);
+        diceEl.style.display = 'block'; // 명시적 표시
+
         const animate = (currentTime: number) => {
             const elapsed = (currentTime - startTime) / 1000;
             const progress = Math.min(elapsed / (duration / 1000), 1);
@@ -175,37 +259,42 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             if (progress < 0.5) scale = 1 + 0.15 * (progress / 0.5);
             else if (progress < 0.75) scale = 1.15 - 0.2 * ((progress - 0.5) / 0.25);
             else scale = 0.95 + 0.05 * ((progress - 0.75) / 0.25);
-            diceEl.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${scale})`;
+            diceEl.style.transform = `translate(-50%, -50%) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${scale})`;
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                diceEl.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg) scale(1)`;
-                if (onAnimationEnd) onAnimationEnd();
+
+                setTimeout(() => {
+                    // diceEl.classList.add(styles.hidden);
+                    diceEl.style.transform = `translate(-50%, -50%) scale(1)`; // 3D 회전 제거
+                    diceEl.style.display = 'none';
+                    if (onAnimationEnd) onAnimationEnd();
+                }, 2000);
             }
         };
         requestAnimationFrame(animate);
     };
-
     const buildBoard = () => {
         const cells = [];
         for (let i = 1; i <= 100; i++) {
             const red = colorGroup?.red.some(x => x === i);
             const sky = colorGroup?.sky.some(x => x === i);
-            const bgColor = red ? '!bg-red-200' : sky ? '!bg-sky-200' : styles.cell;
+            const bgColor = red ? `${styles.cell} !bg-red-200` : sky ? `${styles.cell} !bg-sky-200` : styles.cell;
             const playersInCell = players.filter(p => p.position === i);
             cells.push(
                 <div key={i} className={bgColor} id={`cell-${i}`}>
                     <span className={styles.idx}>{i}</span>
                     <div className={styles.playerContainer}>
                         {playersInCell.map((player, index) => (
-                            <div key={player.playerId} className={styles.tokenWrapper} style={{ zIndex: index + 1 }}>
+                            <div key={player.playerId}
+                                className={styles.tokenWrapper} style={{ zIndex: index + 1 }}>
                                 <Image
                                     className={styles.token}
                                     data-player-id={player.playerId}
                                     width={30}
                                     height={30}
                                     src={`/assets/images/${player.char}`}
-                                    alt={`Player ${player.playerId} Token`}
+                                    alt=''
                                     priority={player.position === 1}
                                 />
                             </div>
@@ -218,6 +307,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     };
 
     if (isLoading) return <div className="flex justify-center items-center">로딩 중...</div>;
+
+    const currentPlayer = players.find(p => p.playerId === playerId);
+    // const isMyTurn = currentTurn === playerId;
 
     if (status === 'waiting') {
         return (
@@ -234,35 +326,67 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     return (
         <div className={`${styles.game} min-h-screen w-full`}>
             <h1 className="text-2xl font-bold text-center my-4">{title}</h1>
-            <div className="h-24 flex justify-center my-12 w-full">
-                <div id="dice" className={styles.dice}>{buildDice()}</div>
+            <div className="text-center mb-4">
+                내 캐릭터: {currentPlayer ? currentPlayer.char.split('.')[0] : '알 수 없음'}
+                {playerId === creatorId && <span className="text-blue-500 ml-2">(방장)</span>}
             </div>
+
             <div className="flex flex-col items-center justify-center gap-4">
-                <div id="board" className={`${styles.board} relative w-full !bg-yellow-400 !justify-center`}>
+                <div id="board" className={`${styles.board}
+                relative w-full
+                !justify-center`}>
                     {buildBoard()}
+                    <div id="dice" className={`${styles.dice} absolute-center`}>
+                        {buildDice()}
+                    </div>
                 </div>
-                <div className="flex justify-center w-full gap-2 items-center mt-4">
+                <div className="flex justify-center items-center text-slate-500 text-xs gap-4 h-12">
+                    <span> 플레이어 ( {players.length} / 4 )</span>
+                    <span>
+                        현재 턴  [ {currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char.split('.')[0]
+                            || '알 수 없음' : '없음'} ]
+
+                    </span>
+                    {lastDiceRoll && (
+                        <span>
+                            현재 플레이어 : {players.find(p => p.playerId === lastDiceRoll.playerId)?.char.split('.')[0] || lastDiceRoll.playerId}
+                        </span>
+
+                    )}
+                    {!lastDiceRoll && (
+                        <span className='h-12 flex items-center px-4'>
+                            직전 플레이어 [ {score?.name} ] 의 주사위 숫자 [ {score?.score} ]
+                        </span>
+                    )}
+                </div>
+                <div className="flex justify-center w-full gap-2 items-center">
                     {players.map(player => (
                         <button
                             key={player.playerId}
-                            className={`${styles.button} ${currentRollingPlayerId === player.playerId ? styles.rolling : ''} ${currentRollingPlayerId !== null && currentRollingPlayerId !== player.playerId ? styles.disabled : ''}`}
+                            className={`${styles.button} !w-full ${currentRollingPlayerId === player.playerId ? styles.rolling : ''
+                                } ${currentTurn !== player.playerId ? styles.disabled : ''}`}
                             onClick={() => rollDice(player.playerId)}
-                            disabled={currentRollingPlayerId !== null}
+                            disabled={playerId !== currentTurn}
+                            hidden={currentTurn !== player.playerId || currentRollingPlayerId !== null}
                         >
-                            {player.char.split('.')[0]}
-                            {player.playerId === creatorId ? '(방장)'
-                                : ''}
+                            {player.char.split('.')[0]} {player.playerId === creatorId ? '(방장)' : ''} {currentTurn === player.playerId ? '(턴)' : ''}
                         </button>
                     ))}
-                </div>
-                <div className="h-24 w-full flex justify-center">
-                    {lastDiceRoll && (
-                        <div className={styles.diceResultDisplay}>
-                            플레이어 {players.find(p => p.playerId === lastDiceRoll.playerId)?.char.split('.')[0] || lastDiceRoll.playerId} 주사위: {lastDiceRoll.value}
-                        </div>
+                    {playerId === creatorId && (
+                        <>
+                            <button onClick={handleDeleteRoom}
+                                className="bg-red-400 text-white w-48 px-4 py-2 cursor-pointer rounded-full hover:bg-red-600" >
+                                방 삭제
+                            </button>
+                            <button onClick={handleResetRoom}
+                                className="bg-amber-400 text-white w-48 px-4 py-2 cursor-pointer rounded-full hover:bg-amber-600" >
+                                방 갱신
+                            </button>
+                        </>
                     )}
                 </div>
-                <div className="text-center">플레이어: {players.length}/4</div>
+
+
             </div>
         </div>
     );
