@@ -2,6 +2,8 @@
 @api = https://localhost:55588
 @vivakrUrl = https://api.vivakr.com
 
+@bm = https://bm.vivabm.com
+
 
 ###
 GET {{vivakrUrl}}/api/code/user/99034af5-b584-4982-91ae-ff7ce615914e HTTP/1.1
@@ -16,7 +18,7 @@ GET {{api}}/api/test HTTP/1.1
 POST {{api}}/api/test HTTP/1.1
 
 ###
-GET {{vivakrUrl}}/api/category/list HTTP/1.1
+GET {{bm}}/api/quiz HTTP/1.1
 
 ###
 GET {{url}}/api/posts HTTP/1.1

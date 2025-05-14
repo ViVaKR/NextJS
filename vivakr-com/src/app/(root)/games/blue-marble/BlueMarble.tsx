@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import styles from './VivBlueMarble.module.css';
+import styles from './BlueMarble.module.css';
 import Image from 'next/image';
-import { db } from '@/lib/firebase/clientApp'
+import { db } from '@/lib/firebase/clientApp';
 import { ref, onValue, off, DataSnapshot } from 'firebase/database';
+
 interface ColorGroups {
     sky: number[];
     red: number[];
@@ -13,88 +14,71 @@ interface ColorGroups {
 type LastDiceInfo = {
     value: number;
     timestamp: any;
+    playerId: number;
 }
+
 type Player = {
-    id: number; // 플레이어 ID 추가
+    id: number;
     position: number;
     char: string;
     lastDice?: LastDiceInfo | null;
+    lastMoveTimestamp?: number | null;
+};
+
+type PlayerChar = {
+    id: number;
+    name: string;
+    isCreator: boolean;
 };
 
 type Players = { [key: number]: Player };
 
-// 게임 ID
 const GAME_Id = 'BlueMarble';
 
-function getRandomNumbers(count: number, max: number): number[] {
-    if (count > max) {
-        throw new Error('count는 max보다 클 수 없습니다.');
-    }
-    if (count < 0 || max <= 0) {
-        throw new Error('count와 max는 양수여야 합니다.');
-    }
-    const numbers: number[] = Array.from({ length: max }, (_, i) => i + 1);
-    for (let i = 0; i < count; i++) {
-        const j = Math.floor(Math.random() * (max - i)) + i;
-        [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-    }
-    return numbers.slice(0, count);
-}
-
-function getColoredRandomNumbers(max: number): ColorGroups {
-    if (max < 10) {
-        throw new Error('max는 10 이상이어야 합니다.');
-    }
-    // 1단계: 1~max에서 10개 뽑기
-    const numbers = getRandomNumbers(10, max);
-    console.log('Selected 10 numbers:', numbers);
-    // 2단계: 10개 중 3개(blue)와 7개(red)로 나누기
-    const shuffled = [...numbers];
-    for (let i = 0; i < 3; i++) {
-        const j = Math.floor(Math.random() * (10 - i)) + i;
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    const sky = shuffled.slice(0, 3);
-    const red = shuffled.slice(3);
-    return { sky, red };
-}
-
-export default function VivBlueMarble() {
-
+export default function BlueMarble({ currentPlayerId = 0 }: { currentPlayerId?: number }) {
     const [players, setPlayers] = useState<Players>({});
-    const [currentRollingPlayerId, setCurrentRollingPlayerId] = useState<number | null>(null); // 현재 주사위 굴리는 플레이어 (로컬 UI용)
+    const [currentRollingPlayerId, setCurrentRollingPlayerId] = useState<number | null>(null);
     const [lastDiceRoll, setLastDiceRoll] = useState<{ playerId: number, value: number } | null>(null);
     const [isResetting, setIsResetting] = useState(false);
     const [colorGroup, setColorGroup] = useState<ColorGroups>();
     const [isLoading, setIsLoading] = useState(true);
+    const [lastProcessedRoll, setLastProcessedRoll] = useState<string | null>(null);
 
-    const playerChars = [
-        { id: 0, name: "vivakr.webp" },
-        { id: 1, name: "smile.webp" },
-        { id: 2, name: "man.webp" },
-        { id: 3, name: "buddha.webp" }
+    const playerChars: PlayerChar[] = [
+        { id: 0, name: "vivakr.webp", isCreator: true },
+        { id: 1, name: "smile.webp", isCreator: false },
+        { id: 2, name: "man.webp", isCreator: false },
+        { id: 3, name: "buddha.webp", isCreator: false }
     ];
 
     useEffect(() => {
         const gameRef = ref(db, `games/${GAME_Id}`);
-        const unsubscribe = onValue(gameRef,
+        const unsubscribe = onValue(
+            gameRef,
             (snapshot: DataSnapshot) => {
                 if (snapshot.exists()) {
                     const gameData = snapshot.val();
-
                     if (gameData.players) {
                         const formatted = formatPlayerData(gameData.players);
                         setPlayers(formatted);
                     } else {
                         setPlayers({});
                     }
+
+                    if (gameData.colorGroup) {
+                        setColorGroup(gameData.colorGroup);
+                    } else {
+                        setColorGroup(undefined);
+                    }
                     setIsLoading(false);
                 } else {
                     setIsLoading(false);
                 }
-            }, (e) => {
+            },
+            (e) => {
                 setIsLoading(false);
-            });
+            }
+        );
 
         return () => {
             off(gameRef);
@@ -104,15 +88,58 @@ export default function VivBlueMarble() {
     }, [GAME_Id]);
 
     useEffect(() => {
+        const lastRollRef = ref(db, `games/${GAME_Id}/lastRoll`);
+        const unsubscribe = onValue(
+            lastRollRef,
+            (snapshot: DataSnapshot) => {
+                if (snapshot.exists()) {
+                    const rollData = snapshot.val();
+
+                    if (rollData && typeof rollData.playerId === 'number' && typeof rollData.value === 'number') {
+                        const rollKey = `${rollData.playerId}:${rollData.timestamp}`;
+                        if (rollKey !== lastProcessedRoll) {
+                            setLastDiceRoll({
+                                playerId: rollData.playerId,
+                                value: rollData.value
+                            });
+                            setLastProcessedRoll(rollKey);
+
+                            animateDice(rollData.value, 2000, 1080, rollData.playerId);
+                        } else {
+                            console.log('[LastRoll Listener] Skipping duplicate roll:', rollKey);
+                        }
+                    } else {
+                        console.warn('[LastRoll Listener] Invalid roll data:', rollData);
+                    }
+                } else {
+                    console.log('[LastRoll Listener] lastRoll is null');
+                    setLastDiceRoll(null);
+                }
+            },
+            (e) => {
+                console.error('[LastRoll Listener] Error:', e);
+            }
+        );
+
+        console.log('[LastRoll Listener] Subscribed');
+        return () => {
+            off(lastRollRef);
+            unsubscribe();
+            console.log('[LastRoll Listener] Unsubscribed');
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lastProcessedRoll]);
+
+    useEffect(() => {
         const initializeGameOnServer = async () => {
             try {
                 await fetch('/api/firebase', { method: 'GET' });
             } catch (err) {
-                console.error(err);
+                console.error('[InitializeGame] Error:', err);
             }
         };
         initializeGameOnServer();
-        setColorGroup(getColoredRandomNumbers(100));
+        // setColorGroup(getColoredRandomNumbers(100));
     }, []);
 
     const buildDice = () => {
@@ -127,17 +154,17 @@ export default function VivBlueMarble() {
 
         const faces = [];
         for (let f = 1; f <= 6; f++) {
-            const pips = pipMap[f as keyof typeof pipMap]
-                .map((pos: string, idx: number) => (
-                    <div key={idx} className={`${styles.pip} ${styles[pos]}`} />
-                ));
-            faces.push(<div
-                key={f}
-                className={`${styles.face} ${styles[`face-${f}`]}`}
-                data-face={f} // 번호속성 추가
-            >
-                {pips}
-            </div>
+            const pips = pipMap[f as keyof typeof pipMap].map((pos: string, idx: number) => (
+                <div key={idx} className={`${styles.pip} ${styles[pos]}`} />
+            ));
+            faces.push(
+                <div
+                    key={f}
+                    className={`${styles.face} ${styles[`face-${f}`]}`}
+                    data-face={f}
+                >
+                    {pips}
+                </div>
             );
         }
         return faces;
@@ -145,6 +172,7 @@ export default function VivBlueMarble() {
 
     const moveToken = async (playerId: number, diceValue: number) => {
         try {
+            console.log(`[MoveToken] Requesting for player ${playerId}, diceValue=${diceValue}`);
             const res = await fetch(`/api/firebase`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -161,20 +189,23 @@ export default function VivBlueMarble() {
             console.error(`[MoveToken] 오류 (플레이어 ${playerId}):`, err);
         }
     };
+
     const easeOutQuad = (t: number) => 1 - (1 - t) * (1 - t);
 
-    const animateDice = (result: number,
+    const animateDice = (
+        result: number,
         duration: number,
         spins: number,
         playerId: number,
-        onAnimationEnd?: () => void) => {
+        onAnimationEnd?: () => void
+    ) => {
         const rotMap = {
-            1: [0, 0], // 면 1
-            2: [0, -90], // 면 2
-            3: [0, 180], // 면 3
-            4: [0, 90], // 면 4
-            5: [-90, 0], // 면 5
-            6: [90, 0] // 면 6
+            1: [0, 0],
+            2: [0, -90],
+            3: [0, 180],
+            4: [0, 90],
+            5: [-90, 0],
+            6: [90, 0]
         };
 
         const [targetX, targetY] = rotMap[result as keyof typeof rotMap];
@@ -182,17 +213,21 @@ export default function VivBlueMarble() {
         const startTime = performance.now();
         const diceEl = document.getElementById('dice');
 
-        if (!diceEl) return;
+        if (!diceEl) {
+            console.error('[AnimateDice] Dice element not found');
+            return;
+        }
+
+        console.log(`[AnimateDice] Starting for player ${playerId}, result=${result}`);
 
         const animate = (currentTime: number) => {
             const elapsed = (currentTime - startTime) / 1000;
             const progress = Math.min(elapsed / (duration / 1000), 1);
             const eased = easeOutQuad(progress);
-            const rotX = targetX + spins * (1 - eased); // 종료 시 정확한 각도로
+            const rotX = targetX + spins * (1 - eased);
             const rotY = targetY + spins * (1 - eased);
 
             let scale = 1;
-
             if (progress < 0.5) scale = 1 + 0.15 * (progress / 0.5);
             else if (progress < 0.75) scale = 1.15 - 0.2 * ((progress - 0.5) / 0.25);
             else scale = 0.95 + 0.05 * ((progress - 0.75) / 0.25);
@@ -202,9 +237,9 @@ export default function VivBlueMarble() {
                 requestAnimationFrame(animate);
             } else {
                 diceEl.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg) scale(1)`;
-                moveToken(playerId, result);
+                console.log(`[AnimateDice] Completed for player ${playerId}`);
                 if (onAnimationEnd) {
-                    onAnimationEnd(); // 애니메이션 종료 시 콜백 호출
+                    onAnimationEnd();
                 }
             }
         };
@@ -212,110 +247,113 @@ export default function VivBlueMarble() {
     };
 
     const rollDice = async (playerId: number) => {
-        if (currentRollingPlayerId != null) return;
+        if (currentRollingPlayerId != null) {
+            console.log(`[RollDice] Already rolling, ignoring for player ${playerId}`);
+            return;
+        }
         setCurrentRollingPlayerId(playerId);
+        console.log(`[RollDice] Starting for player ${playerId}`);
 
         try {
             const res = await fetch(`/api/firebase`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'rollDice', playerId: playerId })
+                body: JSON.stringify({ action: 'rollDice', playerId })
             });
 
-            // 추가
             if (!res.ok) {
                 throw new Error(`HTTP error! Status: ${res.status}`);
             }
 
             const data = await res.json();
-            const { diceResult } = data;
-            setLastDiceRoll({ playerId, value: diceResult });
-            // 주사위 애니메이션 시작
-            animateDice(diceResult, 2000, 1080, playerId);
-
+            console.log(`[RollDice] Server response:`, data);
+            setLastDiceRoll({ playerId, value: data.diceResult });
+            animateDice(data.diceResult, 2000, 1080, playerId, () => {
+                moveToken(playerId, data.diceResult);
+            });
         } catch (err) {
             console.error(`[RollDice] 오류 (플레이어 ${playerId}):`, err);
         } finally {
             setCurrentRollingPlayerId(null);
+            console.log(`[RollDice] Completed for player ${playerId}`);
         }
     };
 
     const handleResetGame = async () => {
-        if (isResetting || currentRollingPlayerId != null) return;
-        setIsResetting(true); // 리셋 시작 상태
-        setColorGroup(getColoredRandomNumbers(100)); // 클라이언트 UI 용
+        if (isResetting || currentRollingPlayerId != null) {
+            console.log('[ResetGame] Resetting or rolling, ignoring');
+            return;
+        }
+        setIsResetting(true);
+        // setColorGroup(getColoredRandomNumbers(100));
 
         try {
             const res = await fetch('/api/firebase', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'resetGame' }) // 리셋 액션 요청
+                body: JSON.stringify({ action: 'resetGame' })
             });
 
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.error || `HTTP 에러! Status: ${res.status}`);
             }
+            console.log('[ResetGame] Server reset completed');
         } catch (err: any) {
-            console.error('[ResetButton] 게임 리셋 오류:', err);
+            console.error('[ResetGame] 게임 리셋 오류:', err);
         } finally {
             setIsResetting(false);
-            setCurrentRollingPlayerId(null); // 롤링 상태도 초기화
-            setLastDiceRoll(null); // 주사위 결과도 초기화
-            console.log('[ResetButton] 게임 리셋 요청 완료.');
+            setCurrentRollingPlayerId(null);
+            setLastDiceRoll(null);
+            setLastProcessedRoll(null);
+            console.log('[ResetGame] Reset completed');
         }
     };
 
-    // 데이터 포맷 함수 (Firebase 응답을 Players 타입으로 변환)
     const formatPlayerData = (firebaseData: any): Players => {
         const formattedPlayers: Players = {};
         if (!firebaseData) return formattedPlayers;
         for (const key in firebaseData) {
             const id = parseInt(key, 10);
             if (!isNaN(id) && playerChars.some(p => p.id === id)) {
-                // Firebase에서 position이 없을 경우 기본값 1로 설정
                 const position = firebaseData[key].position !== undefined ? firebaseData[key].position : 1;
                 formattedPlayers[id] = {
                     ...firebaseData[key],
                     id: id,
-                    position: position, // 기본값 처리
-                    lastDice: firebaseData[key].lastDice || null
+                    position: position,
+                    lastDice: firebaseData[key].lastDice || null,
+                    lastMoveTimestamp: firebaseData[key].lastMoveTimestamp || null
                 };
             }
         }
         return formattedPlayers;
-    }
+    };
 
-    if (isLoading) return <div className="flex justify-center items-center">게임 데이터 로딩 중</div>
+    if (isLoading) return <div className="flex justify-center items-center">게임 데이터 로딩 중</div>;
 
     const buildBoard = () => {
         const cells = [];
         for (let i = 1; i <= 100; i++) {
-
-            // 해당 셀에 위치한 모든 플레이어를 찾음
             const red = colorGroup?.red.some(x => x === i);
             const sky = colorGroup?.sky.some(x => x === i);
             const bgColor = (red ? '!bg-red-200' : (sky ? '!bg-sky-200' : `${styles.cell}`));
 
-            const playersInCell = Object.values(players)
-                .filter(p => p.position === i);
+            const playersInCell = Object.values(players).filter(p => p.position === i);
 
             cells.push(
                 <div key={i} className={`${bgColor}`} id={`cell-${i}`}>
                     <span className={styles.idx}>{i}</span>
-
-                    {/* 플레이어 토큰들을 담을 컨테이너 */}
                     <div className={styles.playerContainer}>
                         {playersInCell.map((player, index) => (
                             <div key={player.id} className={styles.tokenWrapper} style={{ zIndex: index + 1 }}>
                                 <Image
-                                    className={styles.token} // 스타일 적용 확인
-                                    data-player-id={player.id} // 플레이어 식별용 데이터 속성
-                                    width={30} // 크기 약간 줄임 (겹칠 경우 대비)
+                                    className={styles.token}
+                                    data-player-id={player.id}
+                                    width={30}
                                     height={30}
                                     src={`/assets/images/${player.char}`}
                                     alt={`Player ${player.id} Token`}
-                                    priority={player.position === 1} // 시작 토큰 우선 로드
+                                    priority={player.position === 1}
                                 />
                             </div>
                         ))}
@@ -326,54 +364,61 @@ export default function VivBlueMarble() {
         return cells;
     };
 
+    const playerCount = Object.keys(players).length;
+    const isCreator = currentPlayerId === 0;
+    const canReset = isCreator && playerCount > 1;
+
     return (
         <div className={`${styles.game} min-h-screen w-full`}>
-            {/* 주사위 */}
             <div className='h-24 flex justify-center my-12 w-full'>
                 <div id="dice" className={styles.dice}>
                     {buildDice()}
                 </div>
             </div>
-
             <div className='flex flex-col items-center justify-center gap-4'>
-                {/* 보드판 */}
-                <div id="board"
-                    className={`${styles.board} relative w-full !bg-yellow-400 !justify-center`}>
-                    {/* Firebase 데이터 기반으로 보드 다시 그림 */}
+                <div id="board" className={`${styles.board} relative w-full !bg-yellow-400 !justify-center`}>
                     {buildBoard()}
                 </div>
-
-                {/* 플레이어 버튼 */}
                 <div className='flex justify-center w-full gap-2 items-center mt-4'>
                     {playerChars.map(player => (
                         <button
                             key={player.id}
                             className={`${styles.button}
-                            ${currentRollingPlayerId === player.id ? styles.rolling : ''}
-                            ${currentRollingPlayerId !== null
-                                    && currentRollingPlayerId !== player.id
-                                    ? styles.disabled
-                                    : ''}`}
+                                ${currentRollingPlayerId === player.id ? styles.rolling : ''}
+                                ${currentRollingPlayerId !== null && currentRollingPlayerId !== player.id ? styles.disabled : ''}`}
                             onClick={() => rollDice(player.id)}
-                            disabled={currentRollingPlayerId !== null /* || !players[player.id]?.isTurn */}
+                            disabled={currentRollingPlayerId !== null}
                         >
-                            {player.name.split('.')[0]} {/* 이름 표시 (예: 믿어핑) */}
+                            {player.name.split('.')[0]}
+                            {player.isCreator ? ' (방장)' : ''}
                         </button>
                     ))}
-
-                    <button
-                        className={`${styles.button} ${styles.resetButton}`} // 추가 스타일링 위해 클래스 부여 가능
-                        onClick={handleResetGame}
-                        disabled={isResetting || currentRollingPlayerId !== null} // 리셋 중이거나 롤링 중이면 비활성화
-                    >
-                        {isResetting ? '초기화 중...' : '게임 다시 시작'}
-                    </button>
+                    {isCreator && (
+                        <button
+                            className={`${styles.button}
+                            ${styles.resetButton}
+                            ${!canReset ? 'disabled' : ''}
+                            `}
+                            onClick={handleResetGame}
+                            disabled={isResetting
+                                || !canReset
+                                || currentRollingPlayerId !== null}
+                        >
+                            {isResetting ? '초기화 중...' : '게임 시작'}
+                        </button>
+                    )}
                 </div>
                 <div className='h-24 w-full flex justify-center'>
                     {lastDiceRoll && (
                         <div className={styles.diceResultDisplay}>
                             플레이어 {lastDiceRoll.playerId + 1} 주사위: {lastDiceRoll.value}
                         </div>
+                    )}
+                </div>
+                <div className='text-center'>
+                    현재 플레이어: {playerCount}/4
+                    {!canReset && isCreator && (
+                        <p className='text-red-500'>2명 이상 4명 모두 참여해야 게임을 시작할 수 있습니다.</p>
                     )}
                 </div>
             </div>

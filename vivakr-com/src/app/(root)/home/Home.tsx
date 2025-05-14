@@ -46,6 +46,7 @@ export default function Home() {
     }
     getIpInfo()
     setIpArray(info?.ip?.split('.'));
+    console.log(process.cwd())
 
   }, [info?.ip]);
 

@@ -1,0 +1,201 @@
+/* VivMarble.module.css */
+.game {
+  --board-size: 60px;
+  --token-size: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, var(--board-size));
+  gap: 5px;
+  padding: 1rem;
+  background: #f0f0f0;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.cell {
+  width: var(--board-size);
+  height: var(--board-size);
+  background: white;
+  border: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.idx {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #b0a8a8;
+  z-index: 10;
+}
+
+.playerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: -12px;
+  width: 100%;
+  padding-bottom: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.tokenWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: none;
+  position: static;
+}
+
+.token {
+  width: var(--token-size);
+  height: var(--token-size);
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  display: block;
+  position: relative;
+  z-index: inherit;
+}
+
+.dice {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.pip {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: black;
+  border-radius: 50%;
+}
+
+.pos-tl {
+  top: 10px;
+  left: 10px;
+}
+.pos-tr {
+  top: 10px;
+  right: 10px;
+}
+.pos-bl {
+  bottom: 10px;
+  left: 10px;
+}
+.pos-br {
+  bottom: 10px;
+  right: 10px;
+}
+.pos-c {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.pos-lt {
+  top: 10px;
+  left: 10px;
+}
+.pos-lm {
+  top: 40px;
+  left: 10px;
+}
+.pos-lb {
+  top: 70px;
+  left: 10px;
+}
+.pos-rt {
+  top: 10px;
+  right: 10px;
+}
+.pos-rm {
+  top: 40px;
+  right: 10px;
+}
+.pos-rb {
+  top: 70px;
+  right: 10px;
+}
+
+.face {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: white;
+  border: 2px solid #333;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.face-1 {
+  transform: translateZ(50px);
+}
+.face-2 {
+  transform: rotateY(90deg) translateZ(50px);
+}
+.face-3 {
+  transform: rotateY(180deg) translateZ(50px);
+}
+.face-4 {
+  transform: rotateY(-90deg) translateZ(50px);
+}
+.face-5 {
+  transform: rotateX(90deg) translateZ(50px);
+}
+.face-6 {
+  transform: rotateX(-90deg) translateZ(50px);
+}
+
+.button {
+  padding: 12px 20px;
+  background-color: #38bdf8;
+  color: #f8fafc;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  margin: 0 8px;
+  font-weight: bold;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #0ea5e9;
+}
+
+.button:disabled {
+  background-color: #94a3b8;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button.rolling {
+  background-color: #facc15;
+  color: #44403c;
+}
+
+.diceResultDisplay {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  min-height: 1.5em;
+}
