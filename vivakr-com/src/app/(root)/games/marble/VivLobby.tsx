@@ -90,19 +90,33 @@ export default function VivLobby() {
             const joinData = await joinRes.json();
 
             if (joinRes.ok) {
-                console.log('[VivLobby] Created and joined room:', createData.roomId);
                 router.push(`/games/marble/${createData.roomId}?playerId=${selectedPlayerId}`);
             } else {
                 alert(joinData.error || '방 입장 실패');
                 setIsCreating(false);
             }
         } catch (err) {
-            console.error('[VivLobby] Create room error:', err);
             alert('방 생성 또는 입장 중 오류 발생');
             setIsCreating(false);
         }
     };
 
+    const handleForceDeleteRoom = async (roomId: string) => {
+        try {
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'forceDeleteRoom', roomId, playerId: selectedPlayerId })
+            });
+            const data = await res.json();
+            if (res.ok) {
+            } else {
+                alert(data.error || '방 삭제 실패');
+            }
+        } catch (err) {
+            alert('방 삭제 중 오류 발생');
+        }
+    };
     const handleDeleteRoom = async (roomId: string) => {
         if (!confirm('정말로 이 방을 삭제하시겠습니까?')) {
             return;
@@ -115,12 +129,10 @@ export default function VivLobby() {
             });
             const data = await res.json();
             if (res.ok) {
-                console.log('[VivLobby] Deleted room:', roomId);
             } else {
                 alert(data.error || '방 삭제 실패');
             }
         } catch (err) {
-            console.error('[VivLobby] Delete room error:', err);
             alert('방 삭제 중 오류 발생');
         }
     };
@@ -161,6 +173,98 @@ export default function VivLobby() {
     return (
         <div className="min-h-screen bg-slate-100 p-8 flex flex-col items-center">
             <VivTitle title='푸른 구슬의 전설' />
+
+            <div className="w-full max-w-md">
+                <>
+                    <h2 className="text-xl font-semibold mb-4 text-slate-400 text-center">방 목록</h2>
+                    {rooms.length === 0 ? (
+                        <p className='text-slate-400 text-sm'>아직 생성된 방이 없습니다. 방 생성을 통하여 방을 만드세요...</p>
+                    ) : (
+
+                        rooms.map((room) => (
+                            <div key={room.id}
+                                className="bg-white p-4 rounded-lg
+                                            shadow-md mb-4
+                                            flex justify-between
+                                            items-center" >
+                                <div className='w-32 flex flex-col items-center justify-baseline py-8'>
+                                    <h3 className="font-bold text-sky-700">{room.title}</h3>
+                                    <p className='text-xs text-slate-400'>
+                                        {room.status === 'waiting' ? '대기중 ' : '게임중 '}
+                                        <span className='text-red-400 text-nowrap font-bold'>
+                                            ( {room.playerCount} / 4 )
+
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center w-full gap-2">
+
+                                    <FormControl variant="filled" sx={{ width: '100%' }}>
+                                        <InputLabel id={`join-char-label-${room.id}`}>캐릭터</InputLabel>
+                                        <Select
+                                            labelId={`join-char-label-${room.id}`}
+                                            value={selectedRoomId === room.id ? (selectedPlayerId?.toString() ?? '') : ''}
+                                            onChange={(e) => {
+                                                setSelectedRoomId(room.id);
+                                                handlePlayerChange(e);
+                                            }}
+                                            disabled={room.status !== 'waiting' || room.playerCount >= 4}
+                                        >
+                                            <MenuItem value=""> <em>선택 안함</em> </MenuItem>
+
+                                            {playerChars.map((char, idx) => (
+                                                <MenuItem
+                                                    key={idx}
+                                                    value={char.id.toString()}
+                                                    disabled={!!room.players[char.id]} > {char.name.split('.')[0]}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+
+                                    <button onClick={() => handleJoinRoom(room.id, room.players)}
+                                        disabled={
+                                            room.status !== 'waiting' ||
+                                            room.playerCount >= 4 ||
+                                            selectedPlayerId === null ||
+                                            selectedRoomId !== room.id
+                                        }
+                                        className="bg-sky-400 text-white
+                                                     p-2 rounded-full cursor-pointer w-24
+                                                    hover:bg-green-600
+                                                    disabled:bg-gray-400">
+                                        입장
+                                    </button>
+
+                                    {/* {selectedPlayerId === room.creatorId && (
+                                    <button
+                                        onClick={() => handleDeleteRoom(room.id)}
+                                        className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                                    >
+                                        삭제
+                                    </button>
+                                    )} */}
+
+                                    <button
+                                        onClick={() => handleForceDeleteRoom(room.id)}
+                                        className="bg-slate-400
+                                                   text-white
+                                                    cursor-pointer w-16
+                                                    p-2
+                                                    rounded-full
+                                                   hover:bg-red-600">
+                                        삭제
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+
+                    )}
+
+                </>
+            </div>
+
             <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mb-6">
                 <h2 className="text-xl font-semibold mb-4 text-amber-800 text-center">방 만들기</h2>
                 <p className='text-xs text-slate-400'>
@@ -187,7 +291,7 @@ export default function VivLobby() {
                         </MenuItem>
                         {playerChars.map((char) => (
                             <MenuItem key={char.id}
-                                className='!text-3xl !font-extrabold !text-sky-800'
+                                className='!text-base !font-extrabold !text-sky-800'
                                 value={char.id.toString()}>
                                 {char.name.split('.')[0]}
                             </MenuItem>
@@ -197,83 +301,15 @@ export default function VivLobby() {
                 <button
                     onClick={handleCreateRoom}
                     disabled={!newRoomTitle.trim() || selectedPlayerId === null || isCreating}
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="w-full
+                    bg-blue-500 text-white
+                    p-2 rounded
+                    hover:bg-blue-600
+                    cursor-pointer
+                    disabled:bg-gray-400"
                 >
                     방 생성
                 </button>
-            </div>
-            <div className="w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4 text-blue-400">방 목록</h2>
-                {rooms.length === 0 ? (
-                    <p className='text-slate-400 text-sm'>아직 생성된 방이 없습니다. 방 생성을 통하여 방을 만드세요...</p>
-                ) : (
-                    rooms.map((room) => (
-                        <div
-                            key={room.id}
-                            className="bg-white p-4 rounded-lg shadow-md mb-4 flex justify-between items-center"
-                        >
-                            <div>
-                                <h3 className="font-bold">{room.title}</h3>
-                                <p>상태: {room.status === 'waiting' ? '대기중' : '게임중'}</p>
-                                <p>플레이어: {room.playerCount}/4</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <FormControl variant="filled" sx={{ minWidth: 120 }}>
-                                    <InputLabel id={`join-char-label-${room.id}`}>캐릭터</InputLabel>
-                                    <Select
-                                        labelId={`join-char-label-${room.id}`}
-                                        value={selectedRoomId === room.id ? (selectedPlayerId?.toString() ?? '') : ''}
-                                        onChange={(e) => {
-                                            setSelectedRoomId(room.id);
-                                            handlePlayerChange(e);
-                                        }}
-                                        disabled={room.status !== 'waiting' || room.playerCount >= 4}
-                                    >
-                                        <MenuItem value="">
-                                            <em>선택 안함</em>
-                                        </MenuItem>
-                                        {playerChars.map((char) => (
-                                            <MenuItem
-                                                key={char.id}
-                                                value={char.id.toString()}
-                                                disabled={!!room.players[char.id]}
-                                            >
-                                                {char.name.split('.')[0]}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                <button
-                                    onClick={() => handleJoinRoom(room.id, room.players)}
-                                    disabled={
-                                        room.status !== 'waiting' ||
-                                        room.playerCount >= 4 ||
-                                        selectedPlayerId === null ||
-                                        selectedRoomId !== room.id
-                                    }
-                                    className="bg-green-500 text-white p-2 rounded
-                                    hover:bg-green-600 disabled:bg-gray-400"
-                                >
-                                    입장
-                                </button>
-                                {/* <button
-                                    onClick={() => handleDeleteRoom(room.id)}
-                                    className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                                >
-                                    삭제
-                                </button> */}
-                                {selectedPlayerId === room.creatorId && (
-                                    <button
-                                        onClick={() => handleDeleteRoom(room.id)}
-                                        className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                                    >
-                                        삭제
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))
-                )}
             </div>
         </div>
     );

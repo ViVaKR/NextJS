@@ -17,7 +17,6 @@ const MarbleRoomPage: NextPage<Props> = async ({ params, searchParams }) => {
 
     // roomId가 유효하지 않을 경우 404 처리
     if (!resolvedParams.roomId) {
-        console.error('[GamePage] Invalid roomId:', resolvedParams.roomId);
         return notFound();
     }
 
@@ -28,7 +27,6 @@ const MarbleRoomPage: NextPage<Props> = async ({ params, searchParams }) => {
 
     return (
         <div className="w-full min-h-screen bg-slate-100 p-8">
-            <VivTitle title="푸른구슬의 전설" />
             {playerId !== null ? (
                 <VivMarble roomId={resolvedParams.roomId} playerId={playerId} />
             ) : (

@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     if (protectedPaths.some((path) => pathname.startsWith(path))) {
 
         if (!userToken) {
-            const signInUrl = new URL('/membership/sign-in', request.url);
+            const signInUrl = new URL('/', request.url);
             signInUrl.searchParams.set('redirect', pathname);
             return NextResponse.redirect(signInUrl);
         }
@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
         try {
             decoded = jwtDecode(userToken);
         } catch (error) {
-            const signInUrl = new URL('/membership/sign-in', request.url);
+            const signInUrl = new URL('/', request.url);
             return NextResponse.redirect(signInUrl);
         }
 
@@ -53,7 +53,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/membership/((?!sign-in|sign-up|unauthorized).*)', // /membership/ 하위 경로 중 sign-in, sign-up, unauthorized 제외
-        '/google-map/:path*', // maps 및 하위 경로 모두 포함..
+    matcher: ['/membership/((?!sign-in|sign-up|unauthorized).*)',
+        // /membership/ 하위 경로 중 sign-in, sign-up, unauthorized 제외
+        // maps 및 하위 경로 모두 포함
+        '/google-map/:path*',
     ],
 };

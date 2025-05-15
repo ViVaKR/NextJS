@@ -19,11 +19,7 @@ export default function VivTitle({
   return (
     <h2
       className={`${fontColor ?? 'text-sky-800'}
-        ${cute.className}
-          rounded-full
-          flex items-center
-          justify-center
-          text-center`}>
+        ${cute.className} rounded-full flex items-center justify-center text-center`}>
       <DesktopMacOutlinedIcon sx={{ mr: 1 }} />
       {title}
     </h2>

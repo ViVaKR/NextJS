@@ -36,9 +36,9 @@ const playerChars = [
 export default function WaitingRoom({ roomId, playerId, creatorId, title, onStartGame }: WaitingRoomProps) {
     const [players, setPlayers] = useState<Player[]>([]);
     const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(playerId);
-    const [isLeaving, setIsLeaving] = useState(false);
-    const isMounted = useRef(true);
-    const router = useRouter();
+    // const [isLeaving, setIsLeaving] = useState(false);
+    // const isMounted = useRef(true);
+    // const router = useRouter();
 
     // Firebase 플레이어 리스너
     useEffect(() => {
@@ -209,7 +209,8 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
                     <button
                         onClick={handleJoin}
                         disabled={selectedPlayerId === null}
-                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400 mb-4"
+                        className="w-full bg-blue-500 text-white p-2 rounded
+                        hover:bg-blue-600 disabled:bg-gray-400 mb-4"
                     >
                         입장
                     </button>
@@ -236,22 +237,31 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
                     <button
                         onClick={handleStartGame}
                         disabled={!canStart}
-                        className={`w-full mt-4 p-2 rounded text-white ${canStart ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                        className={`w-full mt-4 p-2
+                                    rounded-full
+                                    text-white
+                                    cursor-pointer
+                                    ${canStart ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
                             }`}
                     >
                         게임 시작
                     </button>
                 )}
-                {/* {hasJoined && (
-                    <button
-                        onClick={handleLeaveRoom}
-                        disabled={isLeaving}
-                        className="w-full mt-4 bg-orange-500 text-white p-2 rounded hover:bg-orange-600 disabled:bg-gray-400"
-                    >
-                        나가기
-                    </button>
-                )} */}
+
             </div>
         </div>
     );
 }
+
+
+
+
+{/* {hasJoined && (
+    <button
+        onClick={handleLeaveRoom}
+        disabled={isLeaving}
+        className="w-full mt-4 bg-orange-500 text-white p-2 rounded hover:bg-orange-600 disabled:bg-gray-400"
+    >
+        나가기
+    </button>
+)} */}

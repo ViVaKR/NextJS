@@ -175,18 +175,18 @@ export async function POST(request: Request) {
             }
             const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
             if (!roomSnap.exists()) {
-                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+                return NextResponse.json({ error: `방 번호  ${roomId} 은 존재하지 않습니다.` }, { status: 404 });
             }
             const roomData = roomSnap.val();
             if (roomData.status !== 'waiting') {
-                return NextResponse.json({ error: 'Game already started' }, { status: 400 });
+                return NextResponse.json({ error: '이미 게임이 시작되었습니다.' }, { status: 400 });
             }
             const players = roomData.players || {};
             if (Object.keys(players).length >= 4) {
-                return NextResponse.json({ error: 'Room is full' }, { status: 400 });
+                return NextResponse.json({ error: '방 정원 4명 모두 채워졌습니다.' }, { status: 400 });
             }
             if (players[playerId]) {
-                return NextResponse.json({ error: 'Already joined' }, { status: 400 });
+                return NextResponse.json({ error: '이미 방에 참가 하셨습니다.' }, { status: 400 });
             }
             const selectedChar = playerChars.find(c => c.id === playerId)!.name;
             const updates: any = {
@@ -196,12 +196,17 @@ export async function POST(request: Request) {
                     joinedAt: Date.now()
                 }
             };
+
             if (roomData.creatorId === null) {
                 updates[`rooms/${roomId}/creatorId`] = playerId;
             }
             await update(ref(dbInstance), updates);
-            console.log(`[API POST] Player ${playerId} joined room ${roomId}`);
-            return NextResponse.json({ success: true, creatorId: roomData.creatorId || playerId }, { status: 200 });
+
+            return NextResponse.json({
+                success: true,
+                creatorId: roomData.creatorId || playerId
+            },
+                { status: 200 });
         }
 
         if (action === 'resetGame') {
@@ -237,6 +242,19 @@ export async function POST(request: Request) {
             const roomData = roomSnap.val();
             if (playerId !== roomData.creatorId) {
                 return NextResponse.json({ error: 'Only creator can delete room' }, { status: 403 });
+            }
+            await remove(ref(dbInstance, `rooms/${roomId}`));
+            console.log(`[API POST] Deleted room ${roomId} by player ${playerId}`);
+            return NextResponse.json({ success: true }, { status: 200 });
+        }
+
+        if (action === 'forceDeleteRoom') {
+            if (!roomId || playerId === undefined) {
+                return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
+            }
+            const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
             }
             await remove(ref(dbInstance, `rooms/${roomId}`));
             console.log(`[API POST] Deleted room ${roomId} by player ${playerId}`);

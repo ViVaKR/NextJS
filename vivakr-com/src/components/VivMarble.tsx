@@ -8,6 +8,8 @@ import { db } from '@/lib/firebase/clientApp';
 import { ref, onValue, off, DataSnapshot } from 'firebase/database';
 import WaitingRoom from './WaitingRoom';
 import { number } from 'framer-motion';
+import VivTitle from './VivTitle';
+import VivMarbleQnA from './VivMarbleQnA';
 
 interface ColorGroups {
     sky: number[];
@@ -50,6 +52,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     const [lastProcessedRoll, setLastProcessedRoll] = useState<string | null>(null);
     const [currentTurn, setCurrentTurn] = useState<number | null>(null);
     const [score, setScore] = useState<Gammer | null>();
+    const [isQnAOpen, setIsQnAOpen] = useState(false); // 다이얼로그 상태 추가
     const router = useRouter();
 
     useEffect(() => {
@@ -265,14 +268,22 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             } else {
 
                 setTimeout(() => {
-                    // diceEl.classList.add(styles.hidden);
                     diceEl.style.transform = `translate(-50%, -50%) scale(1)`; // 3D 회전 제거
                     diceEl.style.display = 'none';
                     if (onAnimationEnd) onAnimationEnd();
-                }, 2000);
+                    // 주사위 굴림 완료 후 현재 턴 플레이어만 다이럴 로그 오픈
+                    if (playerId === currentTurn) {
+                        setIsQnAOpen(true);
+                    }
+                }, 1000);
             }
         };
         requestAnimationFrame(animate);
+    };
+
+    // 다이얼로그 닫기 핸들러
+    const handleQnAClose = () => {
+        setIsQnAOpen(false);
     };
     const buildBoard = () => {
         const cells = [];
@@ -325,10 +336,11 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
 
     return (
         <div className={`${styles.game} min-h-screen w-full`}>
-            <h1 className="text-2xl font-bold text-center my-4">{title}</h1>
-            <div className="text-center mb-4">
-                내 캐릭터: {currentPlayer ? currentPlayer.char.split('.')[0] : '알 수 없음'}
-                {playerId === creatorId && <span className="text-blue-500 ml-2">(방장)</span>}
+            <VivTitle title={`푸른구슬의 전설 ( ${title} )`} />
+            <div className="flex justify-center items-center gap-4 text-sky-800 font-extrabold text-3xl">
+                {currentPlayer ? currentPlayer.char.split('.')[0].toUpperCase() : '-'}
+                {playerId === creatorId &&
+                    <span className="text-rose-300 font-extrabold text-xs mt-auto mb-1">방장</span>}
             </div>
 
             <div className="flex flex-col items-center justify-center gap-4">
@@ -341,12 +353,22 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     </div>
                 </div>
                 <div className="flex justify-center items-center text-slate-500 text-xs gap-4 h-12">
-                    <span> 플레이어 ( {players.length} / 4 )</span>
+                    <span>총 플레이어 (
+                        <em className='text-sky-500 mx-2 font-bold'>
+                            {players.length} / 4
+                        </em>
+                        )</span>
+
                     <span>
-                        현재 턴  [ {currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char.split('.')[0]
-                            || '알 수 없음' : '없음'} ]
+                        현재 턴  [
+                        <em className='text-sky-500 mx-2 font-bold'>
+                            {currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char.split('.')[0]
+                                || '알 수 없음' : '없음'}
+                        </em>
+                        ]
 
                     </span>
+
                     {lastDiceRoll && (
                         <span>
                             현재 플레이어 : {players.find(p => p.playerId === lastDiceRoll.playerId)?.char.split('.')[0] || lastDiceRoll.playerId}
@@ -355,7 +377,15 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     )}
                     {!lastDiceRoll && (
                         <span className='h-12 flex items-center px-4'>
-                            직전 플레이어 [ {score?.name} ] 의 주사위 숫자 [ {score?.score} ]
+                            직전 플레이어 [
+                            <em className='text-sky-500 mx-2 font-bold'>
+                                {score?.name}
+                            </em>
+                            ] 의 주사위 숫자 [
+                            <em className='text-sky-500 mx-2 font-bold'>
+                                {score?.score}
+                            </em>
+                            ]
                         </span>
                     )}
                 </div>
@@ -375,19 +405,33 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     {playerId === creatorId && (
                         <>
                             <button onClick={handleDeleteRoom}
-                                className="bg-red-400 text-white w-48 px-4 py-2 cursor-pointer rounded-full hover:bg-red-600" >
+                                className="bg-red-400 text-white w-48 px-4 py-2
+                                    cursor-pointer rounded-full hover:bg-red-600" >
                                 방 삭제
                             </button>
                             <button onClick={handleResetRoom}
-                                className="bg-amber-400 text-white w-48 px-4 py-2 cursor-pointer rounded-full hover:bg-amber-600" >
+                                className="bg-amber-400 text-white w-48 px-4 py-2
+                                    cursor-pointer rounded-full hover:bg-amber-600" >
                                 방 갱신
                             </button>
                         </>
                     )}
                 </div>
-
-
+                <div className='flex gap-4 justify-evenly w-full text-slate-400'>
+                    {players.map((player, idx) => (
+                        <span key={idx} className={player.playerId === currentTurn ? 'text-red-400 font-extrabold' : ''} >
+                            {player.char.split('.')[0]}
+                        </span>
+                    ))}
+                </div>
+                {currentPlayer?.position && (
+                    <VivMarbleQnA qna={currentPlayer?.position}
+                        open={isQnAOpen}
+                        onClose={handleQnAClose}
+                        roomId={roomId}
+                    />
+                )}
             </div>
-        </div>
+        </div >
     );
 }
