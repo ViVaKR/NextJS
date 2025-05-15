@@ -23,7 +23,7 @@ interface WaitingRoomProps {
     playerId: number | null;
     creatorId: number | null;
     title: string;
-    onStartGame: () => void;
+    // onStartGame: () => void;
 }
 
 const playerChars = [
@@ -33,7 +33,9 @@ const playerChars = [
     { id: 3, name: "buddha.webp" }
 ];
 
-export default function WaitingRoom({ roomId, playerId, creatorId, title, onStartGame }: WaitingRoomProps) {
+export default function WaitingRoom({ roomId, playerId, creatorId, title,
+    // onStartGame
+}: WaitingRoomProps) {
     const [players, setPlayers] = useState<Player[]>([]);
     const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(playerId);
     // const [isLeaving, setIsLeaving] = useState(false);
@@ -156,7 +158,7 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title, onStar
             });
             const data = await res.json();
             if (res.ok) {
-                onStartGame();
+                // onStartGame();
             } else {
                 console.error('[WaitingRoom] Start game error:', data.error);
                 alert(data.error || '게임 시작 실패');

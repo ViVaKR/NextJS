@@ -45,16 +45,6 @@ async function uploadQuizDataToFirebase(roomId: string) {
     }
 }
 
-// function getRandomNumbers(count: number, max: number): number[] {
-//     if (count > max) throw new Error('Count cannot exceed max');
-//     if (count < 0 || max <= 0) throw new Error('Count and max must be positive');
-//     const numbers = Array.from({ length: max }, (_, i) => i + 1);
-//     for (let i = 0; i < count; i++) {
-//         const j = Math.floor(Math.random() * (max - i)) + i;
-//         [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-//     }
-//     return numbers.slice(0, count);
-// }
 function getRandomNumbers(count: number, min: number, max: number): number[] {
     if (min > max) throw new Error('Min cannot exceed max');
     if (count < 0 || min < 0 || max < 0) throw new Error('Count, min, and max must be non-negative');
@@ -153,7 +143,7 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { action, roomId, playerId, title } = body;
+        const { action, roomId, playerId, title, score } = body;
 
         if (action === 'createRoom') {
             if (!title || playerId === undefined) {
@@ -319,9 +309,7 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'Room not found' }, { status: 404 });
             }
             const roomData = roomSnap.val();
-            if (roomData.currentTurn !== playerId) {
-                return NextResponse.json({ error: 'Not your turn' }, { status: 403 });
-            }
+
             const playerRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}`);
             const playerSnap = await get(playerRef);
             const playerData = playerSnap.val() || {};
@@ -330,44 +318,104 @@ export async function POST(request: Request) {
             if (lastMoveTimestamp) {
                 const now = Date.now();
                 const timeDiff = now - lastMoveTimestamp;
-                if (timeDiff < 1000) {
-                    console.log(`[API POST] moveToken: Duplicate request, playerId=${playerId}, timeDiff=${timeDiff}ms`);
-                    const playersSnap = await get(ref(dbInstance, `rooms/${roomId}/players`));
+
+                // 중복 요청 방지 (시간 기준을 좀 더 여유있게 줍니다)
+                // 2초 이내의 중복 요청은 무시
+                if (timeDiff < 2000) {
+
+                    // 중복 요청 무시 시 현재 상태를 다시 읽어서 반환
+                    const playersSnap = await get(ref(dbInstance,
+                        `rooms/${roomId}/players`));
+
                     const players = playersSnap.val() || {};
                     const currentPosition = players[playerId]?.position || 1;
                     return NextResponse.json({ players, newPosition: currentPosition }, { status: 200 });
                 }
             }
 
-            const positionRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}/position`);
+            const positionRef = ref(dbInstance,
+                `rooms/${roomId}/players/${playerId}/position`);
             let finalPosition: number | undefined;
+
+            // 트랜잭션으로 안전하게 위치 업데이트
             const transactionResult = await runTransaction(positionRef, (currentPosition) => {
                 if (currentPosition === null || typeof currentPosition !== 'number') currentPosition = 1;
                 let newPositionCalc = currentPosition + diceValue;
                 newPositionCalc = Math.min(newPositionCalc, 100);
+                // 100칸을 넘으면 100에 멈추도록 함 (마블 규칙에 따라 변경 가능)
+                // 만약 100을 넘으면 한 바퀴 도는 규칙이라면 newPositionCalc = (currentPosition - 1 + diceValue) % 100 + 1;
+                // 여기서는 일단 100에서 멈추도록 유지
                 newPositionCalc = Math.max(newPositionCalc, 1);
                 finalPosition = newPositionCalc;
-                return finalPosition;
+                return finalPosition; // 트랜잭션에 최종 위치 반환
             });
 
             if (!transactionResult.committed || finalPosition === undefined) {
-                console.error(`[API POST] moveToken: Transaction failed, playerId=${playerId}`);
-                return NextResponse.json({ error: 'Position update failed' }, { status: 500 });
+                return NextResponse.json({ error: 'Position update failed' },
+                    { status: 500 });
             }
 
+            // 플레이어 위치 및 마지막 이동 타임스탬프 업데이트
+            // ** 중요: 여기서 currentTurn 업데이트 로직을 제거합니다. **
+            const updates: any = {
+                [`rooms/${roomId}/players/${playerId}/position`]: finalPosition,
+                [`rooms/${roomId}/players/${playerId}/lastMoveTimestamp`]: Date.now() // 이동 완료 시점 기록
+            };
+
+            // 마지막 굴림 정보도 여기서 지워줍니다.
+            updates[`rooms/${roomId}/lastRoll`] = null;
+
+            await update(ref(dbInstance), updates);
+
+            console.log(`[API POST] moveToken: Firebase updated for player ${playerId} position and lastMoveTimestamp, lastRoll cleared.`);
+
+            // API 응답에는 업데이트된 players 정보와 새 위치만 포함
             const playersSnap = await get(ref(dbInstance, `rooms/${roomId}/players`));
             const players = playersSnap.val() || {};
             const playerIds = Object.keys(players).map(Number).sort((a, b) => players[a].joinedAt - players[b].joinedAt);
             const currentIndex = playerIds.indexOf(playerId);
             const nextTurn = playerIds[(currentIndex + 1) % playerIds.length];
 
-            await update(ref(dbInstance, `rooms/${roomId}`), {
-                currentTurn: nextTurn,
-                lastRoll: null,
-                [`players/${playerId}/lastMoveTimestamp`]: Date.now()
-            });
-            console.log(`[API POST] Player ${playerId} moved to position ${finalPosition} in room ${roomId}, next turn: ${nextTurn}`);
-            return NextResponse.json({ players, newPosition: finalPosition, nextTurn }, { status: 200 });
+            return NextResponse.json({ players, newPosition: finalPosition }, { status: 200 });
+        }
+
+        if (action === 'submitScore') {
+            if (!roomId || playerId === undefined || typeof score !== 'number') {
+                return NextResponse.json({ error: 'roomId, playerId, and score required' }, { status: 400 });
+            }
+            const playerRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}`);
+            const playerSnap = await get(playerRef);
+            if (!playerSnap.exists()) {
+                return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+            }
+            const currentScore = playerSnap.val().score || 0;
+            // Validate score (e.g., max 50 per question)
+            if (score < 0 || score > 50) {
+                return NextResponse.json({ error: 'Invalid score' }, { status: 400 });
+            }
+            await update(playerRef, { score: currentScore + score });
+            console.log(`[API POST] Updated score for player ${playerId} in room ${roomId}: +${score}`);
+            return NextResponse.json({ success: true }, { status: 200 });
+        }
+
+        if (action === 'nextTurn') {
+            if (!roomId || playerId === undefined) {
+                return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
+            }
+            const roomRef = ref(dbInstance, `rooms/${roomId}`);
+            const roomSnap = await get(roomRef);
+            if (!roomSnap.exists()) {
+                return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+            }
+            const roomData = roomSnap.val();
+            const players = Object.keys(roomData.players || {}).map(Number);
+            const currentTurn = roomData.currentTurn;
+            const currentIndex = players.indexOf(currentTurn);
+            const nextIndex = (currentIndex + 1) % players.length;
+            const nextTurn = players[nextIndex];
+            await update(roomRef, { currentTurn: nextTurn });
+            console.log(`[API POST] Advanced turn in room ${roomId} to player ${nextTurn}`);
+            return NextResponse.json({ success: true }, { status: 200 });
         }
 
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
