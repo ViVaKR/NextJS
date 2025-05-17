@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase/clientApp';
 import { ref, onValue, off } from 'firebase/database';
 import Image from 'next/image';
@@ -10,10 +9,14 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useRouter } from 'next/navigation';
+import { IMarbleChar } from '@/interfaces/i-player-char';
+import { marbleChars } from '@/data/avata-marble';
 
 interface Player {
     playerId: number;
     char: string;
+    avata: string;
     position: number;
     joinedAt: number;
 }
@@ -26,62 +29,44 @@ interface WaitingRoomProps {
     // onStartGame: () => void;
 }
 
-const playerChars = [
-    { id: 0, name: "vivakr.webp" },
-    { id: 1, name: "smile.webp" },
-    { id: 2, name: "man.webp" },
-    { id: 3, name: "buddha.webp" }
-];
+const playerChars: IMarbleChar[] = marbleChars;
 
 export default function WaitingRoom({ roomId, playerId, creatorId, title,
     // onStartGame
 }: WaitingRoomProps) {
     const [players, setPlayers] = useState<Player[]>([]);
     const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(playerId);
-    // const [isLeaving, setIsLeaving] = useState(false);
-    // const isMounted = useRef(true);
+    const hasJoinedRef = useRef(false);
+    const [isLeaving, setIsLeaving] = useState(false);
+    const router = useRouter();
     // const router = useRouter();
 
     // Firebase 플레이어 리스너
     useEffect(() => {
-        console.log('[WaitingRoom] Setting up players listener for room:', roomId);
+        console.log('[대기방] Setting up players listener for room:', roomId);
         const playersRef = ref(db, `rooms/${roomId}/players`);
         const unsubscribe = onValue(playersRef, (snapshot) => {
             const data = snapshot.val() || {};
             const playerList = Object.entries(data).map(([id, p]: [string, any]) => ({
                 playerId: Number(id),
                 char: p.char,
+                avata: p.avata,
                 position: p.position || 1,
                 joinedAt: p.joinedAt
             }));
-            console.log('[WaitingRoom] Players updated:', playerList);
+            console.log('[대기방] Players updated:', playerList);
             setPlayers(playerList);
+
         }, (err) => {
             console.error('[WaitingRoom] Players listener error:', err);
         });
 
         return () => {
-            console.log('[WaitingRoom] Cleaning up players listener');
+            console.log('[대기방] Cleaning up players listener');
             off(playersRef, 'value', unsubscribe);
         };
-    }, [roomId]);
-    /*
-        // 컴포넌트 언마운트 시 leaveRoom 처리
-        useEffect(() => {
-            isMounted.current = true;
-            console.log('[WaitingRoom] Component mounted, playerId:', selectedPlayerId);
+    }, [roomId, selectedPlayerId]);
 
-            return () => {
-                isMounted.current = false;
-                console.log('[WaitingRoom] Component unmounting, isLeaving:', isLeaving, 'selectedPlayerId:', selectedPlayerId);
-                const hasJoined = selectedPlayerId !== null && players.some(p => p.playerId === selectedPlayerId);
-                if (hasJoined && !isLeaving) {
-                    console.log('[WaitingRoom] Triggering handleLeaveRoom on unmount');
-                    handleLeaveRoom();
-                }
-            };
-        }, [roomId, selectedPlayerId]); // players 제거, hasJoined는 내부에서 체크
-     */
     const handleJoin = async () => {
         if (selectedPlayerId === null) {
             alert('캐릭터를 선택하세요.');
@@ -109,37 +94,59 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title,
         }
     };
 
-    /*     const handleLeaveRoom = async () => {
-            if (selectedPlayerId === null || isLeaving || !isMounted.current) {
-                console.log('[WaitingRoom] handleLeaveRoom skipped:', { selectedPlayerId, isLeaving, isMounted: isMounted.current });
-                return;
+    const handleLeaveRoom = async () => {
+        if (isLeaving) return;
+        setIsLeaving(true);
+        try {
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'leaveRoom',
+                    roomId,
+                    playerId: selectedPlayerId
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.error('[대기방] 방 탈출 오류:', data.error);
             }
-            setIsLeaving(true);
-            console.log('[WaitingRoom] handleLeaveRoom called, playerId:', selectedPlayerId);
-            try {
-                const res = await fetch('/api/marble', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'leaveRoom', roomId, playerId: selectedPlayerId })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    console.log('[WaitingRoom] Left room:', roomId);
-                    if (isMounted.current) {
-                        router.push('/games/marble');
-                    }
-                } else {
-                    console.error('[WaitingRoom] Leave room error:', data.error);
-                }
-            } catch (err) {
-                console.error('[WaitingRoom] Leave room error:', err);
-            } finally {
-                if (isMounted.current) {
-                    setIsLeaving(false);
-                }
+
+        } catch (err: any) {
+            console.error('[대기방] 방 탈출 오류:', err);
+        } finally {
+            setIsLeaving(false);
+        }
+    }
+
+    const handleDeleteRoom = async () => {
+        if (isLeaving) return;
+        setIsLeaving(true);
+        try {
+            console.log('[WaitingRoom] Deleting room:', roomId, 'playerId:', selectedPlayerId);
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deleteRoom', roomId, playerId: selectedPlayerId })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.error('[WaitingRoom] Delete room error:', data.error);
+                alert(data.error || '방 삭제 실패');
+            } else {
+                hasJoinedRef.current = false;
+                router.push('/odds/marble');
             }
-        };
-     */
+        } catch (err) {
+            console.error('[WaitingRoom] Delete room error:', err);
+            alert('방 삭제 중 오류 발생');
+        } finally {
+            setIsLeaving(false);
+        }
+    };
+
     const handleStartGame = async () => {
         if (!isCreator) {
             alert('방장만 게임을 시작할 수 있습니다.');
@@ -171,13 +178,14 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title,
 
     const handlePlayerChange = (event: SelectChangeEvent<string>) => {
         const newPlayerId = event.target.value === '' ? null : Number(event.target.value);
-        console.log('[WaitingRoom] Player changed to:', newPlayerId);
+        console.log('[대기방] Player changed to:', newPlayerId);
         setSelectedPlayerId(newPlayerId);
     };
 
     const isCreator = selectedPlayerId === creatorId;
     const canStart = isCreator && players.length >= 2;
-    const hasJoined = selectedPlayerId !== null && players.some(p => p.playerId === selectedPlayerId);
+    const hasJoined = selectedPlayerId !== null
+        && players.some(p => p.playerId === selectedPlayerId);
 
     return (
         <div className="min-h-screen bg-slate-100 p-8 flex flex-col items-center">
@@ -201,7 +209,7 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title,
                                     value={char.id.toString()}
                                     disabled={players.some(p => p.playerId === char.id)}
                                 >
-                                    {char.name.split('.')[0]}
+                                    {char.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -224,7 +232,7 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title,
                     players.map(player => (
                         <div key={player.playerId} className="flex items-center gap-2 mb-2">
                             <Image
-                                src={`/assets/images/${player.char}`}
+                                src={`/assets/images/${player.avata}`}
                                 alt={player.char}
                                 width={30}
                                 height={30}
@@ -236,34 +244,50 @@ export default function WaitingRoom({ roomId, playerId, creatorId, title,
                     ))
                 )}
                 {isCreator && (
-                    <button
-                        onClick={handleStartGame}
-                        disabled={!canStart}
-                        className={`w-full mt-4 p-2
+                    <>
+                        <button
+                            onClick={handleStartGame}
+                            disabled={!canStart}
+                            className={`w-full mt-4 p-2
                                     rounded-full
                                     text-white
                                     cursor-pointer
-                                    ${canStart ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
-                            }`}
+                                    ${canStart
+                                    ? 'bg-green-500 hover:bg-green-600'
+                                    : 'bg-gray-400 cursor-not-allowed'
+                                }`}
+                        >
+                            게임 시작
+                        </button>
+                        <button
+                            onClick={handleDeleteRoom}
+                            className="w-full mt-4
+                            bg-red-500
+                            text-white p-2
+                            rounded-full
+                            cursor-pointer
+                            hover:bg-red-600
+                            disabled:bg-gray-400"
+                        >
+                            방 삭제
+                        </button>
+                    </>
+                )}
+                {hasJoined && !isCreator && (
+                    <button
+                        onClick={handleLeaveRoom}
+                        disabled={isLeaving}
+                        className="w-full mt-4 bg-orange-500
+                        text-white p-2
+                        hover:bg-orange-600
+                        cursor-pointer
+                        rounded-full
+                        disabled:bg-gray-400"
                     >
-                        게임 시작
+                        나가기
                     </button>
                 )}
-
             </div>
         </div>
     );
 }
-
-
-
-
-{/* {hasJoined && (
-    <button
-        onClick={handleLeaveRoom}
-        disabled={isLeaving}
-        className="w-full mt-4 bg-orange-500 text-white p-2 rounded hover:bg-orange-600 disabled:bg-gray-400"
-    >
-        나가기
-    </button>
-)} */}

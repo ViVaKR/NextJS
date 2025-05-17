@@ -3,8 +3,7 @@
 import * as React from 'react';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
-import { createContext, useContext, useState, useCallback } from 'react';
-import { duration } from '@mui/material';
+import { useContext, useState, useCallback } from 'react';
 
 interface SnackbarState {
   open: boolean;
@@ -18,7 +17,7 @@ interface SnackbarState {
 interface SnackbarContextType {
   showSnackbar: (
     message: string,
-    severity?: AlertColor,
+    severity?: AlertColor, // 'success' | 'info' | 'warning' | 'error';
     vertical?: 'top' | 'bottom',
     horizontal?: 'left' | 'right' | 'center',
     duration?: number // 시간옵션

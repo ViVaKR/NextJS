@@ -58,10 +58,16 @@ export default function VivMarbleQnA({
     const [error, setError] = useState<string | null>(null);
     const answerInputRef = useRef<HTMLInputElement>(null);
 
-    const BASE_SCORE = 10;
-    const SPECIAL_BASE_SCORE = 15;
+    const BASE_SCORE_NORMAL = 10; // 무색 칸 기본 점수
+    const BASE_SCORE_RED = 5;     // 빨간색 칸 기본 점수 (수정)
+    const BASE_SCORE_SKY = 15;    // 푸른색 칸 기본 점수 (수정)
+
+    // const BASE_SCORE = 10;
+    // const SPECIAL_BASE_SCORE = 15;
     const MAX_SCORE = 50;
     const LOW_DICE_BONUS = 5;
+    const isRedCell = colorGroup?.red?.includes(qna); // 빨간색 칸인지 확인
+    const isSkyCell = colorGroup?.sky?.includes(qna); // 푸른색 칸인지 확인
 
     useEffect(() => {
         if (!open || !qna || qna < 1 || qna > 100) {
@@ -80,53 +86,11 @@ export default function VivMarbleQnA({
                 const quizRef = ref(db, `rooms/${roomId}/quizData`);
                 const snapshot = await get(quizRef);
 
-                // if (snapshot.exists()) {
-                //     const quizData: IQuizCell[] = snapshot.val();
-                //     const questionData = quizData.find((item) => item.cell === qna);
-
-                //     // *** 문제 선택 로직 ***//
-
-                //     if (questionData) {
-
-                //         // 1. main 문제와 reserve 문제들을 모두 모음
-
-                //         const validQuestions = [
-                //             questionData.main,
-                //             ...questionData.reserve.filter((q) => q.text && q.answer),
-                //         ].filter(
-                //             (q, idx, arr) => arr.findIndex((item) => item.text === q.text) === idx
-                //         );
-                //         let selectedQuestion: IQuiz;
-                //         // const isSpecialCell = colorGroup && (colorGroup.red.includes(qna) || colorGroup.sky.includes(qna));
-                //         // if (isSpecialCell && questionData.reserve.length > 0) {
-                //         //     const unsolvedReserve = questionData.reserve.filter(
-                //         //         (q) => !solvedQuestions.includes(qna) || validQuestions.some((vq) => vq.text === q.text)
-                //         //     );
-                //         //     selectedQuestion =
-                //         //         unsolvedReserve[Math.floor(Math.random() * unsolvedReserve.length)] || questionData.main;
-                //         // } else {
-                //         const unsolvedQuestions = validQuestions.filter(
-                //             (q) => !solvedQuestions.includes(qna) || validQuestions.some((vq) => vq.text === q.text)
-                //         );
-                //         selectedQuestion =
-                //             unsolvedQuestions[Math.floor(Math.random() * unsolvedQuestions.length)] || questionData.main;
-                //         // }
-                //         setQuestion(selectedQuestion.text);
-                //         setAnswer(selectedQuestion.answer);
-                //         setChoices(selectedQuestion.choices || []);
-                //     } else {
-                //         setError(`문제 ${qna}번을 찾을 수 없습니다.`);
-                //     }
-                // } else {
-                //     setError('퀴즈 데이터를 불러올 수 없습니다.');
-                // }
-
                 if (snapshot.exists()) {
                     const quizData: IQuizCell[] = snapshot.val();
                     const questionData = quizData.find((item) => item.cell === qna);
 
                     if (questionData) {
-                        // ** 문제 선택 로직 수정 시작 **
 
                         // 1. main 문제와 reserve 문제들을 모두 모음
                         const allQuestionsForCell: IQuiz[] = [questionData.main, ...(questionData.reserve || [])]; // reserve가 null일 경우 대비
@@ -160,8 +124,6 @@ export default function VivMarbleQnA({
                             setChoices([]);
                         }
 
-                        // ** 문제 선택 로직 수정 끝 **
-
                     } else {
                         setError(`문제 ${qna}번 데이터를 찾을 수 없습니다.`);
                         setQuestion(''); // 문제 데이터 없으면 문제/정답 초기화
@@ -185,7 +147,6 @@ export default function VivMarbleQnA({
 
         fetchQuestion();
     }, [open, qna, roomId]);
-    // }, [open, qna, roomId, colorGroup, solvedQuestions, playerId]);
 
     useEffect(() => {
         if (open && answerInputRef.current) {
@@ -197,84 +158,113 @@ export default function VivMarbleQnA({
     }, [choices, open]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
         event.preventDefault();
+
         let score = 0;
-        const isSpecialCell = colorGroup && (colorGroup.red.includes(qna) || colorGroup.sky.includes(qna));
-        const baseScore = isSpecialCell ? SPECIAL_BASE_SCORE : BASE_SCORE;
-        if (userAnswer.trim().toLowerCase() === answer.toLowerCase()) {
-            score = Math.min(baseScore * diceValue, MAX_SCORE);
-            if (diceValue <= 2) score += LOW_DICE_BONUS;
+
+        // ** 수정된 기본 점수 설정 로직 **
+        let baseScore = BASE_SCORE_NORMAL; // 기본값은 무색 칸 점수
+        if (isRedCell) {
+            baseScore = BASE_SCORE_RED; // 빨간색 칸이면 5점
+        } else if (isSkyCell) {
+            baseScore = BASE_SCORE_SKY; // 푸른색 칸이면 15점
         }
-        onSubmitScore(playerId, score, qna);
+
+        // *** 정답 확인 및 점수 계산 ***
+        const isCorrect = userAnswer.trim().toLowerCase() === answer.toLowerCase();
+
+        // *** 정답 확인 ***
+        if (isCorrect) {
+            // 1. 기본 점수 * 주사위 값 계산
+            const calculatedScore = baseScore * diceValue;
+
+            // 2. 계산된 점수와 최대 점수 (50) 중 작은 값을 적용
+            score = Math.min(calculatedScore, MAX_SCORE);
+
+            // 3. 주사위 값이 1 또는 2이면 보너스 점수 추가
+            if (diceValue <= 2) {
+                score += LOW_DICE_BONUS;
+            }
+
+            // 4. 보너스 점수 추가 후 최종 점수가 50을 넘지 않도록 다시 한번 제한
+            score = Math.min(score, MAX_SCORE);
+
+        } // 오답이거나 '모름' 선택 시 score는 0으로 유지됨
+
         console.log(
-            '[VivMarbleQnA] Submitted answer for player:',
-            playerId,
-            'QnA:',
-            qna,
-            'Score:',
-            score,
-            'Correct:',
-            score > 0
+            '[VivMarbleQnA] Submitted answer:', userAnswer, 'Correct answer:', answer,
+            'Correct:', isCorrect,
+            'Cell:', qna, 'Base Score:', baseScore, 'Dice:', diceValue, 'Bonus applied:', diceValue <= 2,
+            'Calculated Score (before final cap):', (isCorrect ? Math.min(baseScore * diceValue, MAX_SCORE) + (diceValue <= 2 ? LOW_DICE_BONUS : 0) : 0), // 로그용 계산
+            'Final Score:', score
         );
+
+        onSubmitScore(playerId, score, qna);
         setUserAnswer('');
-        onClose();
-        document.getElementById('board')?.focus();
+        onClose(); // 다이얼 로그 닫기
     };
 
     return (
         <Dialog
-            open={open}
+            open={open} // esc 나 외부 클릭으로 닫힐 때 호출될 함때
+
             onClose={onClose}
             disableScrollLock
             slotProps={{
                 paper: {
-                    component: 'form',
+                    component: 'form', // 다이얼 로그 내용을 form 으로 사용하여 submit 이벤트 처리
                     onSubmit: handleSubmit,
                 },
             }}
+            maxWidth="sm"
+            fullWidth
         >
             <DialogTitle>
-                {qna}번 문제 {colorGroup?.red.includes(qna) ? '(빨간 칸)' : colorGroup?.sky.includes(qna) ? '(하늘 칸)' : ''}
+                {qna}번 문제 {isRedCell ? '(벌점 -5점)' : isSkyCell ? '(보너스 점수 +5점)' : ''}
             </DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    {isLoading && '문제를 불러오는 중...'}
-                    {error && <span className="text-red-500">{error}</span>}
-                    {!isLoading && !error && question ? (
-                        <>
-                            ({qna}) {question}
-                        </>
-                    ) : null}
-                </DialogContentText>
-                {choices.length > 0 ? (
-                    <RadioGroup
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        name="answer"
-                    >
-                        {choices.map((choice, index) => (
-                            <FormControlLabel
-                                key={index}
-                                value={choice}
-                                control={<Radio />}
-                                label={choice}
-                            />
-                        ))}
-                    </RadioGroup>
-                ) : (
-                    <TextField
-                        margin="dense"
-                        id="answer"
-                        name="answer"
-                        label="정답 입력"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        inputRef={answerInputRef}
-                    />
-                )}
+            <DialogContent dividers>
+                <DialogContent>
+                    <DialogContentText>
+                        {isLoading && '문제를 불러오는 중...'}
+                        {error && <span className="text-red-500">{error}</span>}
+                        {!isLoading && !error && question ? (
+                            <>
+                                ({qna}) {question}
+                            </>
+                        ) : null}
+                    </DialogContentText>
+                    <div className='mt-4'></div>
+                    {choices.length > 0 ? (
+                        <RadioGroup
+                            value={userAnswer}
+                            onChange={(e) => setUserAnswer(e.target.value)}
+                            name="answer"
+                        >
+                            {choices.map((choice, index) => (
+                                <FormControlLabel
+                                    key={index}
+                                    value={choice}
+                                    control={<Radio />}
+                                    label={choice}
+                                />
+                            ))}
+                        </RadioGroup>
+                    ) : (
+                        <TextField
+                            margin="dense"
+                            id="answer"
+                            name="answer"
+                            label="정답 입력"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            value={userAnswer}
+                            onChange={(e) => setUserAnswer(e.target.value)}
+                            inputRef={answerInputRef}
+                        />
+                    )}
+                </DialogContent>
             </DialogContent>
             <DialogActions>
                 <Button

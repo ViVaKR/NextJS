@@ -6,12 +6,10 @@ import Box from '@mui/material/Box';
 import { getOddsItems } from '@/data/menu-items';
 import { IMenu } from '@/interfaces/i-menu';
 import OddsAccordion from './accordion/OddsAccordion';
-import OddsOrmPrisma from './orm-prisma/OddsOrmPrisma';
 import OddsCodeRunner from './code-runner/OddsCodeRunner';
 import OddsCodeHtml from './code-html/OddsCodeHtml';
 import MazeGame from './maze/MazeGame';
-import GoogleMapPage from '../google-map/page';
-import { useProfile } from '../membership/profile/Profile';
+import MarbleGame from './marble/page';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -23,14 +21,13 @@ const components = [
   { id: 0, Component: OddsCodeRunner, props: {} },
   { id: 1, Component: OddsCodeHtml, props: {} },
   { id: 2, Component: OddsAccordion, props: {} },
-  { id: 3, Component: OddsOrmPrisma, props: {} },
-  { id: 4, Component: MazeGame, props: {} },
+  { id: 3, Component: MazeGame, props: {} },
+  { id: 4, Component: MarbleGame, props: {} }
 
 ];
 
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
-
 
   return (
     <div
@@ -52,16 +49,15 @@ function a11yProps(index: number) {
 }
 
 export default function OddsHome() {
+
   const [value, setValue] = React.useState(0);
   const menus: IMenu[] = getOddsItems();
-
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   const filterMenus = menus.filter((menu) => {
-
     return true;
   });
 

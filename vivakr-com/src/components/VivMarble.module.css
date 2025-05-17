@@ -11,11 +11,11 @@
   display: grid;
   grid-template-columns: repeat(10, var(--board-size));
   gap: 5px;
-  padding: 1rem;
+  padding: 20px;
   background: #facc15;
   border-radius: 1rem;
   position: relative;
-  min-width: 620px; /* 10 * 60px + 10px gap + 10px padding */
+  min-width: 680px; /* 10 * 60px + 10px(gap) + 10px(padding) */
   margin: 0 auto;
 }
 .cell {

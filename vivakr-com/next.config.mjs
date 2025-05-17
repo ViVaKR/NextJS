@@ -79,7 +79,21 @@ const nextConfig = {
         '::1',                 // IPv6
         '::ffff:',
 
-    ]
+    ],
+    async redirects() {
+        return [
+            {
+                source: '/blue-marble',
+                destination: '/odds/marble',
+                permanent: true
+            },
+            {
+                source: '/games/marble',
+                destination: '/odds/marble',
+                permanent: true
+            }
+        ]
+    }
 };
 
 const withMDX = createMDX({

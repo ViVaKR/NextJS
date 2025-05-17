@@ -1,8 +1,8 @@
 import OddsAccordion from "@/app/(root)/odds/accordion/OddsAccordion";
 import OddsCodeHtml from "@/app/(root)/odds/code-html/OddsCodeHtml";
 import OddsCodeRunner from "@/app/(root)/odds/code-runner/OddsCodeRunner";
+import MarbleGame from "@/app/(root)/odds/marble/page";
 import MazeGame from "@/app/(root)/odds/maze/MazeGame";
-import OddsOrmPrisma from "@/app/(root)/odds/orm-prisma/OddsOrmPrisma";
 import { IMenu } from "@/interfaces/i-menu";
 
 export const getNavMenuItems = (): IMenu[] => {
@@ -14,7 +14,6 @@ export const getNavMenuItems = (): IMenu[] => {
         { id: 4, title: '캠프', url: '/camp' },
         { id: 5, title: '잡동사니', url: '/odds' },
         { id: 6, title: '지도', url: '/google-map' },
-        { id: 7, title: '마블', url: '/games/marble' },
 
     ];
 }
@@ -36,7 +35,7 @@ export const getOddsItems = (): IMenu[] => {
         { id: 0, title: '쉘 실행기', url: '/odds/code-runner', Component: OddsCodeRunner },
         { id: 1, title: '예쁜코드', url: '/odds/code-html', Component: OddsCodeHtml },
         { id: 2, title: '아코디언', url: '/odds/accordion', Component: OddsAccordion },
-        { id: 3, title: 'Prisma', url: '/odds/orm-prisma', Component: OddsOrmPrisma },
-        { id: 4, title: '미로게임', url: '/odds/maze', Component: MazeGame },
+        { id: 3, title: '미로게임', url: '/odds/maze', Component: MazeGame },
+        { id: 4, title: '블루마블', url: '/odds/marble', Component: MarbleGame }
     ]
 }

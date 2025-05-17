@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react'; // useRef 추가
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './VivMarble.module.css';
 import Image from 'next/image';
@@ -9,6 +9,7 @@ import { ref, onValue, off, DataSnapshot, update } from 'firebase/database';
 import WaitingRoom from './WaitingRoom';
 import VivTitle from './VivTitle';
 import VivMarbleQnA from './VivMarbleQnA';
+import { useSnackbar } from '@/lib/SnackbarContext';
 
 interface ColorGroups {
     sky: number[];
@@ -24,6 +25,7 @@ interface LastDiceInfo {
 interface Player {
     playerId: number;
     char: string;
+    avata: string;
     position: number;
     joinedAt: number;
     lastMoveTimestamp?: number;
@@ -53,9 +55,14 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     const [lastProcessedRoll, setLastProcessedRoll] = useState<string | null>(null);
     const [currentTurn, setCurrentTurn] = useState<number | null>(null);
     const [score, setScore] = useState<Gammer | null>(null);
+    // 중요: 점수 제출 후 게임 종료 조건 체크
+    const targetScore = 500;
+    const snackbar = useSnackbar();
 
     // QnA 다이얼로그 관리 관련 상태 및 참조
-    const [isQnAOpen, setIsQnAOpen] = useState(false); // 다이얼로그 UI 표시 여부
+    // 다이얼로그 UI 표시 여부
+    const [isQnAOpen, setIsQnAOpen] = useState(false)
+
     // 어떤 moveTimestamp에 대해 QnA를 열었는지 기록
     // 이 값이 null이 아니고 current player의 lastMoveTimestamp와 같으면, 해당 timestamp에 대한 QnA가 현재 열려있거나 처리 중임을 의미
     const [qnaTriggerTimestamp, setQnaTriggerTimestamp] = useState<number | null>(null);
@@ -63,22 +70,24 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
     const [lastProcessedMoveTimestamp, setLastProcessedMoveTimestamp] = useState<number | null>(null);
 
     const [playerScores, setPlayerScores] = useState<{ [playerId: number]: number }>({});
-    const [turnCount, setTurnCount] = useState<number>(0);
+    // const [turnCount, setTurnCount] = useState<number>(0);
     const [solvedQuestions, setSolvedQuestions] = useState<number[]>([]);
     const [lastDiceValue, setLastDiceValue] = useState<number>(1); // QnA에 전달할 주사위 값
+
     // ** 정답 메시지 표시 상태 **
     const [correctAnswerMessage, setCorrectAnswerMessage] = useState<{ show: boolean, playerId: number | null }>({ show: false, playerId: null });
-
+    const [isLeaving, setIsLeaving] = useState(false);
+    const hasJoinedRef = useRef(true); // VivMarble 은 이미 조인된 상태
     const router = useRouter();
 
-    // 첫 번째 useEffect: Firebase roomData 리스너
+    // Firebase roomData 리스너
     // 이 리스너는 상태 업데이트 (players, status, currentTurn 등)만 담당
     useEffect(() => {
         const roomRef = ref(db, `rooms/${roomId}`);
         console.log(`[VivMarble] Setting up room listener for ${roomId}`);
 
         const unsubscribe = onValue(roomRef, (snapshot: DataSnapshot) => {
-            console.log(`[VivMarble] Room data changed.`);
+
             if (snapshot.exists()) {
                 const roomData = snapshot.val();
                 setStatus(roomData.status || 'waiting');
@@ -86,17 +95,31 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 setTitle(roomData.title || '');
                 setColorGroup(roomData.colorGroup || null);
                 setCurrentTurn(roomData.currentTurn ?? null);
-                setTurnCount(roomData.turnCount || 0); // 턴 카운트 업데이트
+                // setTurnCount(roomData.turnCount || 0); // 턴 카운트 업데이트
 
                 const playersData = roomData.players || {};
+
                 const playerList: Player[] = Object.entries(playersData).map(([id, p]: [string, any]) => ({
                     playerId: Number(id),
                     char: p.char,
+                    avata: p.avata,
                     position: p.position || 1,
                     joinedAt: p.joinedAt,
                     lastMoveTimestamp: p.lastMoveTimestamp ?? null, // nullish coalescing operator 사용
                     score: p.score || 0
                 }));
+                // const playerList: Player[] = Object.entries(playersData).map(([id, p]: [string, any]) => {
+                //     const charData = marbleChars.find(c => c.id === Number(id)) || { name: p.char, avata: 'default.webp' };
+                //     return {
+                //         playerId: Number(id),
+                //         char: p.char || charData.name,
+                //         avata: p.avata || charData.avata, // Firebase에 avata가 없으면 marbleChars에서 가져옴
+                //         position: p.position || 1,
+                //         joinedAt: p.joinedAt,
+                //         lastMoveTimestamp: p.lastMoveTimestamp ?? null,
+                //         score: p.score || 0
+                //     };
+                // });
 
                 // players 상태 업데이트
                 setPlayers(playerList);
@@ -107,9 +130,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     return acc;
                 }, {} as { [playerId: number]: number });
                 setPlayerScores(updatedScores);
-
                 setIsLoading(false);
-
                 // 중요한 변경: QnA 오픈 로직은 이 리스너에서 직접 호출하지 않음
                 // 대신, 업데이트된 players 상태 (특히 current player의 lastMoveTimestamp)를 감지하는
                 // 별도의 useEffect에서 처리
@@ -117,20 +138,21 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             } else {
                 console.log(`[VivMarble] Room ${roomId} does not exist.`);
                 setIsLoading(false);
-                router.push('/games/marble'); // 방이 없으면 리다이렉트
+                router.push('/odds/marble'); // 방이 없으면 리다이렉트
             }
         }, (e) => {
-            console.error('[VivMarble] Room listener error:', e);
+            snackbar.showSnackbar('방 초기화 오류.: ' + e, 'error', 'bottom', 'center', 3000);
             setIsLoading(false);
             // 에러 발생 시에도 리다이렉트 고려 가능
-            // router.push('/games/marble');
+            router.push('/odds/marble');
         });
 
         return () => {
-            console.log('[VivMarble] Cleaning up room listener.');
             off(roomRef, 'value', unsubscribe);
         };
-    }, [roomId, router, playerId]); // dependencies: roomId, router, playerId
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [roomId, router, playerId]);
 
     // 두 번째 useEffect: Firebase lastRoll 리스너 (주사위 애니메이션 트리거용)
     // 이 리스너는 주사위 굴림 정보(lastRoll)가 업데이트되었을 때 주사위 애니메이션을 실행
@@ -144,7 +166,8 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 if (snapshot.exists()) {
                     const rollData = snapshot.val();
                     // rollData가 유효한지, 이미 처리한 굴림인지 확인
-                    if (rollData && typeof rollData.playerId === 'number' && typeof rollData.value === 'number') {
+                    if (rollData && typeof rollData.playerId === 'number'
+                        && typeof rollData.value === 'number') {
                         const rollKey = `${rollData.playerId}:${rollData.timestamp}`;
 
                         // lastProcessedRoll은 주사위 굴림 애니메이션 트리거를 한 번만 하기 위한 용도
@@ -175,14 +198,14 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     // 직전 플레이어 정보 업데이트 (lastDiceRoll 상태는 직전 굴림 정보 자체를 보여줌)
                     if (lastDiceRoll) {
                         const p: Gammer = {
-                            name: players.find(p => p.playerId === lastDiceRoll.playerId)?.char.split('.')[0] || '-',
+                            name: players.find(p => p.playerId === lastDiceRoll.playerId)?.char || '-',
                             score: lastDiceRoll.value || 0 // 굴린 값
                         }
                         setScore(p);
                     }
                 }
             }, (e) => {
-                console.error('[VivMarble] LastRoll listener error:', e);
+                snackbar.showSnackbar('[VivMarbl] LastRoll 오류.: ' + e, 'error', 'bottom', 'center', 3000);
             });
 
         return () => {
@@ -237,12 +260,12 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             console.log('[VivMarble] Showing correct answer message.');
             const timer = setTimeout(() => {
                 console.log('[VivMarble] Hiding correct answer message.');
+
                 setCorrectAnswerMessage({ show: false, playerId: null });
             }, 3000); // 3초 후에 메시지 숨김
             return () => clearTimeout(timer);
         }
     }, [correctAnswerMessage]);
-
 
     const handleDeleteRoom = async () => {
         if (!confirm('정말로 이 방을 삭제하시겠습니까?')) {
@@ -256,13 +279,38 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                router.push('/games/marble');
+                router.push('/odds/marble');
             } else {
                 alert(data.error || '방 삭제 실패');
             }
         } catch (err) {
             console.error('[VivMarble] Delete room error:', err);
             alert('방 삭제 중 오류 발생');
+        }
+    };
+
+    const handleLeaveRoom = async () => {
+        if (isLeaving) return;
+        setIsLeaving(true);
+        try {
+            console.log('[VivMarble] Leaving room:', roomId, 'playerId:', playerId);
+            const res = await fetch('/api/marble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'leaveRoom', roomId, playerId })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                router.push('/odds/marble');
+            } else {
+                console.error('[VivMarble] Leave room error:', data.error);
+                alert(data.error || '나가기 실패');
+            }
+        } catch (err) {
+            console.error('[VivMarble] Leave room error:', err);
+            alert('나가기 중 오류 발생');
+        } finally {
+            setIsLeaving(false);
         }
     };
 
@@ -278,10 +326,6 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             });
             const data = await res.json();
             if (res.ok) {
-                console.log('[VivMarble] Reset room:', roomId);
-                // Firebase listener가 상태를 업데이트할 것이므로 여기서 직접 상태 초기화 최소화
-                // setPlayerScores({}); // 리스너에서 처리
-                // setTurnCount(0); // 리스너에서 처리
                 setSolvedQuestions([]); // 게임 재시작 시 해결한 문제 목록 초기화 필요
                 setLastProcessedMoveTimestamp(null); // 처리된 타임스탬프 초기화
                 setQnaTriggerTimestamp(null); // QnA 트리거 타임스탬프 초기화
@@ -339,7 +383,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             const data = await res.json();
 
             if (res.ok) {
-                console.log(`[VivMarble] API rollDice successful for player ${playerId}. Dice result: ${data.diceResult}`);
+                console.log(`[VivMarble] API 플레이어  ${playerId} 주사위 굴리기 성공. 주사위 결과: ${data.diceResult}`);
                 // 서버에서 lastRoll 업데이트 성공. Firebase Listener (두 번째 useEffect)가 감지하고
                 // animateDice를 실행할 것임.
 
@@ -351,7 +395,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     2016, // spins
                     playerId, // rollerId
                     () => { // onAnimationEnd callback (이 콜백은 이 rollDice 함수를 호출한 클라이언트에서만 실행)
-                        console.log(`[VivMarble] animateDice callback finished for roller ${playerId} on client ${playerId} (from rollDice). Calling moveToken.`);
+                        console.log(`[VivMarble] animateDice callback finished for roller
+                            ${playerId} on client ${playerId} (from rollDice). Calling moveToken.`);
+
                         // 애니메이션 종료 후 말 이동 API 호출
                         moveToken(playerId, data.diceResult);
                     });
@@ -361,9 +407,8 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 alert(data.error || '주사위 굴리기 실패');
                 setCurrentRollingPlayerId(null); // 에러 시 롤링 상태 해제
             }
-        } catch (err) {
-            console.error('[VivMarble] rollDice fetch error:', err);
-            alert('주사위 굴리기 중 오류 발생');
+        } catch (e: any) {
+            snackbar.showSnackbar('주사위 굴리기 오류 발생: ' + e, 'error', 'bottom', 'center', 3000);
             setCurrentRollingPlayerId(null); // 에러 시 롤링 상태 해제
         }
     };
@@ -416,7 +461,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
         const animate = (currentTime: number) => {
             const elapsed = (currentTime - startTime) / 1000; // 경과 시간 (초)
             const progress = Math.min(elapsed / (duration / 1000), 1); // 진행률 (0 to 1)
-            const eased = easeOutQuad(progress); // 이징 적용
+            const eased = easeOutQuad(progress); // 사라짐 적용
 
             const rotX = targetX + spins * (1 - eased); // 회전 각도 계산
             const rotY = targetY + spins * (1 - eased);
@@ -448,7 +493,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                         onAnimationEnd();
                     }
 
-                }, 500); // 애니메이션이 완전히 끝난 후 0.5초 대기
+                }, 2000); // 애니메이션이 완전히 끝난 후 0.5초 대기
             }
         };
         requestAnimationFrame(animate); // 애니메이션 시작
@@ -502,8 +547,6 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
         } catch (err) {
             console.error('[VivMarble] Advance turn fetch error:', err);
             alert('턴 전환 중 오류 발생');
-            // 턴 전환 실패 시 QnA 상태 복원 또는 다른 처리 필요?
-            // 일단 실패 시 현재 상태 유지
         }
     };
 
@@ -527,7 +570,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                                     data-player-id={player.playerId}
                                     width={30}
                                     height={30}
-                                    src={`/assets/images/${player.char}`}
+                                    src={`/assets/images/${player.avata}`}
                                     alt=''
                                     // position 1에 있는 플레이어만 우선 로딩
                                     priority={player.position === 1 && index === 0}
@@ -543,7 +586,13 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
 
     // 점수 제출 핸들러 (QnA 다이얼로그에서 호출됨)
     const onSubmitScore = async (playerId: number, score: number, qnaPosition: number) => {
-        console.log(`[VivMarble] onSubmitScore called: playerId=${playerId}, score=${score}, position=${qnaPosition}`);
+
+        // 플레이어 ID로 플레이어 찾기
+        const targetPlayer = players.find(p => p.playerId === playerId);
+        if (!targetPlayer) {
+            snackbar.showSnackbar(`플레이어 ${playerId}를 찾을 수 없습니다.`, 'error', 'bottom', 'center', 3000);
+            return;
+        }
         // 정답 메시지 표시 로직
         if (score > 0) {
             setCorrectAnswerMessage({ show: true, playerId: playerId });
@@ -559,7 +608,6 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             }
             return prev;
         });
-
 
         // UI 상 점수 즉시 업데이트
         setPlayerScores((prev) => {
@@ -593,15 +641,19 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 // Firebase 리스너가 점수 업데이트를 감지하고 playerScores 상태를 갱신할 것임
             }
 
-            // 중요: 점수 제출 후 게임 종료 조건 체크
-            const targetScore = 500;
             // UI에 반영된 점수 상태 (playerScores)를 기준으로 판단
             const finalScore = (playerScores[playerId] || 0) + score; // 현재 UI 점수 + 방금 얻은 점수
-            console.log(`[VivMarble] Player ${playerId}'s score after submission: ${finalScore}. Target: ${targetScore}`);
+            const checkAns = score > 0 ? "정답" : "오답";
+
+            const playerName = targetPlayer.char || `플레이어 ${playerId}`;
+            const message = `[ ${checkAns} ] ${playerName} : 직전점수 ( ${playerScores[playerId]} ) + 취득점수 ( ${score} ) = 최종점수 ( ${finalScore}} )`;
+
+            snackbar.showSnackbar(message, 'info', 'top', 'center', 5000);
 
             if (finalScore >= targetScore) {
                 console.log('[VivMarble] Game ended by score limit.');
-                setStatus('ended'); // UI 상태 즉시 변경
+
+                setStatus('ended'); // UI 상태 즉시 변수
                 // Firebase에도 상태 업데이트
                 await update(ref(db, `rooms/${roomId}`), { status: 'ended' });
                 // 게임 종료 시 턴 넘김은 하지 않음
@@ -634,14 +686,13 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 playerId={playerId}
                 creatorId={creatorId}
                 title={title}
-            //onStartGame={() => setStatus('playing')} // 게임 시작은 서버에서 처리 (resetGame/startGame 액션)
-            // 클라이언트는 creatorId가 startGame 액션 호출
             />
         );
     }
 
     if (status === 'ended') {
         const sortedPlayers = [...players].sort((a, b) => (playerScores[b.playerId] || 0) - (playerScores[a.playerId] || 0));
+        snackbar.showSnackbar(`게임이 종료 되었습니다. 우승자는 ${sortedPlayers[0].char}님 입니다 축하드립니다!`, "success", "top", "center", 5000);
         return (
             <div className={`${styles.game} min-h-screen w-full flex flex-col items-center justify-center gap-4`}>
                 <VivTitle title={`푸른구슬의 전설 ( ${title} ) - 게임 종료`} />
@@ -650,7 +701,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     {sortedPlayers.map((p, index) => (
                         <div key={p.playerId} className="flex gap-4">
                             <span>{index + 1}위:</span>
-                            <span>{p.char.split('.')[0]}</span>
+                            <span>{p.char}</span>
                             <span>{playerScores[p.playerId] || 0}점</span>
                         </div>
                     ))}
@@ -686,34 +737,47 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
             {/* 플레이어 정보 및 점수 표시 */}
             <div className="flex flex-col items-center gap-2 mb-4"> {/* 간격 및 마진 추가 */}
                 <div className="flex justify-center items-center gap-4 text-sky-800 font-extrabold text-3xl">
-                    <span>{currentPlayer ? currentPlayer.char.split('.')[0].toUpperCase() : '-'}</span>
+                    <span>{currentPlayer ? currentPlayer.char.toUpperCase() : '-'}</span>
                     {playerId === creatorId &&
                         <span className="text-rose-300 font-extrabold text-xs mt-auto mb-1">방장</span>}
                 </div>
+
+                <p className='font-bold text-slate-400 text-xl'>
+                    목표점수
+                    <span className='text-rose-600'>
+                        ( {targetScore} )
+                    </span>
+                    점
+                </p>
+                <p className='text-xs text-sky-600 font-bold'>
+                    최종 점수 = (푸른색(15) 또는 빨간색(5), 무색(10)) 칸 * (주사위 숫자) 과 (최고 점수 50) 점 사이에 (최소값)이 (최종 점수)가 됩니다.
+                </p>
+                <p className='text-xs text-sky-600 font-bold'>
+                    다만 주사위 1과 2가 나오면 위로 점수 5점이 추가됩니다. 즉, 정답을 맞추었을 시 최저 점수는 15점이 됩니다.
+                </p>
+
                 <div className="flex justify-center items-center gap-4 text-slate-500 text-sm"> {/* 글씨 크기 조정 */}
                     {players.map((p) => (
                         <span key={p.playerId} className={p.playerId === currentTurn ? 'text-blue-600 font-bold' : ''}> {/* 현재 턴 플레이어 강조 */}
-                            {p.char.split('.')[0]}: {playerScores[p.playerId] || 0}점
+                            {p.char}: {playerScores[p.playerId] || 0}점
                         </span>
                     ))}
                 </div>
             </div>
 
             {/* ** 추가: 정답 메시지 표시 영역 ** */}
-            <div className="text-center h-8"> {/* 메시지 표시 공간 확보 */}
-                {correctAnswerMessage.show && correctAnswerMessage.playerId !== null && (
-                    <span className={`${styles['fade-in-out']} text-green-600 font-bold text-xl`}> {/* CSS 애니메이션 클래스 적용 */}
-                        {players.find(p => p.playerId === correctAnswerMessage.playerId)?.char.split('.')[0] || '플레이어'}님 정답입니다!
+            <div className="text-center h-4"> {/* 메시지 표시 공간 확보 */}
+
+                {(correctAnswerMessage.show && correctAnswerMessage.playerId !== null) && (
+                    <span className={`${styles['fade-in-out']} text-sky-600 font-bold text-2xl`}> {/* CSS 애니메이션 클래스 적용 */}
+                        {players.find(p => p.playerId === correctAnswerMessage.playerId)?.char || '플레이어'}님 정답입니다!
                     </span>
                 )}
             </div>
 
-
-            <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center">
                 {/* 보드 영역 */}
-                <div id="board" className={`${styles.board}
-                relative w-full
-                !justify-center`}>
+                <div id="board" className={`${styles.board} relative w-full !justify-center`}>
                     {buildBoard()}
                     {/* 주사위 애니메이션 영역 */}
                     <div id="dice" className={`${styles.dice} absolute-center`}
@@ -733,7 +797,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     <span>
                         현재 턴  [
                         <em className='text-sky-500 mx-1 font-bold'>
-                            {currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char.split('.')[0]
+                            {currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char
                                 || '알 수 없음' : '없음'}
                         </em>
                         ]
@@ -743,7 +807,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                         <span>
                             직전 굴림 : [
                             <em className='text-sky-500 mx-1 font-bold'>
-                                {players.find(p => p.playerId === lastDiceRoll.playerId)?.char.split('.')[0] || '-'}
+                                {players.find(p => p.playerId === lastDiceRoll.playerId)?.char || '-'}
                             </em>
                             ] 주사위 [
                             <em className='text-sky-500 mx-1 font-bold'>
@@ -773,16 +837,6 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 <div className="flex justify-center w-full gap-2 items-center flex-wrap"> {/* flex-wrap 추가 */}
                     {/* 각 플레이어별 주사위 굴리기 버튼 (자기 턴일 때만 활성화/표시) */}
                     {players.map(player => (
-                        // <button
-                        //     key={player.playerId}
-                        //     className={`${styles.button} !w-auto px-4 py-2 flex-grow sm:flex-grow-0
-                        //         ${currentRollingPlayerId !== null ? styles.rolling : ''}
-                        //         ${playerId !== currentTurn || currentRollingPlayerId !== null ? styles.disabled : ''}
-                        //     `}
-                        //     onClick={() => rollDice(player.playerId)}
-                        //     disabled={playerId !== currentTurn || currentRollingPlayerId !== null} // 실제 비활성화 상태
-                        //     hidden={playerId !== currentTurn || currentRollingPlayerId !== null} // 내 턴이 아니거나 롤링 중이면 숨김 (UI 명확성 위함)
-                        // >
                         <button
                             key={player.playerId}
                             className={`${styles.button} !w-full
@@ -795,7 +849,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                             disabled={playerId !== currentTurn}
                             hidden={currentTurn !== player.playerId || currentRollingPlayerId !== null}
                         >
-                            {player.char.split('.')[0]} {player.playerId === creatorId ? '(방장)' : ''} 🎲
+                            {player.char} {player.playerId === creatorId ? '(방장)' : ''} 🎲
                         </button>
                     ))}
                     {/* 내 턴이 아니거나 롤링 중일 때 턴 정보를 보여주는 텍스트 */}
@@ -807,13 +861,13 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                                 </>
                             ) : (
                                 <>
-                                    [{currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char.split('.')[0] || '-' : '대기'}] 턴 입니다.
+                                    [{currentTurn !== null ? players.find(p => p.playerId === currentTurn)?.char || '-' : '대기'}] 턴 입니다.
                                 </>
                             )}
                         </span>
                     )}
 
-                    {/* 방장 전용 관리 버튼 */}
+                    {/* 방 관련 기능 */}
                     {playerId === creatorId && (
                         <>
                             <button onClick={handleDeleteRoom}
@@ -830,9 +884,22 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                             >
                                 게임 초기화
                             </button>
+
                         </>
                     )}
+                    {playerId !== creatorId && (
+                        <button
+                            onClick={handleLeaveRoom}
+                            className="bg-orange-500 text-white w-auto px-4 py-2 flex-grow sm:flex-grow-0
+                                cursor-pointer rounded-full hover:bg-orange-600 disabled:opacity-50"
+                            disabled={isLeaving || currentRollingPlayerId !== null}
+                        >
+                            나가기
+                        </button>
+                    )}
                 </div>
+
+
 
                 {/* 플레이어 순서 표시 */}
                 <div className='flex gap-4 justify-evenly w-full text-slate-400 text-sm'>
@@ -840,7 +907,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                         .sort((a, b) => a.joinedAt - b.joinedAt) // 참가 순서대로 정렬
                         .map((player, idx) => (
                             <span key={player.playerId} className={player.playerId === currentTurn ? 'text-blue-600 font-extrabold' : ''} >
-                                {player.char.split('.')[0]}
+                                {player.char}
                             </span>
                         ))}
                 </div>
