@@ -58,19 +58,18 @@ export default function VivMarbleQnA({
     const [error, setError] = useState<string | null>(null);
     const answerInputRef = useRef<HTMLInputElement>(null);
 
+
     const BASE_SCORE_NORMAL = 10; // 무색 칸 기본 점수
     const BASE_SCORE_RED = 5;     // 빨간색 칸 기본 점수 (수정)
     const BASE_SCORE_SKY = 15;    // 푸른색 칸 기본 점수 (수정)
 
-    // const BASE_SCORE = 10;
-    // const SPECIAL_BASE_SCORE = 15;
     const MAX_SCORE = 50;
     const LOW_DICE_BONUS = 5;
     const isRedCell = colorGroup?.red?.includes(qna); // 빨간색 칸인지 확인
     const isSkyCell = colorGroup?.sky?.includes(qna); // 푸른색 칸인지 확인
 
     useEffect(() => {
-        if (!open || !qna || qna < 1 || qna > 100) {
+        if (!open || !qna || qna < 1 || qna > 99) {
             setQuestion('');
             setAnswer('');
             setChoices([]);
@@ -191,14 +190,6 @@ export default function VivMarbleQnA({
             score = Math.min(score, MAX_SCORE);
 
         } // 오답이거나 '모름' 선택 시 score는 0으로 유지됨
-
-        console.log(
-            '[VivMarbleQnA] Submitted answer:', userAnswer, 'Correct answer:', answer,
-            'Correct:', isCorrect,
-            'Cell:', qna, 'Base Score:', baseScore, 'Dice:', diceValue, 'Bonus applied:', diceValue <= 2,
-            'Calculated Score (before final cap):', (isCorrect ? Math.min(baseScore * diceValue, MAX_SCORE) + (diceValue <= 2 ? LOW_DICE_BONUS : 0) : 0), // 로그용 계산
-            'Final Score:', score
-        );
 
         onSubmitScore(playerId, score, qna);
         setUserAnswer('');

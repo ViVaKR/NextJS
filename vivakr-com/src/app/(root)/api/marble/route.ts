@@ -7,7 +7,6 @@ import fs from 'fs/promises';
 import type { IQuizCell } from '@/interfaces/i-quiz';
 import { IMarbleChar } from '@/interfaces/i-player-char';
 import { marbleChars } from '@/data/avata-marble';
-import { ApiError } from '@/classes/api-error';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -103,10 +102,12 @@ async function resetGameData(roomId: string) {
         resetPlayers[id] = {
             char: charData?.name || players[id].char,
             avata: charData?.avata || players[id].avata, // 아바타 필드 추가
-            position: 1,
+            position: 0,
+            // position: ,
             joinedAt: players[id].joinedAt,
+            score: 0, // 점수 초기화 추가
             lastMoveTimestamp: null,
-            score: 0 // 점수 초기화 추가
+            lastProcessedMoveTimestamp: null, // 새로 추가: 처리된 QnA 타임스탬프 초기화
         };
     });
 
@@ -115,6 +116,8 @@ async function resetGameData(roomId: string) {
         [`rooms/${roomId}/players`]: resetPlayers,
         [`rooms/${roomId}/colorGroup`]: colorGroup,
         [`rooms/${roomId}/lastRoll`]: null,
+        // 첫 번째 플레이어를 찾아서 currentTurn으로 설정 (참가 순서대로)
+        // [`rooms/${roomId}/currentTurn`]: playerIds.sort((a, b) => players[a].joinedAt - players[b].joinedAt)[0],
         [`rooms/${roomId}/currentTurn`]: playerIds.sort((a, b) => players[a].joinedAt - players[b].joinedAt)[0],
         [`rooms/${roomId}/status`]: 'playing'
     };
@@ -194,9 +197,15 @@ export async function POST(request: Request) {
                         char: selectedChar?.name,
                         // name: selectedChar?.name,
                         avata: selectedChar?.avata,
-                        position: 1,
+                        // position: 1,
+                        position: 0,
                         joinedAt: Date.now(),
-                        score: 0
+                        score: 0,
+                        // ? 추가:
+                        // ? lastMoveTimestamp 및
+                        // ? lastProcessedMoveTimestamp 초기화
+                        lastMoveTimestamp: null,
+                        lastProcessedMoveTimestamp: null,
                     }
                 };
                 if (roomData.creatorId === null) {
@@ -209,30 +218,6 @@ export async function POST(request: Request) {
                 }, { status: 200 });
             }
 
-
-            /*
-                        case 'joinRoom': {
-                            const roomRef = ref(dbInstance, `rooms/${roomId}`);
-                            await runTransaction(roomRef, (roomData) => {
-                                if (!roomData) throw new ApiError(404, '방을 찾을 수 없습니다');
-                                if (roomData.status !== 'waiting') throw new ApiError(400, '게임이 이미 시작되었습니다');
-                                if (Object.keys(roomData.players || {}).length >= 4) throw new ApiError(400, '방이 가득 찼습니다');
-                                if (roomData.players?.[playerId]) throw new ApiError(400, '이미 참여한 플레이어입니다');
-                                const selectedChar = playerChars.find(c => c.id === playerId);
-                                roomData.players = roomData.players || {};
-                                roomData.players[playerId] = {
-                                    char: selectedChar?.name,
-                                    avata: selectedChar?.avata,
-                                    position: 1,
-                                    joinedAt: Date.now(),
-                                    score: 0
-                                };
-                                if (roomData.creatorId === null) roomData.creatorId = playerId;
-                                return roomData;
-                            });
-                            return NextResponse.json({ success: true, creatorId: (await get(roomRef)).val().creatorId || playerId }, { status: 200 });
-                        }
-             */
             case 'leaveRoom': {
                 if (typeof playerId !== 'number') {
                     return NextResponse.json({ error: 'Invalid playerId' }, { status: 400 });
@@ -403,7 +388,7 @@ export async function POST(request: Request) {
                     if (timeDiff < 2000) {
                         const playersSnap = await get(ref(dbInstance, `rooms/${roomId}/players`));
                         const players = playersSnap.val() || {};
-                        const currentPosition = players[playerId]?.position || 1;
+                        const currentPosition = players[playerId]?.position || 0;
                         return NextResponse.json({ players, newPosition: currentPosition }, { status: 200 });
                     }
                 }
@@ -439,7 +424,19 @@ export async function POST(request: Request) {
                 if (!roomId || playerId === undefined || typeof score !== 'number') {
                     return NextResponse.json({ error: 'roomId, playerId, and score required' }, { status: 400 });
                 }
+
+                const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
+
+                if (!roomSnap.exists()) {
+                    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+                }
+                const roomData = roomSnap.val();
+                if (roomData.currentTurn !== playerId) {
+                    return NextResponse.json({ error: 'Not your turn to sumit score' }, { status: 403 });
+                }
+
                 const playerRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}`);
+
                 const playerSnap = await get(playerRef);
                 if (!playerSnap.exists()) {
                     return NextResponse.json({ error: 'Player not found' }, { status: 404 });
@@ -448,40 +445,36 @@ export async function POST(request: Request) {
                 if (score < 0 || score > 50) {
                     return NextResponse.json({ error: 'Invalid score' }, { status: 400 });
                 }
+
                 await update(playerRef, { score: currentScore + score });
                 console.log(`[API POST] Updated score for player ${playerId} in room ${roomId}: +${score}`);
+
                 return NextResponse.json({ success: true }, { status: 200 });
             }
 
-            // case 'nextTurn': {
-            //     if (!roomId || playerId === undefined) {
-            //         return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
-            //     }
-            //     const roomRef = ref(dbInstance, `rooms/${roomId}`);
-            //     const roomSnap = await get(roomRef);
-            //     if (!roomSnap.exists()) {
-            //         return NextResponse.json({ error: 'Room not found' }, { status: 404 });
-            //     }
-            //     const roomData = roomSnap.val();
-            //     const players = Object.keys(roomData.players || {}).map(Number);
-            //     const currentTurn = roomData.currentTurn;
-            //     const currentIndex = players.indexOf(currentTurn);
-            //     const nextIndex = (currentIndex + 1) % players.length;
-            //     const nextTurn = players[nextIndex];
-            //     await update(roomRef, { currentTurn: nextTurn });
-            //     console.log(`[API POST] Advanced turn in room ${roomId} to player ${nextTurn}`);
-            //     return NextResponse.json({ success: true }, { status: 200 });
-            // }
             case 'nextTurn': {
                 if (!roomId || playerId === undefined) {
-                    return NextResponse.json({ error: 'roomId and playerId required' }, { status: 400 });
+                    return NextResponse.json({ error: 'roomId and playerId required' },
+                        { status: 400 });
                 }
                 const roomRef = ref(dbInstance, `rooms/${roomId}`);
+
                 const roomSnap = await get(roomRef);
                 if (!roomSnap.exists()) {
                     return NextResponse.json({ error: 'Room not found' }, { status: 404 });
                 }
+
                 const roomData = roomSnap.val();
+                if (roomData.status !== 'playing') {
+                    return NextResponse.json({ error: 'Game is not in playing state' },
+                        { status: 403 }
+                    );
+                }
+
+                if (roomData.currentTurn !== playerId) {
+                    return NextResponse.json({ error: 'Not your turn to advance' }, { status: 403 });
+                }
+
                 const players = Object.keys(roomData.players || {}).map(Number);
                 if (players.length === 0) {
                     return NextResponse.json({ error: 'No players in room' }, { status: 400 });
