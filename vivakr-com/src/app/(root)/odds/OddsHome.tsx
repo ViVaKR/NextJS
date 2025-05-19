@@ -10,6 +10,7 @@ import OddsCodeRunner from './code-runner/OddsCodeRunner';
 import OddsCodeHtml from './code-html/OddsCodeHtml';
 import MazeGame from './maze/MazeGame';
 import MarbleGame from './marble/page';
+import CrudPage from './crud/page';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -22,7 +23,8 @@ const components = [
   { id: 1, Component: OddsCodeHtml, props: {} },
   { id: 2, Component: OddsAccordion, props: {} },
   { id: 3, Component: MazeGame, props: {} },
-  { id: 4, Component: MarbleGame, props: {} }
+  { id: 4, Component: MarbleGame, props: {} },
+  { id: 5, Component: CrudPage, props: {} },
 
 ];
 

@@ -60,7 +60,7 @@ function getRandomNumbers(count: number, min: number, max: number): number[] {
 }
 
 function getColoredRandomNumbers(max: number): { sky: number[], red: number[] } {
-    if (max < 10) throw new Error('Max must be at least 10');
+    if (max < 10) throw new Error('10 이상의 값을 입력하세요.');
     const numbers = getRandomNumbers(10, 5, max);
     const shuffled = [...numbers];
     for (let i = 0; i < 3; i++) {
@@ -83,14 +83,13 @@ async function initializeRoomData(roomId: string, title: string, creatorId: numb
     };
     await set(ref(dbInstance, `rooms/${roomId}`), initialData);
     await uploadQuizDataToFirebase(roomId);
-    console.log(`[Server] 방 초기화 ${roomId}:`, { title, creatorId, colorGroup });
     return initialData;
 }
 
 async function resetGameData(roomId: string) {
     const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
     if (!roomSnap.exists()) {
-        throw new Error('Room not found');
+        throw new Error('생성된 방이 없습니다.');
     }
     const roomData = roomSnap.val();
     const players = roomData.players || {};
@@ -163,7 +162,6 @@ export async function POST(request: Request) {
                 const roomRef = push(ref(dbInstance, 'rooms'));
                 const newRoomId = roomRef.key!;
                 await initializeRoomData(newRoomId, title, playerId);
-                console.log(`[API POST] 방이 생성되었습니다. ${newRoomId}, 생성자 ${playerId}`);
                 return NextResponse.json({ roomId: newRoomId, creatorId: playerId }, { status: 200 });
             }
 
@@ -422,28 +420,28 @@ export async function POST(request: Request) {
 
             case 'submitScore': {
                 if (!roomId || playerId === undefined || typeof score !== 'number') {
-                    return NextResponse.json({ error: 'roomId, playerId, and score required' }, { status: 400 });
+                    return NextResponse.json({ error: '방번호, 플레이어번호, 점수가 필요합니다.' }, { status: 400 });
                 }
 
                 const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
 
                 if (!roomSnap.exists()) {
-                    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+                    return NextResponse.json({ error: '방이 없습니다.' }, { status: 404 });
                 }
                 const roomData = roomSnap.val();
                 if (roomData.currentTurn !== playerId) {
-                    return NextResponse.json({ error: 'Not your turn to sumit score' }, { status: 403 });
+                    return NextResponse.json({ error: '현재 턴과 플레이어 번호가 잘못되었습니다.' }, { status: 403 });
                 }
 
                 const playerRef = ref(dbInstance, `rooms/${roomId}/players/${playerId}`);
 
                 const playerSnap = await get(playerRef);
                 if (!playerSnap.exists()) {
-                    return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+                    return NextResponse.json({ error: '플레이어가 없습니다.' }, { status: 404 });
                 }
                 const currentScore = playerSnap.val().score || 0;
                 if (score < 0 || score > 50) {
-                    return NextResponse.json({ error: 'Invalid score' }, { status: 400 });
+                    return NextResponse.json({ error: '잘못된 점수 입니다.' }, { status: 400 });
                 }
 
                 await update(playerRef, { score: currentScore + score });
@@ -461,14 +459,12 @@ export async function POST(request: Request) {
 
                 const roomSnap = await get(roomRef);
                 if (!roomSnap.exists()) {
-                    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+                    return NextResponse.json({ error: '방을 찾을 수 없습니다.' }, { status: 404 });
                 }
 
                 const roomData = roomSnap.val();
                 if (roomData.status !== 'playing') {
-                    return NextResponse.json({ error: 'Game is not in playing state' },
-                        { status: 403 }
-                    );
+                    return NextResponse.json({ error: '게임플레이 상태가 아닙니다.' }, { status: 403 });
                 }
 
                 if (roomData.currentTurn !== playerId) {
@@ -501,7 +497,7 @@ export async function POST(request: Request) {
                 }
                 const roomSnap = await get(ref(dbInstance, `rooms/${roomId}`));
                 if (!roomSnap.exists()) {
-                    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+                    return NextResponse.json({ error: '방을 찾을 수 없습니다.' }, { status: 404 });
                 }
                 const roomData = roomSnap.val();
                 if (playerId !== roomData.creatorId) {
@@ -510,17 +506,17 @@ export async function POST(request: Request) {
                 const players = roomData.players || {};
                 const playerCount = Object.keys(players).length;
                 if (playerCount < 2) {
-                    return NextResponse.json({ error: `최소 2명이 참여해야 게임 시작이 가능합니다. 현재 ${playerCount}/4명` }, { status: 400 });
+                    return NextResponse.json({ error: `플레이어는 최소 2명이상이어야 게임 시작이 가능합니다. 현재 ${playerCount}/4명` }, { status: 400 });
                 }
                 const { players: resetPlayers, colorGroup } = await resetGameData(roomId);
                 return NextResponse.json({ players: resetPlayers, colorGroup }, { status: 200 });
             }
 
             default:
-                return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+                return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
         }
-    } catch (err) {
-        // console.error(`[API POST] Error in ${action}:`, err);
-        return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    } catch (err: any) {
+
+        return NextResponse.json({ error: 'Server error: ' + err }, { status: 500 });
     }
 }

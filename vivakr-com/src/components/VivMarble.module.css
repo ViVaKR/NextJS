@@ -53,7 +53,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: none;
   position: static;
 }
 
@@ -210,4 +209,19 @@
   font-weight: bold;
   color: #333;
   min-height: 1.5em;
+}
+
+.fadeInOut {
+  opacity: 1;
+  animation: fade 2s linear;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }

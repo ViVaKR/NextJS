@@ -15,6 +15,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import { IMarbleChar } from '@/interfaces/i-player-char';
 import { marbleChars } from '@/data/avata-marble';
+import Image from 'next/image';
 interface Room {
     id: string;
     title: string;
@@ -47,7 +48,7 @@ export default function VivLobby() {
                 playerCount: Object.keys(data.players || {}).length,
                 players: data.players || {}
             }));
-            console.log('[VivLobby] Real-time rooms:', roomList);
+
             setRooms(roomList);
         }, (err) => {
             console.error('[VivLobby] Real-time rooms error:', err);
@@ -59,6 +60,7 @@ export default function VivLobby() {
     const handleCreateRoom = async () => {
 
         if (isCreating) return;
+
         if (!newRoomTitle.trim()) {
             alert('방 제목을 입력하세요.');
             return;
@@ -170,14 +172,14 @@ export default function VivLobby() {
                 body: JSON.stringify({ action: 'joinRoom', roomId, playerId: selectedPlayerId })
             });
             const data = await res.json();
-            console.log('[VivLobby] Join room response:', data);
+
             if (res.ok) {
                 router.push(`/odds/marble/${roomId}?playerId=${selectedPlayerId}`);
             } else {
                 alert(data.error || '방 입장 실패');
             }
         } catch (err) {
-            console.error('[VivLobby] Join room error:', err);
+
             alert('방 입장 중 오류 발생');
         }
     };
@@ -238,7 +240,12 @@ export default function VivLobby() {
                                                 <MenuItem
                                                     key={idx}
                                                     value={char.id.toString()}
-                                                    disabled={!!room.players[char.id]} > {char.name}
+                                                    disabled={!!room.players[char.id]}>
+                                                    {/* <Image
+                                                        width={10} height={10} alt='-'
+                                                        src={`/assets/images/${char.avata}`}
+                                                    /> */}
+                                                    {char.name}
                                                 </MenuItem>
                                             ))}
                                         </Select>

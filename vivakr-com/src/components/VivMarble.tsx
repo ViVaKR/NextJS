@@ -254,7 +254,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                 console.log('[VivMarble] Hiding correct answer message.');
 
                 setCorrectAnswerMessage({ show: false, playerId: null });
-            }, 3000); // 3초 후에 메시지 숨김
+            }, 5000); // 3초 후에 메시지 숨김
             return () => clearTimeout(timer);
         }
     }, [correctAnswerMessage]);
@@ -558,17 +558,18 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     <div className={styles.playerContainer}>
                         {playersInCell.map((player, index) => (
                             <div key={player.playerId}
-                                className={styles.tokenWrapper} style={{ zIndex: index + 1 }}>
-                                <Tooltip title={player.char} placement='top'>
+                                className={`${styles.tokenWrapper} ${currentTurn === player.playerId ? 'p-1 rounded-full bg-amber-500' : ''}`}
+                                style={{ zIndex: index + 1 }}>
+                                <Tooltip title={`${player.char} ${player.score} 점 ${currentTurn === player.playerId ? '현재턴' : ''}`} placement='top'>
                                     <Image
                                         className={`${styles.token} cursor-pointer`}
                                         data-player-id={player.playerId}
                                         width={30}
                                         height={30}
                                         src={`/assets/images/${player.avata}`}
-                                        onClick={() => handleShowPlayerInfo(player.playerId)}
+                                        onClick={() => handleShowPlayerInfo(player.score, player.char)}
                                         alt=''
-                                        // position 1에 있는 플레이어만 우선 로딩
+                                        // position 0에 있는 플레이어만 우선 로딩
                                         priority={player.position === 0 && index === 0}
                                     // priority={player.position === 1 && index === 0}
                                     />
@@ -651,8 +652,8 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
 
             const playerName = targetPlayer.char || `플레이어 ${playerId}`;
             const message = `[ ${checkAns} ] ${playerName} : 직전점수 ( ${playerScores[playerId]} ) + 취득점수 ( ${score} ) = 최종점수 ( ${finalScore}} )`;
-
-            snackbar.showSnackbar(message, 'info', 'top', 'center', 3000);
+            const messageType = score > 0 ? 'success' : 'warning';
+            snackbar.showSnackbar(message, messageType, 'top', 'center', 3000);
 
             if (finalScore >= targetScore) {
                 await update(ref(db, `rooms/${roomId}`), { status: 'ended' });
@@ -730,10 +731,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
         );
     }
 
-    const handleShowPlayerInfo = async (id: number) => {
-
-        const message = `${players[id].char} 님의 현재 점수는 ( ${players[id].score} )점 입니다.`;
-        snackbar.showSnackbar(message, 'info', 'top', 'center', 3000);
+    const handleShowPlayerInfo = async (score: number, name: string) => {
+        const message = `${name} 님의 현재 점수는 ( ${score} )점 입니다.`;
+        snackbar.showSnackbar(message, 'info', 'top', 'center', 5000);
     }
 
     // 게임 플레이 중 화면
@@ -883,16 +883,7 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
 
                         </>
                     )}
-                    {playerId !== creatorId && (
-                        <button
-                            onClick={handleLeaveRoom}
-                            className="bg-orange-500 text-white w-auto px-4 py-2 flex-grow sm:flex-grow-0
-                                cursor-pointer rounded-full hover:bg-orange-600 disabled:opacity-50"
-                            disabled={isLeaving || currentRollingPlayerId !== null}
-                        >
-                            나가기
-                        </button>
-                    )}
+
                 </div>
 
                 {/* 플레이어 순서 표시 */}
@@ -901,9 +892,9 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                         .sort((a, b) => a.joinedAt - b.joinedAt) // 참가 순서대로 정렬
                         .map((player, idx) => (
 
-                            <div key={player.playerId}
+                            <div key={idx}
                                 className={`${player.playerId === currentTurn
-                                    ? 'text-cyan-600 font-extrabold bg-yellow-300 border-2'
+                                    ? 'text-cyan-600 font-extrabold bg-yellow-200 border-4'
                                     : ''}
                                 flex my-4
                                 flex-col
@@ -913,29 +904,35 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                                 rounded-full
                                 justify-around
                                 items-center
+                                gap-4
                                 `}>
                                 <Image
-                                    width={40}
-                                    height={40}
+                                    width={100}
+                                    height={100}
                                     src={`/assets/images/${player.avata}`}
                                     alt={player.char}
+                                    className='rounded-full w-24 h-24 cursor-pointer shadow-lg shadow-slate-700'
                                 />
-                                {player.char}
+                                <span>
+                                    {player.char}
+                                </span>
                             </div>
                         ))}
                 </div>
                 {/* ** 추가: 정답 메시지 표시 영역 ** */}
-                <div className="text-center h-12 border-2 w-full border-slate-300 rounded-full flex items-center justify-center"> {/* 메시지 표시 공간 확보 */}
-
+                <div className="text-center h-auto w-full
+                fixed top-1/2
+                 flex items-center justify-center"> {/* 메시지 표시 공간 확보 */}
                     {(correctAnswerMessage.show && correctAnswerMessage.playerId !== null) && (
-                        <span className={`${styles['fade-in-out']} text-sky-600 font-bold text-2xl`}> {/* CSS 애니메이션 클래스 적용 */}
-                            {players.find(p => p.playerId === correctAnswerMessage.playerId)?.char || '플레이어'}님 정답입니다!
+                        <span className={`text-red-700
+                        animate-bounce font-extrabold text-7xl ${styles.fadeInOut}`}>
+                            정답입니다!!!
                         </span>
                     )}
                 </div>
 
 
-                <div className='flex flex-col rounded-full border-2 border-slate-300 px-8 py-4 w-full mt-2 mb-96'>
+                <div className='flex flex-col rounded-full border-2 border-slate-300 px-8 py-4 w-full mt-2 mb-12'>
                     <p className='text-xs text-sky-600 font-bold'>
                         최종 점수 = (푸른색(15) 또는 빨간색(5), 무색(10)) 칸 * (주사위 숫자) 과 (최고 점수 50) 점 사이에 (최소값)이 (최종 점수)가 됩니다.
                     </p>
@@ -944,6 +941,16 @@ export default function VivMarble({ roomId, playerId }: VivMarbleProps) {
                     </p>
 
                 </div>
+                {playerId !== creatorId && (
+                    <button
+                        onClick={handleLeaveRoom}
+                        className="bg-orange-500 text-white w-auto mb-96 px-4 py-2 flex-grow sm:flex-grow-0
+                                cursor-pointer rounded-full hover:bg-orange-600 disabled:opacity-50"
+                        disabled={isLeaving || currentRollingPlayerId !== null}
+                    >
+                        나가기
+                    </button>
+                )}
 
                 {/* QnA 다이얼로그 렌더링 */}
                 {/* QnA는 status가 playing이고 isQnAOpen 상태가 true일 때만 표시 */}

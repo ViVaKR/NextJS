@@ -35,21 +35,50 @@ const demoTheme = createTheme({
 
 export interface Note extends DataModel {
     id: number;
+    level: number;
+    types?: '주관식' | '객관식';
     title: string;
     text: string;
+    choices?: string[];
+    answer?: string | number;
+
 }
 
 let notesStore: Note[] = [
-    { id: 1, title: 'Grocery List Item', text: 'Buy more coffee.' },
-    { id: 2, title: 'Personal Goal', text: 'Finish reading the book.' },
+    {
+        id: 1,
+        level: 1,
+        type: '주관식',
+        title: '채만식의 소설 중 태평천하는 제목에서 어떤 표현방법을 통해 풍자의 효과를 보여주고 있는지 3음절로 쓰세요',
+        text: '',
+        choices: [],
+        answer: '반어법'
+    },
+    {
+        id: 2,
+        level: 1,
+        type: '객관식',
+        title: '1인칭 관찰자 시점에 대한 설명 중 잘못된 것은?',
+        text: '',
+        choices: [
+            "모든 등장인물의 내면 심리를 파악할 수 있다",
+            "내가 주인공이 되어 자신의 이야기를 한다",
+            "독자와 등장인물 사이의 거리가 가깝다",
+            "추측이 자주 나타난다"
+        ],
+        answer: '모든 등장인물의 내면 심리를 파악할 수 있다'
+    },
 ];
 
 export const notesDataSource: DataSource<Note> = {
     fields: [
         { field: 'id', headerName: 'ID' },
+        { field: 'level', headerName: '단계' },
         { field: 'title', headerName: 'Title', flex: 1 },
+        { field: 'type' },
         { field: 'text', headerName: 'Text', flex: 1 },
     ],
+
     getMany: ({ paginationModel, filterModel, sortModel }) => {
         return new Promise<{ items: Note[]; itemCount: number }>((resolve) => {
             setTimeout(() => {
@@ -219,7 +248,7 @@ interface DemoProps {
 
 */
 
-export default function CrudBasic({ window }: DemoProps) {
+export default function VivCrud({ window }: DemoProps) {
     // const { window } = props;
     const router = useDemoRouter('/notes');
     const [isReady, setIsRead] = React.useState(false);

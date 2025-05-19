@@ -1,6 +1,7 @@
 import OddsAccordion from "@/app/(root)/odds/accordion/OddsAccordion";
 import OddsCodeHtml from "@/app/(root)/odds/code-html/OddsCodeHtml";
 import OddsCodeRunner from "@/app/(root)/odds/code-runner/OddsCodeRunner";
+import CrudPage from "@/app/(root)/odds/crud/page";
 import MarbleGame from "@/app/(root)/odds/marble/page";
 import MazeGame from "@/app/(root)/odds/maze/MazeGame";
 import { IMenu } from "@/interfaces/i-menu";
@@ -36,6 +37,7 @@ export const getOddsItems = (): IMenu[] => {
         { id: 1, title: '예쁜코드', url: '/odds/code-html', Component: OddsCodeHtml },
         { id: 2, title: '아코디언', url: '/odds/accordion', Component: OddsAccordion },
         { id: 3, title: '미로게임', url: '/odds/maze', Component: MazeGame },
-        { id: 4, title: '블루마블', url: '/odds/marble', Component: MarbleGame }
+        { id: 4, title: '푸른구슬', url: '/odds/marble', Component: MarbleGame },
+        { id: 5, title: '데모', url: '/odds/crud', Component: CrudPage }
     ]
 }
