@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` sticky-footer ${poppins.className} antialiased`}>
+      <body className={`sticky-footer ${poppins.className} antialiased`}>
         <ClientSessionProvider>
           <AuthProvider>
             <SnackbarProvider>

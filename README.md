@@ -3,6 +3,5 @@
 NextJS
 
 ```bash
-    npx create-next-app@latest
-
+    npx create-next-app@latest project-name --use-pnpm
 ```

@@ -22,7 +22,10 @@ export default async function AppBarPage() {
   return (
     <>
       <VivTitle title="Camp" />
-      <VivFeaturedCodeItems codes={sortedData()} categories={categories} />
+      <VivFeaturedCodeItems
+        codes={sortedData()}
+        categories={categories} />
+
       <div className='w-full min-h-screen'></div>
     </>
   )

@@ -45,9 +45,9 @@ const NAVIGATION: Navigation = [
           {
             segment: 'csharp', title: 'C#', icon: <CategoryOutlinedIcon />,
             children: [
-              { segment: 'beginner', title: 'Beginner', icon: < AirlineStopsOutlinedIcon /> },
-              { segment: 'intermediate', title: 'Intermediate', icon: < AirlineStopsOutlinedIcon /> },
-              { segment: 'advanced', title: 'Advanced', icon: < AirlineStopsOutlinedIcon /> },
+              { segment: 'beginner', title: 'Beginner', icon: <AirlineStopsOutlinedIcon /> },
+              { segment: 'intermediate', title: 'Intermediate', icon: <AirlineStopsOutlinedIcon /> },
+              { segment: 'advanced', title: 'Advanced', icon: <AirlineStopsOutlinedIcon /> },
             ]
           },
           { segment: 'aspnetcore', title: 'ASP.NET Core', icon: <CategoryOutlinedIcon /> },

@@ -47,8 +47,6 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/public ./public
 # static 빌드 결과물 복사
 COPY --from=builder /app/.next/static ./.next/static
-# Prisma 스키마 파일 복사 (선택적이지만 권장)
-COPY --from=builder /app/prisma ./prisma
 
 # 어플리케이션이 사용할 포트 노출 (기본 3000)
 EXPOSE 3000

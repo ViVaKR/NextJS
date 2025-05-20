@@ -1,7 +1,6 @@
 'use client'
 import { ICategory } from '@/interfaces/i-category';
 import { ICode } from '@/interfaces/i-code';
-import { fetchCategories } from '@/lib/fetchCategories';
 import { Box, Card, CardContent, Link, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import BubbleChartOutlinedIcon from '@mui/icons-material/BubbleChartOutlined';

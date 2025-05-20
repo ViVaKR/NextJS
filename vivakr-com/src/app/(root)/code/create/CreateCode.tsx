@@ -2,7 +2,7 @@
 'use client'
 import { CodeData } from '@/types/code-form-data';
 import { getTokenAsync, fetchUserDetailAsync } from '@/services/auth.service';
-import { Box, Button, ButtonGroup, createTheme, Grid, IconButton, MenuItem, TextField, TextFieldProps, ThemeProvider, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Grid, IconButton, MenuItem, TextField, TextFieldProps, ThemeProvider, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -68,7 +68,6 @@ export default function CreateCodePage() {
         watch,
         reset,
         setValue,
-        getValues
     } = useForm<CodeData>({
         defaultValues: {
             id: 0,
