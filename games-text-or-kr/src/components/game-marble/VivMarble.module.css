@@ -1,0 +1,227 @@
+.game {
+  --board-size: 60px;
+  --token-size: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, var(--board-size));
+  gap: 5px;
+  padding: 20px;
+  background: #facc15;
+  border-radius: 1rem;
+  position: relative;
+  min-width: 680px; /* 10 * 60px + 10px(gap) + 10px(padding) */
+  margin: 0 auto;
+}
+.cell {
+  width: var(--board-size);
+  height: var(--board-size);
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden; /* 셀 내부 오버플로우 방지 */
+}
+.idx {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 0.75em;
+  font-weight: bolder;
+  color: rgb(169, 160, 34);
+}
+
+.playerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: -12px;
+  width: 100%;
+  padding-bottom: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.tokenWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: static;
+}
+
+.token {
+  width: var(--token-size);
+  height: var(--token-size);
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  display: block;
+  position: relative;
+  z-index: inherit;
+}
+
+.dice {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  z-index: 20;
+  background: transparent;
+  transition: opacity 0.3s ease;
+}
+
+.dice.hidden {
+  /* opacity: 0;
+  pointer-events: none; */
+  display: none;
+}
+
+.pip {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: black;
+  border-radius: 50%;
+}
+
+.pos-tl {
+  top: 8px;
+  left: 8px;
+}
+.pos-tr {
+  top: 8px;
+  right: 8px;
+}
+.pos-bl {
+  bottom: 8px;
+  left: 8px;
+}
+.pos-br {
+  bottom: 8px;
+  right: 8px;
+}
+.pos-c {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.pos-lt {
+  top: 8px;
+  left: 8px;
+}
+.pos-lm {
+  top: 32px;
+  left: 8px;
+}
+.pos-lb {
+  top: 56px;
+  left: 8px;
+}
+.pos-rt {
+  top: 8px;
+  right: 8px;
+}
+.pos-rm {
+  top: 32px;
+  right: 8px;
+}
+.pos-rb {
+  top: 56px;
+  right: 8px;
+}
+
+.face {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border: 2px solid #333;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.face-1 {
+  transform: translateZ(40px);
+}
+.face-2 {
+  transform: rotateY(90deg) translateZ(40px);
+}
+.face-3 {
+  transform: rotateY(180deg) translateZ(40px);
+}
+.face-4 {
+  transform: rotateY(-90deg) translateZ(40px);
+}
+.face-5 {
+  transform: rotateX(90deg) translateZ(40px);
+}
+.face-6 {
+  transform: rotateX(-90deg) translateZ(40px);
+}
+
+.button {
+  padding: 12px 20px;
+  background-color: #38bdf8;
+  color: #f8fafc;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  margin: 0 8px;
+  font-weight: bold;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #0ea5e9;
+}
+
+.button:disabled {
+  background-color: #94a3b8;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button.rolling {
+  background-color: #facc15;
+  color: #44403c;
+}
+
+.diceResultDisplay {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  min-height: 1.5em;
+}
+
+.fadeInOut {
+  opacity: 1;
+  animation: fade 2s linear;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

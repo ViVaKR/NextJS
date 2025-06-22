@@ -1,0 +1,78 @@
+services:
+  nextjs-frontend:
+    # 이미지 이름 지정 (원하는 대로 변경 가능)
+    image: vivakr-com:${TAG:-latest} # 태그 기본값은 latest, 환경 변수 TAG로 지정 가능
+    container_name: vivakr-com
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # 빌드 시 사용할 환경 변수 (ARG) 전달
+      # .env 파일의 NEXT_PUBLIC_* 변수들을 여기에 추가
+      # docker compose build --build-arg NEXT_PUBLIC_API_URL=... 형태로도 전달 가능
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.vivakr.com} # 환경 변수 없으면 기본값 사용
+        NEXT_PUBLIC_IPINFO_URL: ${NEXT_PUBLIC_IPINFO_URL:-https://ipinfo.io}
+        NEXT_PUBLIC_IPINFO_URL2: ${NEXT_PUBLIC_IPINFO_URL2:-https://ns.vivakr.com}
+        NEXT_PUBLIC_CHAT_URL: ${NEXT_PUBLIC_CHAT_URL:-https://ns.kimbumjun.co.kr}
+        NEXT_PUBLIC_RUNNER_URL: ${NEXT_PUBLIC_RUNNER_URL:-https://runner.kimbumjun.com}
+        NEXT_PUBLIC_ENABLE_LOGIN_MENU: ${NEXT_PUBLIC_ENABLE_LOGIN_MENU:-true}
+        NEXT_PUBLIC_STORAGE_KEY: ${NEXT_PUBLIC_STORAGE_KEY:-user}
+        NEXT_PUBLIC_MYIP: ${NEXT_PUBLIC_MYIP:-} # 로컬 IP는 빌드 시점에 따라 달라질 수 있어 주의
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
+        NEXT_PUBLIC_GOOGLE_MAP_ID: ${NEXT_PUBLIC_GOOGLE_MAP_ID:-}
+        NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-}
+        NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${NEXT_PUBLIC_FIREBASE_DATABASE_URL:-}
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-}
+        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:-}
+        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:-}
+        NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID:-}
+        NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:-}
+
+    ports:
+      # Nginx가 연결할 호스트 포트 : 컨테이너 내부 포트
+      - '47960:3000'
+    # 런타임 시 필요한 환경 변수 주입
+    # .env.local 및 NextAuth에 필요한 .env 변수들을 여기에 추가
+    environment:
+      # NextAuth 필수 환경 변수
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET} # 호스트 환경변수 또는 .env 파일에서 읽어옴
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://vivakr.com} # 운영 환경 URL 또는 기본값
+      # Google Provider
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      # GitHub Provider
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      # Facebook Provider
+      FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
+      FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
+      # Twitter Provider
+      TWITTER_CLIENT_ID: ${TWITTER_CLIENT_ID}
+      TWITTER_CLIENT_SECRET: ${TWITTER_CLIENT_SECRET}
+      # Discord Provider
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      # Microsoft Provider
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
+      # Next.js 내부 포트 변경 필요 시 (Dockerfile의 CMD와 일치시켜야 함)
+      # PORT: 3000
+      # 호스트의 .env 파일 로드 (선택적, 보안 주의)
+      # 이렇게 하면 아래 environment 섹션에서 ${VAR_NAME} 형태로 사용 가능
+    env_file:
+      - .env # 빌드 args용 변수들 로드 (선택적)
+      - .env.local # 시크릿 값들 로드
+    # 재시작 정책
+    restart: unless-stopped
+    # healthcheck 추가 (선택적이지만 권장)
+    # healthcheck:
+    #   test: [ 'CMD', 'curl', '-f', 'http://localhost:3000' ] # 앱이 응답하는지 간단히 확인
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s # 컨테이너 시작 후 healthcheck 시작까지 대기 시간
+    # 네트워크 설정 (선택 사항, 다른 서비스와 연결 시 유용)
+    # networks:
+    #   default:
+    #     name: viv_nextjs_network
