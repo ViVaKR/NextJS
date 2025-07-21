@@ -82,18 +82,18 @@ export default function ClientLayout({
     [isCollapsed]);
 
   // Left Menu 애니메이션 variants 정의
-  const menuVariants = {
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.3, ease: 'easeInOut' },
-    },
-    closed: {
-      opacity: 0,
-      x: -20, // 왼쪽으로 살짝 밀려나면서 사라짐
-      transition: { duration: 0.3, ease: 'easeInOut' },
-    },
-  };
+  // const menuVariants = {
+  //   open: {
+  //     opacity: 1,
+  //     x: 0,
+  //     transition: { duration: 0.3, ease: 'easeInOut' },
+  //   },
+  //   closed: {
+  //     opacity: 0,
+  //     x: -20, // 왼쪽으로 살짝 밀려나면서 사라짐
+  //     transition: { duration: 0.3, ease: 'easeInOut' },
+  //   },
+  // };
 
   // * Start Point
   return (
@@ -162,7 +162,7 @@ export default function ClientLayout({
           !isCollapsed && (
             <motion.aside
               className="start-0 flex flex-col gap-1 mr-2"
-              variants={menuVariants}
+              // variants={menuVariants}
               initial="closed"
               animate="open"
               exit="closed">
