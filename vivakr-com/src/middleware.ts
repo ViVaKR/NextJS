@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
         }
 
         if (adminPaths.some((path) => pathname.startsWith(path))) {
-            console.log('Chekc Admin');
+
             const roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role];
             if (!roles.includes('Admin')) {
                 return NextResponse.redirect(new URL('/membership/unauthorized', request.url));

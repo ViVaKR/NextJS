@@ -1,0 +1,8 @@
+@url = https://api.vivakr.com
+
+
+
+###
+GET {{url}}/api/locationinfo HTTP/1.1
+
+###
