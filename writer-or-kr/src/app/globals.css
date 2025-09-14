@@ -1,26 +1,310 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
+  --background: #b8e8e2;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* preflight 재정의 */
+@layer base {
+  /* For Firefox */
+  * {
+    /* 스크롤바 너비 숨김 */
+    scrollbar-width: none;
+  }
+
+  /* For WebKit (Chrome & Safari) */
+  ::-webkit-scrollbar {
+    /* 스크롤바 숨김 */
+    display: none;
+  }
+
+  h1 {
+    font-size: 2.488rem; /* 약 40px */
+    font-weight: 700;
+    margin-bottom: 0.5em;
+  }
+
+  h2 {
+    font-size: 2.074rem; /* 약 33px */
+    font-weight: 600;
+    margin-bottom: 0.5em;
+  }
+
+  h3 {
+    font-size: 1.728rem; /* 약 28px */
+    font-weight: 600;
+    margin-bottom: 0.5em;
+  }
+
+  h4 {
+    font-size: 1.44rem; /* 약 23px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+  }
+
+  h5 {
+    font-size: 1.2rem; /* 약 19px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+  }
+
+  h6 {
+    font-size: 1rem; /* 16px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /*
+  --font-sans: var(--font-roboto);
+  --font-mono: var(--font-fira);
+  --font-kr: var(--font-ibm-plex-kr);
+  --font-poppins: var(--font-poppins); */
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 1.5rem;
+  --text-tiny--letter-spacint: 0.125rem;
+  --text-tiny--font-weight: 500;
+
+  /* add --breakpoint */
+  --breadpoint-xs: 30rem;
+  --breakpoint-3xl: 120rem;
+  --breakpoint-tablet: 40rem;
+  --breakpoint-laptop: 64rem;
+  --breakpoint-desktop: 80rem;
+  /* removing default breakpoints -->
+    --breakpoint-2xl: initial;
+    --breakpoint-*: initial;
+
+  */
+
+  /* 임의의 값 사용  */
+  /*
+    max-[600px]: bg-sky-300;
+    min-[320px]: text-center;
+  */
+}
+
+@layer utilities {
+  .bg-robot {
+    background-image: url('/images/robot-man.webp');
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+  }
+
+  .bg-viv {
+    background-image: url('/images/viv.webp');
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+  }
+
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+}
+
+/* 구성 요소 클래스 추가 부분 */
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 font-bold py-2 px-4 text-white rounded-md;
+  }
+
+  .btn-rose {
+    @apply bg-rose-500 font-bold py-2 px-4 text-white rounded-md;
+  }
+
+  /* div container */
+  .box-sm {
+    @apply w-full flex justify-around items-center rounded-lg;
+  }
+  .box-sm-col {
+    @apply w-full flex flex-col gap-2 rounded-lg;
+  }
+
+  .card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: --spacing(6);
+    box-shadow: var(--shadown-xl);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: var(--font-geist-sans), sans-serif; */
+  /* font-family: var(--font-roboto), var(--font-ibm-plex-kr), sans-serif;
+ */
+  line-height: 1.5rem;
+  font-size: 1rem;
 }
+
+div.writer-container {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template:
+    'header' 80px
+    'main' 1fr
+    'footer' 150px
+    / 1fr;
+}
+
+header {
+  grid-area: header;
+  overflow-x: auto;
+}
+
+main {
+  grid-area: main;
+  overflow-x: auto;
+}
+
+footer {
+  grid-area: footer;
+  overflow: auto;
+}
+
+/* Responsive Design */
+/*
+  `sm` : 640px, 40rem
+  `md` : 768px, 48rem
+  `lg` : 1024px, 64rem
+  `xl` : 1280px, 80rem
+  `2xl` : 1536px, 96rem
+
+  `max-sm`
+  `max-md`
+  `max-lg`
+  `max-xl`
+  `max-2xl`
+
+*/
+/* 가상클래스 */
+/*
+  ! 가상 !
+  * Classes
+  :hover
+  :focus
+  :focus-within
+  :focus-visible
+  :active
+  :visited
+  :target
+  :first-child
+  :last-child
+  :only-child
+  :nth-child(odd)
+  :nth-child(even)
+  :nth-child()
+  :nth-last-child()
+  :nth-of-type()
+  :nth-last-of-type()
+  :first-of-type
+  :last-of-type
+  :only-of-type
+  :required
+  :empty
+  :disabled
+  :enabled
+  :checked
+  :indeterminate
+  :default
+  :optional
+  :required
+  :valid
+  :invalid
+  :user-valid
+  :in-range
+  :out-of-range
+  :placeholder-shown
+  :details-content
+  :autofill
+  :read-only
+
+  *elements
+  ::before
+  ::after
+  ::placeholder
+  ::selection
+  * attribute selectors
+  [dir='rtl']
+  [open]
+
+  * child selector
+  &
+  >
+  *
+
+  & *
+
+*/
+
+/*
+  ! preflight !
+
+  ? 여백제거 ?
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    margin: 0;
+    padding: 0;
+  }
+
+  ? 테두리 스타일 재설 정 ?
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    box-sizing: border-box;
+    border: 0 solid;
+  }
+
+  ?  ?
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  ?  ?
+  ol,
+  ul,
+  menu {
+    list-style: none;
+  }
+
+  ? 이미지는 블록 수준 ?
+  img,
+  svg,
+  video,
+  audio,
+  embed,
+  object {
+    display: block;
+    vertical-align: middel;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+*/

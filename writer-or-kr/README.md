@@ -1,36 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Writer.Or.Kr
 
-## Getting Started
-
-First, run the development server:
+## Start
 
 ```bash
-
-
-npm install prisma --save-dev
-
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-
-
-# 1. Prisma CLI를 개발용으로 설치 (-D 플래그)
-pnpm add prisma -D
-
-# 2. Prisma Client를 일반 의존성으로 설치
-pnpm add @prisma/client
-
-# 3. Prisma 프로젝트 초기화
-pnpm dlx prisma init
-
-# 보안 처리
-pnpm approve-builds
-
-# 마이그레이션
-pnpm dlx prisma migrate dev --name init
-
+    brew link --overwrite pnpm
+    npm list -g
+    ncu -g
+    corepack enable pnpm
+    npx create-next-app@latest writer-or-kr --use-pnpm
+    pnpm dev
 ```
+
+## .env
+
+- NEXT_PUBLIC_ 접두가가 붙은 공개 API 엔드포인드
+- 민감하지 않은 정보, 모든 환경에 공통으로 적용되는 기본값
+- Git Commit OK.
+
+## .env.local

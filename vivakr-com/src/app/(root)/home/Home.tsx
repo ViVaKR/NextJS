@@ -44,6 +44,7 @@ export default function Home() {
       const result: IIpInfo | null = await getIpInfomations();
       setInfo(result);
     }
+
     getIpInfo()
     setIpArray(info?.ip?.split('.'));
     console.log(process.cwd())
@@ -59,7 +60,6 @@ export default function Home() {
       });
     }
   }, []);
-
 
   return (
     <div className="flex flex-col m-0 p-0 relative min-h-screen">
