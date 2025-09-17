@@ -10,6 +10,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
@@ -20,6 +21,10 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+
+  // ...compat.config({
+  //   extends: ["next", "prettier"],
+  // })
 ];
 
 export default eslintConfig;

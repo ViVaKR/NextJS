@@ -1,22 +1,51 @@
 import type { Metadata } from "next";
-// import { Roboto, IBM_Plex_Sans_KR, Poppins, Fira_Code } from "next/font/google";
-import { Geist, Geist_Mono } from "next/font/google"
+import { Inter, Roboto, IBM_Plex_Sans_KR, Oswald, Fira_Code, Cute_Font } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "./navbar/Navbar";
 import Footer from "./footer/Footer";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: "swap",
 });
 
+const fira = Fira_Code({
+  variable: "--font-fira",
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap'
+});
+
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: "swap",
+})
+
+const ibm_plex = IBM_Plex_Sans_KR({
+  variable: "--font-ibm-plex-kr",
+  weight: ['100', '200', '300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: "swap"
+});
+
+const cute = Cute_Font({
+  variable: "--font-cute",
+  weight: '400',
+  subsets: ['latin'],
+  display: "swap"
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://writer.or.kr'),
@@ -43,13 +72,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body
         className={`
-
-          ${geistSans.variable} ${geistMono.variable}
-          antialiased`}
+          ${inter.variable}
+          ${roboto.variable}
+          ${fira.variable}
+          ${ibm_plex.variable}
+          ${oswald.variable}
+          ${cute.variable}
+          antialiased
+          md:subpixel-antialiased`}
       >
         <div className="writer-container">
           <header> <Navbar /> </header>
@@ -59,4 +94,5 @@ export default function RootLayout({
       </body>
     </html>
   );
+
 }

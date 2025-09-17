@@ -1,0 +1,37 @@
+/* 테마변수 */
+/* 다른 변수를 참조하는 테마 변수를 정의할 때 는 inline 옵션을 사용함  */
+@theme {
+  /*
+
+    ! flex-basis !
+    - basis-full : 100%
+    - basis-<number>
+    - basis-auto
+    - 3xs(16rem, 256px)~ 7xl (80rem, 1280px)
+
+  */
+  --container-4xs: 14rem;
+  --container-8xl: 96rem;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-roboto: var(--font-roboto);
+  --font-poppins: var(--font-poppins);
+  --font-fira: var(--font-fira);
+  --font-kr: var(--font-ibm-plex-kr);
+
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 1.5rem;
+  --text-tiny--letter-spacint: 0.125rem;
+  --text-tiny--font-weight: 500;
+
+  --breadpoint-xs: 30rem;
+  --breakpoint-3xl: 120rem;
+  --breakpoint-tablet: 40rem;
+  --breakpoint-laptop: 64rem;
+  --breakpoint-desktop: 80rem;
+
+  --color-midnight: #121063;
+  --color-tahiti: #3ab7bf;
+  --color-bermuda: #78dcca;
+}

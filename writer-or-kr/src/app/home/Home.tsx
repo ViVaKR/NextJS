@@ -4,7 +4,14 @@ export default function Home() {
 
     return (
         <div className="p-4">
-            <h1 className="font-poppins">Hello, World Fine Thanks And You?</h1>
+
+            <h1>Home</h1>
+
+            <p className="text-tahiti bg-midnight py-2 px-4 my-4 rounded-md">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae ipsum fugiat iusto quas, dolores, magni vitae consectetur maxime provident voluptate impedit dolore qui nulla voluptatum atque, corrupti voluptatem incidunt necessitatibus.
+            </p>
+            <h3 className="font-kr">Hello, World Fine Thanks And You? 한글, font-kr </h3>
+            <h3 className="font-poppins">Hello, World Fine Thanks And You? 한글</h3>
 
             <div className="card max-w-80 h-48 my-8">
                 Card
@@ -13,6 +20,9 @@ export default function Home() {
             <div className="box-sm">
                 <p className="ordinal">1st</p>
                 <p className="slashed-zero">0</p>
+                <p className="text-tiny">
+                    한글 테스트 ...
+                </p>
             </div>
 
             <div className="box-sm-col bg-teal-500 text-white

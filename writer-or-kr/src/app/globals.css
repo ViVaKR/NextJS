@@ -1,9 +1,22 @@
 @layer theme, base, components, utilities;
 @import 'tailwindcss';
+@import './theme.css';
 
 :root {
-  --background: #b8e8e2;
+  --background: #dcf7f2;
   --foreground: #171717;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-roboto: var(--font-roboto);
+  --font-mono: var(--font-fira);
+  --font-ibm-kr: var(--font-ibm-plex-kr);
+  --font-cute: var(--font-cute);
+
+  --font-display: var(--font-oswald), sans-serif;
+  --font-display--font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  --font-display--font-variation-settings: 'opsz' 32;
 }
 
 /* preflight 재정의 */
@@ -19,79 +32,6 @@
     /* 스크롤바 숨김 */
     display: none;
   }
-
-  h1 {
-    font-size: 2.488rem; /* 약 40px */
-    font-weight: 700;
-    margin-bottom: 0.5em;
-  }
-
-  h2 {
-    font-size: 2.074rem; /* 약 33px */
-    font-weight: 600;
-    margin-bottom: 0.5em;
-  }
-
-  h3 {
-    font-size: 1.728rem; /* 약 28px */
-    font-weight: 600;
-    margin-bottom: 0.5em;
-  }
-
-  h4 {
-    font-size: 1.44rem; /* 약 23px */
-    font-weight: 500;
-    margin-bottom: 0.5em;
-  }
-
-  h5 {
-    font-size: 1.2rem; /* 약 19px */
-    font-weight: 500;
-    margin-bottom: 0.5em;
-  }
-
-  h6 {
-    font-size: 1rem; /* 16px */
-    font-weight: 500;
-    margin-bottom: 0.5em;
-  }
-}
-
-@theme {
-  /*
-  --font-sans: var(--font-roboto);
-  --font-mono: var(--font-fira);
-  --font-kr: var(--font-ibm-plex-kr);
-  --font-poppins: var(--font-poppins); */
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  --text-tiny: 0.625rem;
-  --text-tiny--line-height: 1.5rem;
-  --text-tiny--letter-spacint: 0.125rem;
-  --text-tiny--font-weight: 500;
-
-  /* add --breakpoint */
-  --breadpoint-xs: 30rem;
-  --breakpoint-3xl: 120rem;
-  --breakpoint-tablet: 40rem;
-  --breakpoint-laptop: 64rem;
-  --breakpoint-desktop: 80rem;
-  /* removing default breakpoints -->
-    --breakpoint-2xl: initial;
-    --breakpoint-*: initial;
-
-  */
-
-  /* 임의의 값 사용  */
-  /*
-    max-[600px]: bg-sky-300;
-    min-[320px]: text-center;
-  */
 }
 
 @layer utilities {
@@ -130,6 +70,26 @@
     @apply w-full flex flex-col gap-2 rounded-lg;
   }
 
+  .flex-viv-default {
+    @apply flex h-32 flex-row;
+  }
+
+  .hr-viv {
+    @apply text-slate-300 my-2;
+  }
+
+  .subtitle-xl {
+    @apply text-xl text-slate-400 font-semibold;
+  }
+
+  .flex-row-center {
+    @apply flex justify-center items-center;
+  }
+
+  .flex-col-center {
+    @apply flex flex-col justify-center items-center;
+  }
+
   .card {
     background-color: var(--color-white);
     border-radius: var(--radius-lg);
@@ -141,11 +101,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  /* font-family: var(--font-geist-sans), sans-serif; */
-  /* font-family: var(--font-roboto), var(--font-ibm-plex-kr), sans-serif;
- */
+  font-family: var(--font-inter), var(--font-ibm-plex-kr), sans-serif;
   line-height: 1.5rem;
-  font-size: 1rem;
 }
 
 div.writer-container {
@@ -173,6 +130,24 @@ footer {
   grid-area: footer;
   overflow: auto;
 }
+
+/* @theme */
+/*
+  - 테마변수는 새로운 유틸리티 클래스를 생성하도록 지시하기도 함.
+  - 테마변수는 최상위 레벨에서 정의 되어야 함.
+
+*/
+
+/* :root */
+/*
+  유틸리티 클래스에 연결되지 않아야 하는 변수로서 일반 CSS 변수를 정의하는 것
+
+*/
+
+/*
+  --> class="bg-mint-500" <-- @theme { --color-mini-500; oklch(0.72 0.11 178); }
+  --> <div style="background-color: var(--color-mint-500)"> ... </div>
+*/
 
 /* Responsive Design */
 /*

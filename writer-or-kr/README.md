@@ -18,3 +18,20 @@
 - Git Commit OK.
 
 ## .env.local
+
+## 라우팅
+
+- [slug], [...slug], [[...slug]]
+- (group) : 그룹
+- _lib : 라우팅할 수 없는 폴더, 안전한 장소
+
+- 파일
+    - layout
+    - page
+    - loading
+    - not-found
+    - error
+    - global-error
+    - route
+    - template
+    - default
