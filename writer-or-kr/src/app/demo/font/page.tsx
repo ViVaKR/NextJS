@@ -3,6 +3,36 @@ export default function FontPage() {
   return (
     <div className="h-dvh bg-amber-50 p-4 text-xl">
 
+      <div className="h-48 bg-robot bg-center bg-cover
+      grayscale
+      blur-xs
+      hover:filter-none
+      cursor-pointer
+      w-full mb-4"></div>
+
+      <div>
+
+        <p className="text-3xl text-shadow-lg/50 text-shadow-amber-400 text-slate-700 mb-4">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente consequatur, quisquam ex provident quod enim aut! Sapiente soluta, aliquam adipisci obcaecati fugiat harum magni repellendus, fugit aut similique atque sequi.
+        </p>
+      </div>
+
+      <div className="flex gap-4 mb-8">
+        <button className="bg-cyan-500
+        shadow-xl shadow-cyan-700 ring-3 ring-cyan-50
+        text-white px-4 py-3
+        rounded-lg">Subscribe</button>
+      </div>
+
+
+      <div className="flex gap-4 mb-4">
+        <div className="bg-slate-100 size-24 flex-row-center rounded-xl shadow-xl">01</div>
+        <div className="bg-slate-100 size-24 flex-row-center rounded-xl shadow-lg">01</div>
+        <div className="bg-slate-100 size-24 flex-row-center rounded-xl shadow-xl/20">01</div>
+        <div className="bg-slate-100 size-24 flex-row-center rounded-xl shadow-xl/50">01</div>
+        <div className="bg-slate-100 size-24 flex-row-center rounded-xl shadow-xl/75">01</div>
+      </div>
+
 
       <div className="flex justify-around gap-4 mb-4">
 
