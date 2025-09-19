@@ -7,7 +7,7 @@
     npm list -g
     ncu -g
     corepack enable pnpm
-    npx create-next-app@latest writer-or-kr --use-pnpm
+    npx create-next-app@latest writer-or-kr --use-pnpm --api
     pnpm dev
 ```
 

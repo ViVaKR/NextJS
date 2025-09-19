@@ -7,13 +7,15 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   images: {
+    qualities: [25, 50, 75, 100],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'api.vivakr.com',
         pathname: '/images/**',
       }
-    ]
+    ],
+
   },
   allowedDevOrigins: [
     'https://vivakr.com',
