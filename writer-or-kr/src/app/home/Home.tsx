@@ -14,15 +14,14 @@ interface resData {
   message: string
 }
 
-
 export default function Home() {
   const [data, setData] = useState<resData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
 
-      const response = await fetch('http://localhost:8081');
-      // const response = await fetch('/api/extern');
+      // const response = await fetch('http://localhost:8081');
+      const response = await fetch('/api/extern');
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
