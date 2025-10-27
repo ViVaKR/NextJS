@@ -3,6 +3,7 @@
 /vivakr-com-backup
 **/maps/
 .DS_Store
+**/.next/
 
 # Logs
 logs
